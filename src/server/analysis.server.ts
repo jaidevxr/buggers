@@ -1,5 +1,6 @@
 import {
   githubJson,
+  githubJsonWithHeaders,
   type GitHubCommit,
   type GitHubPull,
   type GitHubPullFile,
@@ -25,7 +26,8 @@ export const ANALYSIS_STAGES = [
 ] as const;
 
 const HISTORY_FILE_LIMIT = 10;
-const HISTORY_COMMITS_PER_FILE = 60;
+/** Churn window: count commits in the last 90 days, not a fixed sample. */
+const CHURN_WINDOW_DAYS = 90;
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -53,18 +55,32 @@ async function failAnalysis(analysisId: string, message: string) {
     .eq("id", analysisId);
 }
 
+/**
+ * Parse the "last" page URL from a GitHub Link header.
+ * Returns null if there is no last page (single page of results).
+ */
+function parseLinkHeaderLastUrl(linkHeader: string | null): string | null {
+  if (!linkHeader) return null;
+  const match = linkHeader.match(/<([^>]+)>;\s*rel="last"/);
+  return match?.[1] ?? null;
+}
+
 export async function collectFileHistory(
   userId: string,
   repoFullName: string,
   filenames: string[],
 ): Promise<FileHistoryStat[]> {
   const stats: FileHistoryStat[] = [];
+  const sinceDate = new Date(Date.now() - CHURN_WINDOW_DAYS * 86_400_000).toISOString();
+
   for (const filename of filenames.slice(0, HISTORY_FILE_LIMIT)) {
     try {
+      // Churn: commits in the 90-day window (up to 100 per page; sufficient for churn signal)
       const commits = await githubJson<GitHubCommit[]>(
         userId,
-        `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}&per_page=${HISTORY_COMMITS_PER_FILE}`,
+        `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}&since=${sinceDate}&per_page=100`,
       );
+
       if (!commits.length) {
         stats.push({
           filename,
@@ -76,10 +92,45 @@ export async function collectFileHistory(
         });
         continue;
       }
+
       const defectCommitCount = commits.filter((c) => DEFECT_PATTERN.test(c.commit.message)).length;
       const authors = new Set(commits.map((c) => c.author?.login ?? c.commit.author?.name ?? "unknown"));
-      const oldest = commits[commits.length - 1]?.commit.author?.date;
-      const ageDays = oldest ? (Date.now() - new Date(oldest).getTime()) / 86_400_000 : null;
+
+      // True file inception age: fetch per_page=1, read Link header to find last page,
+      // then fetch that page to get the very first commit on this path.
+      let ageDays: number | null = null;
+      try {
+        const { headers } = await githubJsonWithHeaders<GitHubCommit[]>(
+          userId,
+          `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}&per_page=1`,
+        );
+        const lastUrl = parseLinkHeaderLastUrl(headers.get("Link") ?? headers.get("link"));
+        if (lastUrl) {
+          // Link header contains full URLs (e.g. https://api.github.com/repos/...).
+          // githubRequest expects a path, so extract /repos/... portion.
+          let lastPath: string;
+          try {
+            const parsed = new URL(lastUrl);
+            lastPath = parsed.pathname + parsed.search;
+          } catch {
+            lastPath = lastUrl; // fallback: assume it's already a path
+          }
+          const lastPageCommits = await githubJson<GitHubCommit[]>(userId, lastPath);
+          const firstCommit = lastPageCommits[lastPageCommits.length - 1];
+          if (firstCommit?.commit.author?.date) {
+            ageDays = (Date.now() - new Date(firstCommit.commit.author.date).getTime()) / 86_400_000;
+          }
+        } else {
+          // Single page = the first commit is the only commit (or latest single)
+          const oldest = commits[commits.length - 1]?.commit.author?.date;
+          ageDays = oldest ? (Date.now() - new Date(oldest).getTime()) / 86_400_000 : null;
+        }
+      } catch {
+        // file_age becomes insufficient_data if the Link header trick fails
+        const oldest = commits[commits.length - 1]?.commit.author?.date;
+        ageDays = oldest ? (Date.now() - new Date(oldest).getTime()) / 86_400_000 : null;
+      }
+
       stats.push({
         filename,
         commitCount: commits.length,
