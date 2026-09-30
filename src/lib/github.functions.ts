@@ -3,6 +3,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   completeGitHubConnectSchema,
+  saveGitHubTokenSchema,
   listPullRequestsSchema,
   pullRequestDetailSchema,
   repositoryOverviewSchema,
@@ -33,8 +34,9 @@ export const startGitHubConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { createOAuthState } = await import("@/server/connectionKeyCrypto");
-    const { GITHUB_SCOPES } = await import("@/server/github.server");
+    const { GITHUB_SCOPES, reloadEnv } = await import("@/server/github.server");
 
+    reloadEnv();
     const clientId = process.env["GITHUB_CLIENT_ID"];
     if (!clientId) {
       throw new Error("GitHub connection is not configured for this app (missing GITHUB_CLIENT_ID).");
@@ -72,6 +74,26 @@ export const completeGitHubConnect = createServerFn({ method: "POST" })
 
     const accessToken = await exchangeGitHubOAuthCode(data.code);
     await saveConnectionKeyForUser(context.userId, CONNECTOR_ID, accessToken);
+    return { ok: true };
+  });
+
+export const saveGitHubToken = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator(saveGitHubTokenSchema)
+  .handler(async ({ data, context }) => {
+    const { saveConnectionKeyForUser } = await import("@/server/appUserConnections.server");
+    const res = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${data.token}`,
+        Accept: "application/vnd.github.v3+json",
+        "User-Agent": "Buggers-App",
+      },
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Invalid GitHub token (${res.status}): Please check token validity and scopes.`);
+    }
+    await saveConnectionKeyForUser(context.userId, CONNECTOR_ID, data.token);
     return { ok: true };
   });
 

@@ -3,6 +3,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, type LanguageModel } from "ai";
 import { aiReviewOutputSchema } from "@/lib/validation";
+import { reloadEnv } from "@/server/github.server";
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 const DEFAULT_MAX_TOKENS = 4096;
@@ -82,6 +83,7 @@ export class StandaloneAiProvider implements AiReviewProvider {
   public maxTokens: number;
 
   constructor() {
+    reloadEnv();
     const rawProvider = (process.env["AI_PROVIDER"] || "openai").toLowerCase();
     this.provider = (["openai", "anthropic", "google"].includes(rawProvider)
       ? rawProvider
@@ -100,7 +102,7 @@ export class StandaloneAiProvider implements AiReviewProvider {
       this.provider === "anthropic"
         ? "claude-3-5-sonnet-latest"
         : this.provider === "google"
-        ? "gemini-1.5-pro"
+        ? (process.env["GOOGLE_MODEL"] || "gemini-3.5-flash")
         : "gpt-4o";
 
     this.model = process.env["AI_MODEL"] || defaultModel;
@@ -113,36 +115,91 @@ export class StandaloneAiProvider implements AiReviewProvider {
   }
 
   async review(prompt: string, systemPrompt: string): Promise<AiReviewProviderResult> {
-    if (!this.apiKey) {
-      throw new Error("AI review is not configured (missing AI_API_KEY).");
+    reloadEnv();
+
+    const tryCall = async (provider: SupportedAiProvider, apiKey: string, model: string) => {
+      const modelInstance = resolveModel(provider, apiKey, model);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+
+      try {
+        const result = streamText({
+          model: modelInstance,
+          system: systemPrompt,
+          prompt,
+          maxOutputTokens: this.maxTokens,
+          abortSignal: controller.signal,
+        });
+
+        const text = await result.text;
+        const usageData = await result.usage;
+        return {
+          text,
+          usage: {
+            promptTokens: usageData?.inputTokens ?? 0,
+            completionTokens: usageData?.outputTokens ?? 0,
+            totalTokens: usageData?.totalTokens ?? 0,
+          },
+        };
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    // Prepare providers in order: primary first, then fallbacks
+    const candidateList: Array<{ provider: SupportedAiProvider; apiKey: string; model: string }> = [];
+
+    if (this.apiKey) {
+      candidateList.push({ provider: this.provider, apiKey: this.apiKey, model: this.model });
+
+      // If Google is primary, also add alternate Google flash models in case one hits capacity (e.g. 503)
+      if (this.provider === "google") {
+        const altGoogleModels = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest"].filter(
+          (m) => m !== this.model,
+        );
+        for (const altModel of altGoogleModels) {
+          candidateList.push({ provider: "google", apiKey: this.apiKey, model: altModel });
+        }
+      }
     }
 
-    const modelInstance = resolveModel(this.provider, this.apiKey, this.model);
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-
-    try {
-      const result = streamText({
-        model: modelInstance,
-        system: systemPrompt,
-        prompt,
-        maxOutputTokens: this.maxTokens,
-        abortSignal: controller.signal,
-      });
-
-      const text = await result.text;
-      const usageData = await result.usage;
-      return {
-        text,
-        usage: {
-          promptTokens: usageData?.inputTokens ?? 0,
-          completionTokens: usageData?.outputTokens ?? 0,
-          totalTokens: usageData?.totalTokens ?? 0,
-        },
-      };
-    } finally {
-      clearTimeout(timer);
+    // Add OpenAI fallback
+    const openaiKey = process.env["OPENAI_API_KEY"];
+    if (this.provider !== "openai" && openaiKey) {
+      candidateList.push({ provider: "openai", apiKey: openaiKey, model: process.env["OPENAI_MODEL"] || "gpt-4o-mini" });
     }
+
+    // Add Google fallback if primary was not google
+    const googleKey = process.env["GOOGLE_GENERATIVE_AI_API_KEY"] || (this.provider === "google" ? this.apiKey : "");
+    if (this.provider !== "google" && googleKey) {
+      candidateList.push({ provider: "google", apiKey: googleKey, model: process.env["GOOGLE_MODEL"] || "gemini-3.5-flash" });
+    }
+
+    // Add Anthropic fallback
+    const anthropicKey = process.env["ANTHROPIC_API_KEY"];
+    if (this.provider !== "anthropic" && anthropicKey) {
+      candidateList.push({ provider: "anthropic", apiKey: anthropicKey, model: "claude-3-5-sonnet-latest" });
+    }
+
+    if (candidateList.length === 0) {
+      throw new Error("AI review is not configured (missing AI_API_KEY or provider keys).");
+    }
+
+    let lastErr: unknown;
+    for (let i = 0; i < candidateList.length; i++) {
+      const candidate = candidateList[i]!;
+      try {
+        if (i > 0) {
+          console.warn(`[AI Review] Primary provider failed. Falling back to ${candidate.provider} (${candidate.model})...`);
+        }
+        return await tryCall(candidate.provider, candidate.apiKey, candidate.model);
+      } catch (err) {
+        lastErr = err;
+        console.warn(`[AI Review] Provider ${candidate.provider} failed:`, err instanceof Error ? err.message : String(err));
+      }
+    }
+
+    throw lastErr;
   }
 }
 

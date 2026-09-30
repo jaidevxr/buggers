@@ -63,6 +63,10 @@ export const completeGitHubConnectSchema = z.object({
   state: z.string().trim().min(1, "OAuth state cannot be empty"),
 });
 
+export const saveGitHubTokenSchema = z.object({
+  token: z.string().trim().min(1, "GitHub token cannot be empty"),
+});
+
 export const listPullRequestsSchema = z.object({
   repoFullName: repoFullNameSchema,
   state: z.enum(["open", "closed", "all"]).optional(),

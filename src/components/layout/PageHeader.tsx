@@ -35,6 +35,20 @@ export function timeAgo(iso?: string | null) {
   return new Date(iso).toLocaleDateString();
 }
 
-export function errMsg(e: unknown) {
-  return e instanceof Error ? e.message : String(e);
+export function errMsg(e: unknown): string {
+  if (!e) return "An unknown error occurred";
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string") return e;
+  if (typeof e === "object") {
+    const obj = e as Record<string, unknown>;
+    if (typeof obj["message"] === "string") return obj["message"];
+    if (typeof obj["error"] === "string") return obj["error"];
+    if (typeof obj["msg"] === "string") return obj["msg"];
+    try {
+      return JSON.stringify(e);
+    } catch {
+      return String(e);
+    }
+  }
+  return String(e);
 }

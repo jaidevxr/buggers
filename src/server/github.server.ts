@@ -38,10 +38,36 @@ export class GitHubRequestError extends Error {
   }
 }
 
+import fs from "fs";
+import path from "path";
+
+export function reloadEnv() {
+  try {
+    const envPath = path.resolve(process.cwd(), ".env");
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, "utf-8");
+      for (const rawLine of content.split("\n")) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith("#")) continue;
+        const eqIdx = line.indexOf("=");
+        if (eqIdx > 0) {
+          const key = line.slice(0, eqIdx).trim();
+          let val = line.slice(eqIdx + 1).trim();
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          process.env[key] = val;
+        }
+      }
+    }
+  } catch {}
+}
+
 /**
  * Exchanges a temporary GitHub authorization code for an OAuth access token directly with GitHub.
  */
 export async function exchangeGitHubOAuthCode(code: string): Promise<string> {
+  reloadEnv();
   const clientId = process.env["GITHUB_CLIENT_ID"];
   const clientSecret = process.env["GITHUB_CLIENT_SECRET"];
 

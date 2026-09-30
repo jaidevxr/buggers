@@ -42,6 +42,7 @@ function AuthPage() {
         provider: "github",
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
+          scopes: "read:user repo",
           skipBrowserRedirect: true,
         },
       });

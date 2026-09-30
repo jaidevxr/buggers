@@ -1,13 +1,15 @@
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Circle } from "lucide-react";
 import { getDashboardSummary } from "@/lib/analysis.functions";
-import { getGitHubConnection } from "@/lib/github.functions";
+import { getGitHubConnection, saveGitHubToken } from "@/lib/github.functions";
 import { PageHeader, StatCard, timeAgo, errMsg } from "@/components/layout/PageHeader";
 import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
 import { RiskBadge, StatusPill } from "@/components/status/StatusBadges";
 import { ConnectGitHubButton } from "@/components/github/ConnectGitHubCard";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Overview — Buggers" }] }),
@@ -15,10 +17,26 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
+  const qc = useQueryClient();
   const conn = useQuery({ queryKey: ["github-connection"], queryFn: () => getGitHubConnection() });
   const summary = useQuery({ queryKey: ["dashboard-summary"], queryFn: () => getDashboardSummary() });
   const connected = Boolean(conn.data?.connected);
   const hasAnalyses = (summary.data?.counts.analyses ?? 0) > 0;
+
+  useEffect(() => {
+    if (conn.data && !conn.data.connected && !conn.isLoading) {
+      supabase.auth.getSession().then(async ({ data }) => {
+        if (data.session?.provider_token) {
+          try {
+            await saveGitHubToken({ data: { token: data.session.provider_token } });
+            await qc.invalidateQueries({ queryKey: ["github-connection"] });
+          } catch {
+            // Ignored if background token doesn't have necessary permissions
+          }
+        }
+      });
+    }
+  }, [conn.data, conn.isLoading, qc]);
 
   return (
     <div>
