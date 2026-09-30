@@ -21,7 +21,7 @@ export function reportError(error: unknown, context: Record<string, unknown> = {
 
   // If Sentry has been initialized externally (e.g. in a Sentry.init() call
   // added to the entry point), capture the exception via the global hub.
-  const sentryHub = (window as Record<string, unknown>)["__SENTRY__"];
+  const sentryHub = (window as unknown as Record<string, unknown>)["__SENTRY__"];
   if (sentryHub && typeof (sentryHub as Record<string, unknown>)["hub"] === "object") {
     try {
       const hub = (sentryHub as { hub: { captureException?: (e: unknown, ctx?: unknown) => void } }).hub;
