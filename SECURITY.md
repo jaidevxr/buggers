@@ -43,7 +43,7 @@ Buggers analyzes GitHub pull requests to estimate bug risk and identify defects 
 
 ### Threat E: Credential & Secret Hygiene
 * **Vector:** Committing development credentials (`.env`) or connector secrets to version control.
-* **Impact:** Compromise of Supabase database, GitHub App OAuth secrets, or AI gateway API keys.
+* **Impact:** Compromise of Supabase database, GitHub OAuth secrets, or AI provider API keys.
 * **Mitigation:**
   - `.env` and `.env.*` are excluded by `.gitignore` (with `!.env.example` explicitly preserved).
   - Git history is kept clean of environment secrets; `.env.example` contains only placeholder values.
