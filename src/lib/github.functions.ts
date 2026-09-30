@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  completeGitHubConnectSchema,
+  listPullRequestsSchema,
+  pullRequestDetailSchema,
+  repositoryOverviewSchema,
+} from "@/lib/validation";
 
 const CONNECTOR_ID = "github";
 const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
@@ -50,7 +56,7 @@ export const startGitHubConnect = createServerFn({ method: "POST" })
       appUserId: context.userId,
       clientAPIKey: clientApiKey,
       returnUrl,
-      connectionAPIKey: existing ?? undefined,
+      ...(existing ? { connectionAPIKey: existing } : {}),
       credentialsConfiguration: { scopes: GITHUB_SCOPES },
     });
     return { authorizationUrl };
@@ -58,7 +64,7 @@ export const startGitHubConnect = createServerFn({ method: "POST" })
 
 export const completeGitHubConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { code: string }) => input)
+  .inputValidator(completeGitHubConnectSchema)
   .handler(async ({ data, context }) => {
     const { exchangeAppUserOAuthCode } = await import("@/integrations/lovable/appUserConnector");
     const { saveConnectionKeyForUser } = await import("@/server/appUserConnections.server");
@@ -197,7 +203,7 @@ export type PullSummary = {
 
 export const listPullRequests = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { repoFullName: string; state?: "open" | "closed" | "all" }) => input)
+  .inputValidator(listPullRequestsSchema)
   .handler(async ({ data, context }) => {
     const { githubJson } = await import("@/server/github.server");
     const state = data.state ?? "all";
@@ -236,7 +242,7 @@ export const listPullRequests = createServerFn({ method: "GET" })
 
 export const getRepositoryOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { repoFullName: string }) => input)
+  .inputValidator(repositoryOverviewSchema)
   .handler(async ({ data, context }) => {
     const { githubJson } = await import("@/server/github.server");
     const [repo, pulls, commits, contributors] = await Promise.all([
@@ -307,7 +313,7 @@ export const getRepositoryOverview = createServerFn({ method: "GET" })
 
 export const getPullRequestDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { repoFullName: string; prNumber: number }) => input)
+  .inputValidator(pullRequestDetailSchema)
   .handler(async ({ data, context }) => {
     const { githubJson } = await import("@/server/github.server");
     const [pr, files, commits] = await Promise.all([

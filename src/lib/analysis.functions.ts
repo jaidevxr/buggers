@@ -1,10 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  getAnalysisSchema,
+  listAnalysesSchema,
+  runAnalysisSchema,
+  startAnalysisSchema,
+} from "@/lib/validation";
 
 export const startAnalysis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { repoFullName: string; prNumber: number }) => input)
+  .inputValidator(startAnalysisSchema)
   .handler(async ({ data, context }) => {
+    const { checkUserRateLimit } = await import("@/server/rateLimit.server");
+    checkUserRateLimit(`${context.userId}:startAnalysis`, 10, 60_000);
+
     const { githubJson } = await import("@/server/github.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -16,7 +25,7 @@ export const startAnalysis = createServerFn({ method: "POST" })
       user: { login: string } | null;
       head: { ref: string; sha: string };
       base: { ref: string };
-    }>(context.userId, `/repos/${data.repoFullName}/pulls/${data.prNumber}`);
+    }>(context.userId, `/repos/${encodeURIComponent(data.repoFullName.split("/")[0]!)}/${encodeURIComponent(data.repoFullName.split("/")[1]!)}/pulls/${data.prNumber}`);
 
     // Idempotent per head commit: re-running on the same SHA reuses the row.
     const { data: existing } = await supabaseAdmin
@@ -32,7 +41,16 @@ export const startAnalysis = createServerFn({ method: "POST" })
       if (existing.status === "processing") return { analysisId: existing.id, alreadyRunning: true };
       await supabaseAdmin
         .from("analyses")
-        .update({ status: "queued", stage: "queued", error_message: null, updated_at: new Date().toISOString() })
+        .update({
+          status: "queued",
+          stage: "queued",
+          error_message: null,
+          risk_score: null,
+          risk_level: null,
+          risk_confidence: null,
+          completed_at: null,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", existing.id);
       return { analysisId: existing.id, alreadyRunning: false };
     }
@@ -60,8 +78,11 @@ export const startAnalysis = createServerFn({ method: "POST" })
 
 export const runAnalysis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { analysisId: string }) => input)
+  .inputValidator(runAnalysisSchema)
   .handler(async ({ data, context }) => {
+    const { checkUserRateLimit } = await import("@/server/rateLimit.server");
+    checkUserRateLimit(`${context.userId}:runAnalysis`, 10, 60_000);
+
     const { processAnalysis } = await import("@/server/analysis.server");
     await processAnalysis(context.userId, data.analysisId);
     return { ok: true };
@@ -69,7 +90,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
 
 export const getAnalysis = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { analysisId: string }) => input)
+  .inputValidator(getAnalysisSchema)
   .handler(async ({ data, context }) => {
     const { data: analysis, error } = await context.supabase
       .from("analyses")
@@ -90,14 +111,14 @@ export const getAnalysis = createServerFn({ method: "GET" })
 
 export const listAnalyses = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { repoFullName?: string } | undefined) => input ?? {})
+  .inputValidator(listAnalysesSchema)
   .handler(async ({ data, context }) => {
     let query = context.supabase
       .from("analyses")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(100);
-    if (data.repoFullName) query = query.eq("repo_full_name", data.repoFullName);
+    if (data?.repoFullName) query = query.eq("repo_full_name", data.repoFullName);
     const { data: rows, error } = await query;
     if (error) throw error;
     return { analyses: rows ?? [] };

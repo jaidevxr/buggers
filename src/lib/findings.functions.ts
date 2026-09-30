@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  createTicketFromFindingSchema,
+  getFindingSchema,
+  updateFindingStatusSchema,
+  updateTicketSchema,
+} from "@/lib/validation";
 
 export const listFindings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -15,7 +21,7 @@ export const listFindings = createServerFn({ method: "GET" })
 
 export const getFinding = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { findingId: string }) => input)
+  .inputValidator(getFindingSchema)
   .handler(async ({ data, context }) => {
     const { data: finding, error } = await context.supabase
       .from("findings")
@@ -34,7 +40,7 @@ export const getFinding = createServerFn({ method: "GET" })
 
 export const updateFindingStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { findingId: string; status: "open" | "reviewed" | "false_positive" | "fixed" }) => input)
+  .inputValidator(updateFindingStatusSchema)
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("findings")
@@ -46,8 +52,19 @@ export const updateFindingStatus = createServerFn({ method: "POST" })
 
 export const createTicketFromFinding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { findingId: string; assignee?: string }) => input)
+  .inputValidator(createTicketFromFindingSchema)
   .handler(async ({ data, context }) => {
+    // Check if a ticket for this finding already exists (idempotent creation)
+    const { data: existingTicket } = await context.supabase
+      .from("tickets")
+      .select("*")
+      .eq("finding_id", data.findingId)
+      .maybeSingle();
+
+    if (existingTicket) {
+      return { ticket: existingTicket };
+    }
+
     const { data: finding, error: findingError } = await context.supabase
       .from("findings")
       .select("*")
@@ -87,7 +104,7 @@ export const listTickets = createServerFn({ method: "GET" })
 
 export const updateTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { ticketId: string; status?: string; assignee?: string | null }) => input)
+  .inputValidator(updateTicketSchema)
   .handler(async ({ data, context }) => {
     const patch: { updated_at: string; status?: string; assignee?: string | null } = { updated_at: new Date().toISOString() };
     if (data.status) patch.status = data.status;

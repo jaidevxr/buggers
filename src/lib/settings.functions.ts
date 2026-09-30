@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { userSettingsSchema } from "@/lib/validation";
 
 export type UserSettings = {
   notify_high_risk: boolean;
@@ -33,10 +34,13 @@ export const getSettings = createServerFn({ method: "GET" })
 
 export const saveSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: Partial<UserSettings>) => input)
+  .inputValidator(userSettingsSchema.partial())
   .handler(async ({ data, context }) => {
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== undefined),
+    );
     const { error } = await context.supabase.from("user_settings").upsert(
-      { user_id: context.userId, ...data, updated_at: new Date().toISOString() },
+      { user_id: context.userId, ...cleaned, updated_at: new Date().toISOString() },
       { onConflict: "user_id" },
     );
     if (error) throw error;
