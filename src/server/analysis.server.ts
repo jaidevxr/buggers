@@ -12,7 +12,8 @@ import {
   type FileHistoryStat,
   type RiskResult,
 } from "@/lib/risk-engine";
-import { runAiReview, validateAiFindings } from "@/server/aiReview.server";
+import { runAiReview, validateAiFindings, type AiTokenUsage } from "@/server/aiReview.server";
+import { logStructured } from "@/server/logger.server";
 
 export const ANALYSIS_STAGES = [
   "queued",
@@ -29,18 +30,50 @@ export const ANALYSIS_STAGES = [
 const HISTORY_FILE_LIMIT = 10;
 /** Churn window: count commits in the last 90 days, not a fixed sample. */
 const CHURN_WINDOW_DAYS = 90;
+/** Heartbeat interval: refresh the lease every 60 seconds during processing. */
+const HEARTBEAT_INTERVAL_MS = 60_000;
+/** Lease duration: 5 minutes. Must exceed HEARTBEAT_INTERVAL_MS. */
+const LEASE_DURATION_SECONDS = 300;
+
+// ─── Estimated cost per token (GPT-4o class model) ──────────────────
+const COST_PER_PROMPT_TOKEN = 0.0000025;
+const COST_PER_COMPLETION_TOKEN = 0.00001;
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
 }
 
-async function setStage(analysisId: string, stage: string, status = "processing") {
+// ─── Stage persistence helpers ──────────────────────────────────────
+
+/**
+ * Updates the analysis stage, refreshes the heartbeat, and optionally
+ * persists stage output data so a retry can skip completed stages.
+ */
+async function setStage(
+  analysisId: string,
+  stage: string,
+  stageData?: Record<string, unknown>,
+  status = "processing",
+) {
   const db = await admin();
-  await db
-    .from("analyses")
-    .update({ stage, status, updated_at: new Date().toISOString() })
-    .eq("id", analysisId);
+  const update: Record<string, unknown> = {
+    stage,
+    status,
+    heartbeat_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  if (stageData) {
+    // Merge stageData into existing stage_data JSONB
+    const { data: current } = await db
+      .from("analyses")
+      .select("stage_data")
+      .eq("id", analysisId)
+      .single();
+    const existing = (current?.stage_data as Record<string, unknown>) ?? {};
+    update["stage_data"] = { ...existing, ...stageData };
+  }
+  await db.from("analyses").update(update as never).eq("id", analysisId);
 }
 
 async function failAnalysis(analysisId: string, message: string) {
@@ -157,7 +190,38 @@ export async function collectFileHistory(
   return stats;
 }
 
+// ─── Heartbeat loop ─────────────────────────────────────────────────
+
+/**
+ * Starts a periodic heartbeat that refreshes lease_expires_at on the analysis row.
+ * Returns a stop function; call it when processing is done.
+ */
+function startHeartbeat(analysisId: string): () => void {
+  const timer = setInterval(async () => {
+    try {
+      const db = await admin();
+      await db
+        .from("analyses")
+        .update({
+          heartbeat_at: new Date().toISOString(),
+          lease_expires_at: new Date(Date.now() + LEASE_DURATION_SECONDS * 1000).toISOString(),
+        })
+        .eq("id", analysisId);
+    } catch (err) {
+      logStructured("warn", "heartbeat_refresh_failed", {
+        analysisId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
+  return () => clearInterval(timer);
+}
+
+// ─── Main processing ────────────────────────────────────────────────
+
 export async function processAnalysis(userId: string, analysisId: string) {
+  const startTime = Date.now();
   const db = await admin();
   const { data: analysis, error } = await db
     .from("analyses")
@@ -171,23 +235,76 @@ export async function processAnalysis(userId: string, analysisId: string) {
 
   const repoFullName = analysis.repo_full_name;
   const prNumber = analysis.pr_number;
+  const stopHeartbeat = startHeartbeat(analysisId);
+
+  // Recover persisted stage data from a previous attempt (idempotency)
+  const stageData = (analysis.stage_data as Record<string, unknown>) ?? {};
+
+  logStructured("info", "analysis_started", {
+    analysisId,
+    stage: "init",
+    attempt: analysis.attempt_count ?? 1,
+  });
 
   try {
-    await setStage(analysisId, "fetching_pr");
-    const pr = await githubJson<GitHubPull>(userId, `/repos/${repoFullName}/pulls/${prNumber}`);
+    // ── Stage: fetching_pr ────────────────────────────────────────
+    let pr: GitHubPull;
+    if (stageData["pr"] && typeof stageData["pr"] === "object") {
+      pr = stageData["pr"] as GitHubPull;
+      logStructured("debug", "stage_skipped_cached", { analysisId, stage: "fetching_pr" });
+    } else {
+      const stageStart = Date.now();
+      await setStage(analysisId, "fetching_pr");
+      pr = await githubJson<GitHubPull>(userId, `/repos/${repoFullName}/pulls/${prNumber}`);
+      await setStage(analysisId, "fetching_pr", { pr });
+      logStructured("info", "stage_completed", {
+        analysisId,
+        stage: "fetching_pr",
+        durationMs: Date.now() - stageStart,
+      });
+    }
 
-    await setStage(analysisId, "fetching_commits");
-    const commits = await githubJson<GitHubCommit[]>(
-      userId,
-      `/repos/${repoFullName}/pulls/${prNumber}/commits?per_page=100`,
-    );
+    // ── Stage: fetching_commits ───────────────────────────────────
+    let commits: GitHubCommit[];
+    if (stageData["commits"] && Array.isArray(stageData["commits"])) {
+      commits = stageData["commits"] as GitHubCommit[];
+      logStructured("debug", "stage_skipped_cached", { analysisId, stage: "fetching_commits" });
+    } else {
+      const stageStart = Date.now();
+      await setStage(analysisId, "fetching_commits");
+      commits = await githubJson<GitHubCommit[]>(
+        userId,
+        `/repos/${repoFullName}/pulls/${prNumber}/commits?per_page=100`,
+      );
+      await setStage(analysisId, "fetching_commits", { commits });
+      logStructured("info", "stage_completed", {
+        analysisId,
+        stage: "fetching_commits",
+        durationMs: Date.now() - stageStart,
+      });
+    }
 
-    await setStage(analysisId, "fetching_files");
-    const files = await githubJson<GitHubPullFile[]>(
-      userId,
-      `/repos/${repoFullName}/pulls/${prNumber}/files?per_page=100`,
-    );
+    // ── Stage: fetching_files ─────────────────────────────────────
+    let files: GitHubPullFile[];
+    if (stageData["files"] && Array.isArray(stageData["files"])) {
+      files = stageData["files"] as GitHubPullFile[];
+      logStructured("debug", "stage_skipped_cached", { analysisId, stage: "fetching_files" });
+    } else {
+      const stageStart = Date.now();
+      await setStage(analysisId, "fetching_files");
+      files = await githubJson<GitHubPullFile[]>(
+        userId,
+        `/repos/${repoFullName}/pulls/${prNumber}/files?per_page=100`,
+      );
+      await setStage(analysisId, "fetching_files", { files });
+      logStructured("info", "stage_completed", {
+        analysisId,
+        stage: "fetching_files",
+        durationMs: Date.now() - stageStart,
+      });
+    }
 
+    // Update PR metadata
     await db
       .from("analyses")
       .update({
@@ -204,15 +321,32 @@ export async function processAnalysis(userId: string, analysisId: string) {
       })
       .eq("id", analysisId);
 
-    await setStage(analysisId, "historical_analysis");
-    const ranked = [...files].sort((a, b) => b.changes - a.changes);
-    const history = await collectFileHistory(
-      userId,
-      repoFullName,
-      ranked.map((f) => f.filename),
-    );
+    // ── Stage: historical_analysis ────────────────────────────────
+    let history: FileHistoryStat[];
+    if (stageData["history"] && Array.isArray(stageData["history"])) {
+      history = stageData["history"] as FileHistoryStat[];
+      logStructured("debug", "stage_skipped_cached", { analysisId, stage: "historical_analysis" });
+    } else {
+      const stageStart = Date.now();
+      await setStage(analysisId, "historical_analysis");
+      const ranked = [...files].sort((a, b) => b.changes - a.changes);
+      history = await collectFileHistory(
+        userId,
+        repoFullName,
+        ranked.map((f) => f.filename),
+      );
+      await setStage(analysisId, "historical_analysis", { history });
+      logStructured("info", "stage_completed", {
+        analysisId,
+        stage: "historical_analysis",
+        durationMs: Date.now() - stageStart,
+      });
+    }
 
+    // ── Stage: ai_review ──────────────────────────────────────────
+    const stageStart = Date.now();
     await setStage(analysisId, "ai_review");
+    const ranked = [...files].sort((a, b) => b.changes - a.changes);
     const historyNotes = history
       .filter((h) => !h.insufficient)
       .map(
@@ -236,6 +370,19 @@ export async function processAnalysis(userId: string, analysisId: string) {
       historyNotes,
     });
 
+    const aiUsage: AiTokenUsage = review.usage ?? {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+    };
+    logStructured("info", "stage_completed", {
+      analysisId,
+      stage: "ai_review",
+      durationMs: Date.now() - stageStart,
+      tokens: aiUsage,
+    });
+
+    // ── Stage: validating_findings ────────────────────────────────
     await setStage(analysisId, "validating_findings");
     const reviewFiles = ranked.map((f) => ({
       filename: f.filename,
@@ -248,6 +395,7 @@ export async function processAnalysis(userId: string, analysisId: string) {
       ? validateAiFindings(review.findings, reviewFiles)
       : { valid: [], rejected: 0 };
 
+    // ── Stage: risk_calculation ────────────────────────────────────
     await setStage(analysisId, "risk_calculation");
     const aiFilesSample = ranked.slice(0, 30);
     const coverage: CoverageMetrics = {
@@ -277,16 +425,11 @@ export async function processAnalysis(userId: string, analysisId: string) {
       coverage,
     });
 
-    // Replace any findings from a previous run of this analysis.
-    await db.from("findings").delete().eq("analysis_id", analysisId);
+    // ── Atomic findings replace via Postgres function ──────────────
     if (validated.valid.length) {
-      const rows = validated.valid.map((f) => {
+      const findingsPayload = validated.valid.map((f) => {
         const file = files.find((x) => x.filename === f.file);
         return {
-          analysis_id: analysisId,
-          user_id: userId,
-          repo_full_name: repoFullName,
-          pr_number: prNumber,
           file_path: f.file,
           line_number: f.line,
           title: f.title.slice(0, 200),
@@ -302,10 +445,26 @@ export async function processAnalysis(userId: string, analysisId: string) {
           status: "open",
         };
       });
-      const { error: insertError } = await db.from("findings").insert(rows);
-      if (insertError) throw insertError;
+      const { error: rpcError } = await db.rpc("replace_analysis_findings", {
+        p_analysis_id: analysisId,
+        p_user_id: userId,
+        p_repo_full_name: repoFullName,
+        p_pr_number: prNumber,
+        p_findings: findingsPayload,
+      });
+      if (rpcError) throw rpcError;
+    } else {
+      // No findings: still delete any stale ones from a previous run
+      await db.from("findings").delete().eq("analysis_id", analysisId);
     }
 
+    // ── Cost estimation ───────────────────────────────────────────
+    const estimatedCostUsd =
+      aiUsage.promptTokens * COST_PER_PROMPT_TOKEN +
+      aiUsage.completionTokens * COST_PER_COMPLETION_TOKEN;
+    const executionDurationMs = Date.now() - startTime;
+
+    // ── Final update ──────────────────────────────────────────────
     await db
       .from("analyses")
       .update({
@@ -324,10 +483,28 @@ export async function processAnalysis(userId: string, analysisId: string) {
           coverage,
         } as unknown as never,
         model_version: risk.modelVersion,
+        execution_duration_ms: executionDurationMs,
+        ai_prompt_tokens: aiUsage.promptTokens,
+        ai_completion_tokens: aiUsage.completionTokens,
+        ai_estimated_cost_usd: estimatedCostUsd,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", analysisId);
+
+    stopHeartbeat();
+
+    logStructured("info", "analysis_completed", {
+      analysisId,
+      stage: "completed",
+      durationMs: executionDurationMs,
+      tokens: aiUsage,
+      costUsd: estimatedCostUsd,
+      riskScore: risk.score,
+      riskLevel: risk.level,
+      findingsCount: validated.valid.length,
+      findingsRejected: validated.rejected,
+    });
 
     if (risk.level === "high" || risk.level === "critical") {
       await db.from("notifications").insert({
@@ -340,7 +517,14 @@ export async function processAnalysis(userId: string, analysisId: string) {
 
     return { status: "completed" as const };
   } catch (e) {
+    stopHeartbeat();
     const message = e instanceof Error ? e.message : String(e);
+    logStructured("error", "analysis_failed", {
+      analysisId,
+      stage: "error",
+      error: message,
+      durationMs: Date.now() - startTime,
+    });
     await failAnalysis(analysisId, message);
     throw e;
   }

@@ -28,7 +28,15 @@ export type RawAiFinding = {
   suggested_fix: string;
 };
 
-export type AiReviewResult = { ok: true; findings: RawAiFinding[] } | { ok: false; error: string };
+export type AiTokenUsage = {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+};
+
+export type AiReviewResult =
+  | { ok: true; findings: RawAiFinding[]; usage?: AiTokenUsage | undefined }
+  | { ok: false; error: string; usage?: AiTokenUsage | undefined };
 
 export type DiffFileForReview = {
   filename: string;
@@ -38,8 +46,13 @@ export type DiffFileForReview = {
   patch?: string | undefined;
 };
 
+export type AiReviewProviderResult = {
+  text: string;
+  usage?: AiTokenUsage;
+};
+
 export interface AiReviewProvider {
-  review(prompt: string, systemPrompt: string): Promise<string>;
+  review(prompt: string, systemPrompt: string): Promise<AiReviewProviderResult>;
 }
 
 function createRunIdFetch(initialRunId?: string) {
@@ -77,7 +90,7 @@ export class LovableGatewayProvider implements AiReviewProvider {
     return Boolean(this.apiKey);
   }
 
-  async review(prompt: string, systemPrompt: string): Promise<string> {
+  async review(prompt: string, systemPrompt: string): Promise<AiReviewProviderResult> {
     if (!this.apiKey) {
       throw new Error("AI review is not configured (missing LOVABLE_API_KEY).");
     }
@@ -111,7 +124,16 @@ export class LovableGatewayProvider implements AiReviewProvider {
         },
       });
 
-      return await result.text;
+      const text = await result.text;
+      const usageData = await result.usage;
+      return {
+        text,
+        usage: {
+          promptTokens: usageData?.inputTokens ?? 0,
+          completionTokens: usageData?.outputTokens ?? 0,
+          totalTokens: usageData?.totalTokens ?? 0,
+        },
+      };
     } finally {
       clearTimeout(timer);
     }
@@ -210,20 +232,18 @@ export async function runAiReview(
 ): Promise<AiReviewResult> {
   const prompt = buildPrompt(args);
 
-  const attemptReview = async (): Promise<string> => {
-    return await provider.review(prompt, SYSTEM);
-  };
-
   let lastError: unknown;
+  let lastUsage: AiTokenUsage | undefined;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const rawText = await attemptReview();
-      const parsedJson = extractJson(rawText);
+      const result = await provider.review(prompt, SYSTEM);
+      lastUsage = result.usage;
+      const parsedJson = extractJson(result.text);
       const validated = aiReviewOutputSchema.safeParse(parsedJson);
       if (!validated.success) {
         throw new Error(`AI response failed schema validation: ${validated.error.message}`);
       }
-      return { ok: true, findings: validated.data.findings as RawAiFinding[] };
+      return { ok: true, findings: validated.data.findings as RawAiFinding[], usage: lastUsage };
     } catch (error) {
       lastError = error;
       const message = error instanceof Error ? error.message : String(error);
@@ -237,7 +257,7 @@ export async function runAiReview(
 
   const finalMessage = lastError instanceof Error ? lastError.message : String(lastError);
   console.error("AI review permanently failed after 2 attempts:", finalMessage);
-  return { ok: false, error: finalMessage };
+  return { ok: false, error: finalMessage, usage: lastUsage };
 }
 
 /** Parse a unified diff patch into the set of line numbers present in the new file. */

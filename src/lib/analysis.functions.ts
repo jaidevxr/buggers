@@ -38,7 +38,29 @@ export const startAnalysis = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (existing) {
-      if (existing.status === "processing") return { analysisId: existing.id, alreadyRunning: true };
+      // Dead-run detection: if processing but heartbeat stale (>15 min), treat as retriable
+      if (existing.status === "processing") {
+        const { data: full } = await supabaseAdmin
+          .from("analyses")
+          .select("heartbeat_at, lease_expires_at, updated_at")
+          .eq("id", existing.id)
+          .single();
+        const now = Date.now();
+        const heartbeat = full?.heartbeat_at ? new Date(full.heartbeat_at).getTime() : 0;
+        const leaseExp = full?.lease_expires_at ? new Date(full.lease_expires_at).getTime() : 0;
+        const lastUpdate = full?.updated_at ? new Date(full.updated_at).getTime() : 0;
+        const staleCutoff = 15 * 60_000; // 15 minutes
+
+        const isAlive =
+          (heartbeat > 0 && now - heartbeat < staleCutoff) ||
+          (leaseExp > 0 && leaseExp > now) ||
+          (lastUpdate > 0 && now - lastUpdate < staleCutoff);
+
+        if (isAlive) {
+          return { analysisId: existing.id, alreadyRunning: true };
+        }
+        // Dead run: fall through to re-queue below
+      }
       await supabaseAdmin
         .from("analyses")
         .update({
@@ -49,6 +71,7 @@ export const startAnalysis = createServerFn({ method: "POST" })
           risk_level: null,
           risk_confidence: null,
           completed_at: null,
+          stage_data: {},
           updated_at: new Date().toISOString(),
         })
         .eq("id", existing.id);

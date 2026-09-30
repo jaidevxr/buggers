@@ -62,9 +62,57 @@ export async function githubRequest(
     await markReconnectRequired(userId, GITHUB_CONNECTOR_ID);
     throw new GitHubReconnectRequiredError();
   }
-  if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
-    throw new GitHubRateLimitError();
+
+  // Handle GitHub rate limits (403 or 429) by delaying rather than failing outright
+  const remaining = res.headers.get("x-ratelimit-remaining");
+  const isRateLimited = res.status === 429 || (res.status === 403 && remaining === "0");
+
+  if (isRateLimited) {
+    const resetTimeHeader = res.headers.get("x-ratelimit-reset");
+    const retryAfterHeader = res.headers.get("retry-after");
+
+    let delayMs = 5000;
+    if (retryAfterHeader) {
+      delayMs = Math.min(60_000, Math.max(1000, Number(retryAfterHeader) * 1000));
+    } else if (resetTimeHeader) {
+      const resetEpochSeconds = Number(resetTimeHeader);
+      const nowEpochSeconds = Math.floor(Date.now() / 1000);
+      const diffSeconds = resetEpochSeconds - nowEpochSeconds;
+      if (diffSeconds > 0 && diffSeconds <= 60) {
+        delayMs = diffSeconds * 1000;
+      }
+    }
+
+    const { logStructured } = await import("@/server/logger.server");
+    logStructured("warn", `GitHub rate limit hit. Pausing for ${delayMs}ms before retry...`, {
+      status: res.status,
+      delayMs,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+
+    // Re-attempt once after the rate limit delay
+    const retryRes = await callAsAppUser({
+      gatewayBaseUrl: GATEWAY_BASE_URL,
+      connectionAPIKey,
+      connectorId: GITHUB_CONNECTOR_ID,
+      path,
+      requiredScopes: GITHUB_SCOPES,
+      init: {
+        ...init,
+        headers: {
+          Accept: init?.accept ?? "application/vnd.github+json",
+          ...(init?.headers ?? {}),
+        },
+      },
+    });
+
+    if (retryRes.status === 429 || (retryRes.status === 403 && retryRes.headers.get("x-ratelimit-remaining") === "0")) {
+      throw new GitHubRateLimitError();
+    }
+    return retryRes;
   }
+
   return res;
 }
 

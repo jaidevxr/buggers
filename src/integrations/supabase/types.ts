@@ -17,16 +17,24 @@ export type Database = {
       analyses: {
         Row: {
           additions: number | null
+          ai_completion_tokens: number | null
+          ai_estimated_cost_usd: number | null
+          ai_prompt_tokens: number | null
+          attempt_count: number
           base_branch: string | null
           changed_files: number | null
           completed_at: string | null
           created_at: string
           deletions: number | null
           error_message: string | null
+          execution_duration_ms: number | null
           head_branch: string | null
           head_sha: string
+          heartbeat_at: string | null
           history: Json
           id: string
+          lease_expires_at: string | null
+          max_attempts: number
           model_version: string | null
           pr_author: string | null
           pr_number: number
@@ -38,22 +46,32 @@ export type Database = {
           risk_score: number | null
           signals: Json
           stage: string
+          stage_data: Json
           status: string
           updated_at: string
           user_id: string
+          worker_id: string | null
         }
         Insert: {
           additions?: number | null
+          ai_completion_tokens?: number | null
+          ai_estimated_cost_usd?: number | null
+          ai_prompt_tokens?: number | null
+          attempt_count?: number
           base_branch?: string | null
           changed_files?: number | null
           completed_at?: string | null
           created_at?: string
           deletions?: number | null
           error_message?: string | null
+          execution_duration_ms?: number | null
           head_branch?: string | null
           head_sha: string
+          heartbeat_at?: string | null
           history?: Json
           id?: string
+          lease_expires_at?: string | null
+          max_attempts?: number
           model_version?: string | null
           pr_author?: string | null
           pr_number: number
@@ -65,22 +83,32 @@ export type Database = {
           risk_score?: number | null
           signals?: Json
           stage?: string
+          stage_data?: Json
           status?: string
           updated_at?: string
           user_id: string
+          worker_id?: string | null
         }
         Update: {
           additions?: number | null
+          ai_completion_tokens?: number | null
+          ai_estimated_cost_usd?: number | null
+          ai_prompt_tokens?: number | null
+          attempt_count?: number
           base_branch?: string | null
           changed_files?: number | null
           completed_at?: string | null
           created_at?: string
           deletions?: number | null
           error_message?: string | null
+          execution_duration_ms?: number | null
           head_branch?: string | null
           head_sha?: string
+          heartbeat_at?: string | null
           history?: Json
           id?: string
+          lease_expires_at?: string | null
+          max_attempts?: number
           model_version?: string | null
           pr_author?: string | null
           pr_number?: number
@@ -92,9 +120,11 @@ export type Database = {
           risk_score?: number | null
           signals?: Json
           stage?: string
+          stage_data?: Json
           status?: string
           updated_at?: string
           user_id?: string
+          worker_id?: string | null
         }
         Relationships: []
       }
@@ -353,7 +383,65 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      acquire_queued_analysis: {
+        Args: {
+          p_worker_id: string
+          p_lease_duration_seconds?: number
+        }
+        Returns: {
+          additions: number | null
+          ai_completion_tokens: number | null
+          ai_estimated_cost_usd: number | null
+          ai_prompt_tokens: number | null
+          attempt_count: number
+          base_branch: string | null
+          changed_files: number | null
+          completed_at: string | null
+          created_at: string
+          deletions: number | null
+          error_message: string | null
+          execution_duration_ms: number | null
+          head_branch: string | null
+          head_sha: string
+          heartbeat_at: string | null
+          history: Json
+          id: string
+          lease_expires_at: string | null
+          max_attempts: number
+          model_version: string | null
+          pr_author: string | null
+          pr_number: number
+          pr_state: string | null
+          pr_title: string | null
+          repo_full_name: string
+          risk_confidence: number | null
+          risk_level: string | null
+          risk_score: number | null
+          signals: Json
+          stage: string
+          stage_data: Json
+          status: string
+          updated_at: string
+          user_id: string
+          worker_id: string | null
+        }[]
+      }
+      reap_dead_analyses: {
+        Args: {
+          p_timeout_minutes?: number
+        }
+        Returns: number
+      }
+      replace_analysis_findings: {
+        Args: {
+          p_analysis_id: string
+          p_user_id: string
+          p_repo_full_name: string
+          p_pr_number: number
+          p_findings: Json
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
