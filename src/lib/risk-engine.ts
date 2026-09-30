@@ -170,6 +170,7 @@ export function isConfigOnlyPath(path: string): boolean {
     base.startsWith(".eslint") ||
     base.startsWith(".gitignore") ||
     base.startsWith(".gitattributes") ||
+    base.startsWith("tsconfig") ||
     base.endsWith(".config.js") ||
     base.endsWith(".config.ts") ||
     base.endsWith(".config.mjs") ||
@@ -334,7 +335,8 @@ export function computeRisk(
   const isDocsOrConfigOnly =
     nonTestFiles.length > 0 &&
     nonTestFiles.every(
-      (f) => isDocsPath(f.filename) || isConfigOnlyPath(f.filename) || isDependencyManifest(f.filename),
+      (f) =>
+        isDocsPath(f.filename) || isConfigOnlyPath(f.filename) || isDependencyManifest(f.filename),
     );
 
   if (nonTestFiles.length === 0) {
@@ -357,7 +359,8 @@ export function computeRisk(
       status: "observed",
       value: 0,
       weight: config.weights.testChanges,
-      evidence: "Documentation and configuration changes are exempt from test coverage requirements.",
+      evidence:
+        "Documentation and configuration changes are exempt from test coverage requirements.",
     });
   } else {
     // Code files require tests; scale based on test-to-code ratio
@@ -408,9 +411,7 @@ export function computeRisk(
     const weightOf = (s: AiFindingSummary) =>
       ({ critical: 1, high: 0.75, medium: 0.4, low: 0.15 })[s.severity] * s.confidence;
     const aiScore =
-      aiFindings.length === 0
-        ? 0
-        : clamp01(aiFindings.reduce((a, f) => a + weightOf(f), 0) / 2);
+      aiFindings.length === 0 ? 0 : clamp01(aiFindings.reduce((a, f) => a + weightOf(f), 0) / 2);
     signals.push({
       id: "ai_findings",
       label: "AI review findings",

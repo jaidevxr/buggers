@@ -8,6 +8,7 @@ import {
 import {
   computeRisk,
   DEFECT_PATTERN,
+  type CoverageMetrics,
   type FileHistoryStat,
   type RiskResult,
 } from "@/lib/risk-engine";
@@ -94,7 +95,9 @@ export async function collectFileHistory(
       }
 
       const defectCommitCount = commits.filter((c) => DEFECT_PATTERN.test(c.commit.message)).length;
-      const authors = new Set(commits.map((c) => c.author?.login ?? c.commit.author?.name ?? "unknown"));
+      const authors = new Set(
+        commits.map((c) => c.author?.login ?? c.commit.author?.name ?? "unknown"),
+      );
 
       // True file inception age: fetch per_page=1, read Link header to find last page,
       // then fetch that page to get the very first commit on this path.
@@ -118,7 +121,8 @@ export async function collectFileHistory(
           const lastPageCommits = await githubJson<GitHubCommit[]>(userId, lastPath);
           const firstCommit = lastPageCommits[lastPageCommits.length - 1];
           if (firstCommit?.commit.author?.date) {
-            ageDays = (Date.now() - new Date(firstCommit.commit.author.date).getTime()) / 86_400_000;
+            ageDays =
+              (Date.now() - new Date(firstCommit.commit.author.date).getTime()) / 86_400_000;
           }
         } else {
           // Single page = the first commit is the only commit (or latest single)
@@ -240,9 +244,19 @@ export async function processAnalysis(userId: string, analysisId: string) {
       deletions: f.deletions,
       patch: f.patch,
     }));
-    const validated = review.ok ? validateAiFindings(review.findings, reviewFiles) : { valid: [], rejected: 0 };
+    const validated = review.ok
+      ? validateAiFindings(review.findings, reviewFiles)
+      : { valid: [], rejected: 0 };
 
     await setStage(analysisId, "risk_calculation");
+    const aiFilesSample = ranked.slice(0, 30);
+    const coverage: CoverageMetrics = {
+      filesAnalyzed: aiFilesSample.length,
+      totalFiles: files.length,
+      patchesTruncated: aiFilesSample.filter((f) => f.patch && f.patch.length >= 12000).length,
+      filesSkipped: Math.max(0, files.length - aiFilesSample.length),
+    };
+
     const risk: RiskResult = computeRisk({
       files: files.map((f) => ({
         filename: f.filename,
@@ -256,10 +270,11 @@ export async function processAnalysis(userId: string, analysisId: string) {
       commitCount: commits.length,
       history,
       aiFindings: validated.valid.map((f) => ({
-        severity: f.severity as "critical" | "high" | "medium" | "low",
+        severity: f.severity,
         confidence: f.confidence,
       })),
       aiAvailable: review.ok,
+      coverage,
     });
 
     // Replace any findings from a previous run of this analysis.
@@ -306,6 +321,7 @@ export async function processAnalysis(userId: string, analysisId: string) {
           reasons: risk.reasons,
           ai_rejected: validated.rejected,
           ai_available: review.ok,
+          coverage,
         } as unknown as never,
         model_version: risk.modelVersion,
         completed_at: new Date().toISOString(),

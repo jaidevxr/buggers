@@ -7,7 +7,12 @@ import { getAnalysis, runAnalysis, startAnalysis } from "@/lib/analysis.function
 import { getPullRequestDetail } from "@/lib/github.functions";
 import { PageHeader, timeAgo, errMsg } from "@/components/layout/PageHeader";
 import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
-import { ConfidenceMeter, RiskBadge, SeverityBadge, StatusPill } from "@/components/status/StatusBadges";
+import {
+  ConfidenceMeter,
+  RiskBadge,
+  SeverityBadge,
+  StatusPill,
+} from "@/components/status/StatusBadges";
 import { Button } from "@/components/ui/button";
 import { DiffViewer } from "@/components/diff/DiffViewer";
 
@@ -28,7 +33,16 @@ const STAGES = [
   ["completed", "Analysis complete"],
 ] as const;
 
-type Signal = { key?: string; id?: string; label?: string; name?: string; status?: string; value?: unknown; detail?: string; explanation?: string };
+type Signal = {
+  key?: string;
+  id?: string;
+  label?: string;
+  name?: string;
+  status?: string;
+  value?: unknown;
+  detail?: string;
+  explanation?: string;
+};
 
 function AnalysisPage() {
   const { id } = Route.useParams();
@@ -44,23 +58,46 @@ function AnalysisPage() {
   const a = q.data?.analysis;
   const pr = useQuery({
     queryKey: ["pr", a?.repo_full_name, a?.pr_number],
-    queryFn: () => getPullRequestDetail({ data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number } }),
+    queryFn: () =>
+      getPullRequestDetail({ data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number } }),
     enabled: Boolean(a),
   });
 
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState message={errMsg(q.error)} />;
-  if (!a) return <EmptyState title="Analysis not found" action={<Link to="/dashboard" className="text-sm underline">Back to overview</Link>} />;
+  if (!a)
+    return (
+      <EmptyState
+        title="Analysis not found"
+        action={
+          <Link to="/dashboard" className="text-sm underline">
+            Back to overview
+          </Link>
+        }
+      />
+    );
 
   const findings = q.data!.findings;
   const stageIdx = STAGES.findIndex(([k]) => k === a.stage);
   const signals = (Array.isArray(a.signals) ? a.signals : []) as Signal[];
+  const historyObj = (a.history && typeof a.history === "object" ? a.history : {}) as {
+    coverage?: {
+      filesAnalyzed: number;
+      totalFiles: number;
+      patchesTruncated: number;
+      filesSkipped: number;
+    };
+  };
+  const coverage = historyObj.coverage;
 
   async function rerun() {
     setRerunning(true);
     try {
-      const r = await startAnalysis({ data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number } });
-      if (!r.alreadyRunning) void runAnalysis({ data: { analysisId: r.analysisId } }).catch(() => {});
+      const r = await startAnalysis({
+        data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number },
+      });
+      if (!r.alreadyRunning)
+        void runAnalysis({ data: { analysisId: r.analysisId } }).catch(() => {});
       await q.refetch();
     } catch (e) {
       toast.error(errMsg(e));
@@ -78,7 +115,9 @@ function AnalysisPage() {
           <>
             <StatusPill status={a.status} />
             {(a.status === "completed" || a.status === "failed") && (
-              <Button size="sm" variant="outline" onClick={rerun} disabled={rerunning}>Re-run analysis</Button>
+              <Button size="sm" variant="outline" onClick={rerun} disabled={rerunning}>
+                Re-run analysis
+              </Button>
             )}
           </>
         }
@@ -94,8 +133,18 @@ function AnalysisPage() {
               const active = !done && !failed && i === stageIdx;
               return (
                 <li key={key} className="flex items-center gap-2">
-                  {failed ? <XCircle className="h-4 w-4 text-destructive" /> : done ? <CheckCircle2 className="h-4 w-4 text-risk-low" /> : active ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
-                  <span className={active ? "font-semibold" : done ? "" : "text-muted-foreground"}>{label}</span>
+                  {failed ? (
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  ) : done ? (
+                    <CheckCircle2 className="h-4 w-4 text-risk-low" />
+                  ) : active ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span className={active ? "font-semibold" : done ? "" : "text-muted-foreground"}>
+                    {label}
+                  </span>
                 </li>
               );
             })}
@@ -110,7 +159,9 @@ function AnalysisPage() {
         <section className="surface-card p-5 lg:col-span-2">
           <h2 className="mb-3 font-semibold">Risk</h2>
           {a.status !== "completed" ? (
-            <p className="text-sm text-muted-foreground">Risk will appear once the analysis actually completes.</p>
+            <p className="text-sm text-muted-foreground">
+              Risk will appear once the analysis actually completes.
+            </p>
           ) : (
             <>
               <div className="mb-4 flex flex-wrap items-center gap-4">
@@ -119,14 +170,39 @@ function AnalysisPage() {
                 {a.risk_confidence != null && <ConfidenceMeter value={Number(a.risk_confidence)} />}
                 <span className="text-xs text-muted-foreground">Model {a.model_version}</span>
               </div>
+              {coverage && (
+                <div className="mb-4 rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground flex flex-wrap items-center gap-4">
+                  <span>
+                    <strong className="text-foreground">Coverage:</strong> analyzed{" "}
+                    {coverage.filesAnalyzed} of {coverage.totalFiles} changed file(s)
+                  </span>
+                  {coverage.patchesTruncated > 0 && (
+                    <span>· {coverage.patchesTruncated} patch(es) truncated</span>
+                  )}
+                  {coverage.filesSkipped > 0 && (
+                    <span>· {coverage.filesSkipped} file(s) skipped</span>
+                  )}
+                </div>
+              )}
               <div className="grid gap-2 sm:grid-cols-2">
                 {signals.map((s, i) => (
-                  <div key={s.key ?? s.id ?? i} className="rounded-lg border border-border p-3 text-sm">
+                  <div
+                    key={s.key ?? s.id ?? i}
+                    className="rounded-lg border border-border p-3 text-sm"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium">{s.label ?? s.name ?? s.key}</span>
-                      <span className="text-xs text-muted-foreground">{s.status === "insufficient_data" ? "Insufficient data" : typeof s.value === "number" ? s.value.toFixed(2) : ""}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {s.status === "insufficient_data"
+                          ? "Insufficient data"
+                          : typeof s.value === "number"
+                            ? s.value.toFixed(2)
+                            : ""}
+                      </span>
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">{s.detail ?? s.explanation ?? ""}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {s.detail ?? s.explanation ?? ""}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -137,15 +213,30 @@ function AnalysisPage() {
 
       <h2 className="mb-3 mt-8 font-semibold">Findings ({findings.length})</h2>
       {findings.length === 0 ? (
-        <EmptyState title={a.status === "completed" ? "No validated findings" : "Analysis pending"} description={a.status === "completed" ? "The AI review produced no findings that passed validation against the real diff." : undefined} />
+        <EmptyState
+          title={a.status === "completed" ? "No validated findings" : "Analysis pending"}
+          description={
+            a.status === "completed"
+              ? "The AI review produced no findings that passed validation against the real diff."
+              : undefined
+          }
+        />
       ) : (
         <div className="surface-card divide-y divide-border">
           {findings.map((f) => (
-            <Link key={f.id} to="/findings/$id" params={{ id: f.id }} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-muted/50">
+            <Link
+              key={f.id}
+              to="/findings/$id"
+              params={{ id: f.id }}
+              className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-muted/50"
+            >
               <SeverityBadge severity={f.severity} />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium">{f.title}</div>
-                <div className="truncate text-xs text-muted-foreground">{f.file_path}{f.line_number ? `:${f.line_number}` : ""} · {f.category}</div>
+                <div className="truncate text-xs text-muted-foreground">
+                  {f.file_path}
+                  {f.line_number ? `:${f.line_number}` : ""} · {f.category}
+                </div>
               </div>
               <ConfidenceMeter value={Number(f.confidence)} />
               <StatusPill status={f.status} />
@@ -155,7 +246,11 @@ function AnalysisPage() {
       )}
 
       <h2 className="mb-3 mt-8 font-semibold">Changed files</h2>
-      {pr.isLoading ? <LoadingState label="Loading diff from GitHub…" /> : pr.error ? <ErrorState message={errMsg(pr.error)} /> : pr.data ? (
+      {pr.isLoading ? (
+        <LoadingState label="Loading diff from GitHub…" />
+      ) : pr.error ? (
+        <ErrorState message={errMsg(pr.error)} />
+      ) : pr.data ? (
         <DiffViewer files={pr.data.files} findings={findings} />
       ) : null}
     </div>
