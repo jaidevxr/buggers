@@ -216,7 +216,7 @@ Buggers has two independent auth flows:
 
 | Flow | Provider | Purpose | Token storage |
 | --- | --- | --- | --- |
-| **Sign-in** | Supabase Auth (Google OAuth) | Authenticate the user, create a session | Supabase manages the JWT; stored in `localStorage` |
+| **Sign-in** | Supabase Auth (GitHub, Google, or Email) | Authenticate the user, create a session | Supabase manages the JWT; stored in `localStorage` |
 | **GitHub connect** | Direct GitHub OAuth App | Read repos, PRs, diffs, commits via GitHub API | Encrypted in `app_user_connections` table (AES-256-GCM) |
 
 A user can sign in without connecting GitHub (they'll see a prompt to connect). Connecting GitHub requires being signed in first (the `requireSupabaseAuth` middleware protects the connect endpoints).
