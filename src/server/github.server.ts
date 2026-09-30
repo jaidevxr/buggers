@@ -77,6 +77,18 @@ export async function githubJson<T>(userId: string, path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+export async function githubJsonWithHeaders<T>(
+  userId: string,
+  path: string,
+): Promise<{ data: T; headers: Headers }> {
+  const res = await githubRequest(userId, path);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new GitHubRequestError(res.status, `GitHub request failed (${res.status}): ${body.slice(0, 300)}`);
+  }
+  return { data: (await res.json()) as T, headers: res.headers };
+}
+
 export async function githubText(userId: string, path: string, accept: string): Promise<string> {
   const res = await githubRequest(userId, path, { accept });
   if (!res.ok) {

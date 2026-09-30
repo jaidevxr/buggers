@@ -15,7 +15,10 @@ function Tickets() {
   const qc = useQueryClient();
   const q = useQuery({ queryKey: ["tickets"], queryFn: () => listTickets() });
 
-  async function patch(ticketId: string, p: { status?: string; assignee?: string | null }) {
+  async function patch(
+    ticketId: string,
+    p: { status?: "open" | "in_progress" | "closed"; assignee?: string | null },
+  ) {
     try {
       await updateTicket({ data: { ticketId, ...p } });
       await qc.invalidateQueries({ queryKey: ["tickets"] });
@@ -46,7 +49,16 @@ function Tickets() {
                   <td className="p-3">#{t.pr_number}</td>
                   <td className="p-3"><SeverityBadge severity={t.severity} /></td>
                   <td className="p-3">
-                    <select aria-label="Ticket status" className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={t.status} onChange={(e) => patch(t.id, { status: e.target.value })}>
+                    <select
+                      aria-label="Ticket status"
+                      className="rounded-md border border-input bg-background px-2 py-1 text-xs"
+                      value={t.status}
+                      onChange={(e) =>
+                        patch(t.id, {
+                          status: e.target.value as "open" | "in_progress" | "closed",
+                        })
+                      }
+                    >
                       <option value="open">Open</option><option value="in_progress">In progress</option><option value="closed">Closed</option>
                     </select>
                   </td>
