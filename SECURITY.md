@@ -34,10 +34,12 @@ Buggers analyzes GitHub pull requests to estimate bug risk and identify defects 
 
 ### Threat D: Denial of Service & API Quota Exhaustion
 * **Vector:** Rapid automated triggers of resource-intensive operations (e.g. triggering repeated analyses or AI reviews).
-* **Impact:** Lovable AI gateway quota depletion, GitHub rate-limit exhaustion, compute starvation.
+* **Impact:** AI provider API quota depletion (OpenAI/Anthropic/Google billing spikes), GitHub API rate-limit exhaustion (5 000 req/h per token), compute starvation.
 * **Mitigation:**
   - In-memory sliding window rate limiter (`src/server/rateLimit.server.ts`) enforcing limits per user per endpoint (e.g., 10 requests per minute for `startAnalysis` and `runAnalysis`).
   - Analysis jobs are idempotent per `head_sha`: duplicate submissions for the same PR commit SHA reuse the existing analysis record instead of triggering redundant upstream calls.
+  - GitHub 403/429 responses with `x-ratelimit-reset` headers trigger automatic backoff delay; the worker retries after the reset window rather than failing immediately.
+  - AI token usage is logged per analysis (`token_usage_prompt`, `token_usage_completion`) for cost monitoring; alerts can be configured via external dashboards.
 
 ### Threat E: Credential & Secret Hygiene
 * **Vector:** Committing development credentials (`.env`) or connector secrets to version control.
