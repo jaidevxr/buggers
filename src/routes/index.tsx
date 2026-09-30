@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, GitPullRequest, History, ShieldCheck, Sparkles, Github } from "lucide-react";
+import { ArrowRight, GitPullRequest, History, ShieldCheck, Sparkles } from "lucide-react";
 import { BugMark, BuggersWordmark } from "@/components/brand/BugMark";
 import { Button } from "@/components/ui/button";
 
@@ -73,8 +73,8 @@ function Landing() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <Link to="/auth">
-                    <Github className="mr-2 h-4 w-4" />
-                    Continue with GitHub
+                    Get started
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
