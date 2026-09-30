@@ -19,7 +19,6 @@ export const Route = createFileRoute("/auth")({
     ],
   }),
   component: AuthPage,
-  ssr: false,
 });
 
 function AuthPage() {
