@@ -60,6 +60,7 @@ export const updateTicketSchema = z.object({
 
 export const completeGitHubConnectSchema = z.object({
   code: z.string().trim().min(1, "OAuth code cannot be empty"),
+  state: z.string().trim().min(1, "OAuth state cannot be empty"),
 });
 
 export const listPullRequestsSchema = z.object({

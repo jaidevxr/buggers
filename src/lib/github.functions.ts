@@ -9,7 +9,6 @@ import {
 } from "@/lib/validation";
 
 const CONNECTOR_ID = "github";
-const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
 
 export type ConnectionState = {
   connected: boolean;
@@ -33,32 +32,28 @@ function toClientError(e: unknown): string {
 export const startGitHubConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { authorizeAppUserOAuth } = await import("@/integrations/lovable/appUserConnector");
-    const { getConnectionKeyForUser } = await import("@/server/appUserConnections.server");
+    const { createOAuthState } = await import("@/server/connectionKeyCrypto");
     const { GITHUB_SCOPES } = await import("@/server/github.server");
 
-    const clientApiKey = process.env["GITHUB_APP_USER_CONNECTOR_CLIENT_API_KEY"];
-    if (!clientApiKey) throw new Error("GitHub connection is not configured for this app.");
+    const clientId = process.env["GITHUB_CLIENT_ID"];
+    if (!clientId) {
+      throw new Error("GitHub connection is not configured for this app (missing GITHUB_CLIENT_ID).");
+    }
 
     const request = getRequest();
     if (!request) throw new Error("OAuth must start from an app request.");
     const url = new URL(request.url);
-    const sandboxHost = url.hostname === "localhost" ? request.headers.get("x-forwarded-host") : null;
-    const returnUrl = new URL(
-      "/oauth/github/return",
-      sandboxHost ? `https://${sandboxHost}` : url.origin,
-    ).toString();
+    const configuredCallback = process.env["GITHUB_OAUTH_CALLBACK_URL"];
+    const returnUrl = configuredCallback || new URL("/oauth/github/return", url.origin).toString();
 
-    const existing = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
-    const { authorizationUrl } = await authorizeAppUserOAuth({
-      gatewayBaseUrl: GATEWAY_BASE_URL,
-      connectorId: CONNECTOR_ID,
-      appUserId: context.userId,
-      clientAPIKey: clientApiKey,
-      returnUrl,
-      ...(existing ? { connectionAPIKey: existing } : {}),
-      credentialsConfiguration: { scopes: GITHUB_SCOPES },
-    });
+    const state = createOAuthState(context.userId);
+
+    const authorizationUrl = `https://github.com/login/oauth/authorize?client_id=${encodeURIComponent(
+      clientId,
+    )}&redirect_uri=${encodeURIComponent(returnUrl)}&scope=${encodeURIComponent(
+      GITHUB_SCOPES.join(" "),
+    )}&state=${encodeURIComponent(state)}`;
+
     return { authorizationUrl };
   });
 
@@ -66,35 +61,31 @@ export const completeGitHubConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(completeGitHubConnectSchema)
   .handler(async ({ data, context }) => {
-    const { exchangeAppUserOAuthCode } = await import("@/integrations/lovable/appUserConnector");
+    const { verifyOAuthState } = await import("@/server/connectionKeyCrypto");
+    const { exchangeGitHubOAuthCode } = await import("@/server/github.server");
     const { saveConnectionKeyForUser } = await import("@/server/appUserConnections.server");
-    const { connectionAPIKey, connectorId } = await exchangeAppUserOAuthCode(
-      GATEWAY_BASE_URL,
-      data.code,
-    );
-    if (connectorId !== CONNECTOR_ID) throw new Error("OAuth completion returned the wrong connector");
-    await saveConnectionKeyForUser(context.userId, connectorId, connectionAPIKey);
+
+    const isValidState = verifyOAuthState(data.state, context.userId);
+    if (!isValidState) {
+      throw new Error("Invalid or expired OAuth state token. Please try connecting again.");
+    }
+
+    const accessToken = await exchangeGitHubOAuthCode(data.code);
+    await saveConnectionKeyForUser(context.userId, CONNECTOR_ID, accessToken);
     return { ok: true };
   });
 
 export const disconnectGitHub = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { disconnectAppUser } = await import("@/integrations/lovable/appUserConnector");
     const { getConnectionKeyForUser, deleteConnectionForUser } = await import(
       "@/server/appUserConnections.server"
     );
-    const key = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
-    if (key) {
-      try {
-        await disconnectAppUser({
-          gatewayBaseUrl: GATEWAY_BASE_URL,
-          connectionAPIKey: key,
-          connectorId: CONNECTOR_ID,
-        });
-      } catch (e) {
-        console.error("GitHub disconnect failed at gateway:", e);
-      }
+    const { revokeGitHubToken } = await import("@/server/github.server");
+
+    const token = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
+    if (token) {
+      await revokeGitHubToken(token);
     }
     await deleteConnectionForUser(context.userId, CONNECTOR_ID);
     return { ok: true };
@@ -103,9 +94,10 @@ export const disconnectGitHub = createServerFn({ method: "POST" })
 export const getGitHubConnection = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ConnectionState> => {
-    const { getConnectionRow } = await import("@/server/appUserConnections.server");
+    const { getConnectionRow, markReconnectRequired } = await import("@/server/appUserConnections.server");
     const row = await getConnectionRow(context.userId, CONNECTOR_ID);
     if (!row) return { connected: false };
+    if (row.reconnect_required) return { connected: false, reconnectRequired: true };
 
     const { githubJson } = await import("@/server/github.server");
     try {
@@ -124,9 +116,12 @@ export const getGitHubConnection = createServerFn({ method: "GET" })
         connectedAt: row.updated_at,
       };
     } catch (e) {
-      const message = toClientError(e);
-      if (message.includes("Reconnect")) return { connected: false, reconnectRequired: true };
-      return { connected: false, error: message };
+      const message = e instanceof Error ? e.message : String(e);
+      if (message.includes("Reconnect") || message.includes("401") || message.includes("Bad credentials")) {
+        await markReconnectRequired(context.userId, CONNECTOR_ID);
+        return { connected: false, reconnectRequired: true };
+      }
+      return { connected: false, error: toClientError(e) };
     }
   });
 

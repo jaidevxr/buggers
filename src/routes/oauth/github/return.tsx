@@ -12,32 +12,35 @@ function OAuthReturn() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const notifyOpenerAndClose = (
-      type: "appUserConnectorOAuthComplete" | "appUserConnectorOAuthFailed",
-      code?: string,
+      type: "gitHubOAuthComplete" | "gitHubOAuthFailed",
+      payload?: { code?: string; state?: string; error?: string },
     ) => {
       window.opener?.postMessage(
-        { type, connectorId: "github", code: code ?? null },
+        { type, connectorId: "github", ...payload },
         window.location.origin,
       );
       window.close();
     };
 
-    if (params.get("success") !== "true") {
-      setMessage(params.get("error") ?? "GitHub authorization did not complete.");
-      notifyOpenerAndClose("appUserConnectorOAuthFailed");
+    const error = params.get("error");
+    const errorDescription = params.get("error_description");
+    if (error) {
+      const errText = errorDescription || error || "GitHub authorization did not complete.";
+      setMessage(errText);
+      notifyOpenerAndClose("gitHubOAuthFailed", { error: errText });
       return;
     }
+
     const code = params.get("code");
-    if (!code) {
-      if (params.get("offline_access_allowed") === "false") {
-        notifyOpenerAndClose("appUserConnectorOAuthComplete");
-        return;
-      }
-      setMessage("GitHub authorization completed without an exchange code.");
-      notifyOpenerAndClose("appUserConnectorOAuthFailed");
+    const state = params.get("state");
+
+    if (!code || !state) {
+      setMessage("GitHub authorization completed without required code or state.");
+      notifyOpenerAndClose("gitHubOAuthFailed", { error: "Missing code or state" });
       return;
     }
-    notifyOpenerAndClose("appUserConnectorOAuthComplete", code);
+
+    notifyOpenerAndClose("gitHubOAuthComplete", { code, state });
   }, []);
 
   return (

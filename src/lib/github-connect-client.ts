@@ -1,29 +1,41 @@
 import { startGitHubConnect, completeGitHubConnect } from "@/lib/github.functions";
 
-function waitForOAuthCompletion(popup: Window) {
-  return new Promise<string | null>((resolve, reject) => {
+interface OAuthResult {
+  code: string;
+  state: string;
+}
+
+function waitForOAuthCompletion(popup: Window): Promise<OAuthResult> {
+  return new Promise<OAuthResult>((resolve, reject) => {
     let poll: number | undefined;
     const cleanup = () => {
       window.removeEventListener("message", onMessage);
       if (poll !== undefined) window.clearInterval(poll);
     };
+
     const onMessage = (event: MessageEvent) => {
       const type = event.data?.type;
       if (
         event.origin !== window.location.origin ||
         event.source !== popup ||
-        event.data?.connectorId !== "github" ||
-        (type !== "appUserConnectorOAuthComplete" && type !== "appUserConnectorOAuthFailed")
-      )
-        return;
-      cleanup();
-      if (type === "appUserConnectorOAuthComplete") {
-        resolve(typeof event.data?.code === "string" ? event.data.code : null);
+        (type !== "gitHubOAuthComplete" && type !== "gitHubOAuthFailed")
+      ) {
         return;
       }
+
+      cleanup();
+      if (type === "gitHubOAuthComplete") {
+        const { code, state } = event.data;
+        if (typeof code === "string" && typeof state === "string") {
+          resolve({ code, state });
+          return;
+        }
+      }
+
       popup.close();
-      reject(new Error("GitHub authorization failed."));
+      reject(new Error(event.data?.error || "GitHub authorization failed."));
     };
+
     window.addEventListener("message", onMessage);
     poll = window.setInterval(() => {
       if (!popup.closed) return;
@@ -37,16 +49,18 @@ function waitForOAuthCompletion(popup: Window) {
 export async function connectGitHub() {
   const popup = window.open("", "buggers-github-oauth", "width=640,height=760");
   if (!popup) throw new Error("Popup blocked. Allow popups and try again.");
-  let code: string | null;
+
+  let result: OAuthResult;
   try {
     const { authorizationUrl } = await startGitHubConnect();
     const completion = waitForOAuthCompletion(popup);
     popup.location.href = authorizationUrl;
-    code = await completion;
+    result = await completion;
   } catch (error) {
     popup.close();
     throw error;
   }
-  if (code) await completeGitHubConnect({ data: { code } });
+
+  await completeGitHubConnect({ data: { code: result.code, state: result.state } });
   return { ok: true };
 }

@@ -1,14 +1,18 @@
 import {
-  appUserReconnectRequired,
-  callAsAppUser,
-} from "@/integrations/lovable/appUserConnector";
-import {
   GITHUB_CONNECTOR_ID,
   getConnectionKeyForUser,
   markReconnectRequired,
+  deleteConnectionForUser,
 } from "@/server/appUserConnections.server";
+import { logStructured } from "@/server/logger.server";
 
-export const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
+export const GITHUB_API_BASE_URL = "https://api.github.com";
+
+/**
+ * Scopes: `repo` is required because Buggers analyzes pull requests and commits in both
+ * private and organization repositories. A narrower scope like `public_repo` or `read:user`
+ * would fail when analyzing private repositories or organization pull requests.
+ */
 export const GITHUB_SCOPES = ["read:user", "repo"];
 
 export class GitHubNotConnectedError extends Error {
@@ -34,36 +38,111 @@ export class GitHubRequestError extends Error {
   }
 }
 
-/** Raw authenticated GitHub request for the signed-in app user. */
+/**
+ * Exchanges a temporary GitHub authorization code for an OAuth access token directly with GitHub.
+ */
+export async function exchangeGitHubOAuthCode(code: string): Promise<string> {
+  const clientId = process.env["GITHUB_CLIENT_ID"];
+  const clientSecret = process.env["GITHUB_CLIENT_SECRET"];
+
+  if (!clientId || !clientSecret) {
+    throw new Error("GitHub OAuth is not configured. Missing GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET.");
+  }
+
+  const res = await fetch("https://github.com/login/oauth/access_token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "User-Agent": "Buggers-App",
+    },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GitHub token exchange failed (${res.status}): ${text}`);
+  }
+
+  const data = (await res.json()) as { access_token?: string; error?: string; error_description?: string };
+  if (data.error || !data.access_token) {
+    throw new Error(`GitHub OAuth error: ${data.error_description || data.error || "no access token returned"}`);
+  }
+
+  return data.access_token;
+}
+
+/**
+ * Revokes an OAuth token grant directly at GitHub.
+ * If revocation fails (e.g. 404 or network issue), logs a warning but allows cleanup to continue.
+ */
+export async function revokeGitHubToken(token: string): Promise<void> {
+  const clientId = process.env["GITHUB_CLIENT_ID"];
+  const clientSecret = process.env["GITHUB_CLIENT_SECRET"];
+  if (!clientId || !clientSecret) return;
+
+  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  try {
+    const res = await fetch(`https://api.github.com/applications/${encodeURIComponent(clientId)}/grant`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+        "User-Agent": "Buggers-App",
+      },
+      body: JSON.stringify({ access_token: token }),
+    });
+
+    if (!res.ok && res.status !== 404) {
+      logStructured("warn", `GitHub token revocation returned status ${res.status}`);
+    }
+  } catch (err) {
+    logStructured("warn", "Failed to reach GitHub for token revocation", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+/**
+ * Raw authenticated GitHub API request using the user's decrypted OAuth token.
+ */
 export async function githubRequest(
   userId: string,
   path: string,
   init?: RequestInit & { accept?: string },
 ): Promise<Response> {
-  const connectionAPIKey = await getConnectionKeyForUser(userId, GITHUB_CONNECTOR_ID);
-  if (!connectionAPIKey) throw new GitHubNotConnectedError();
+  const token = await getConnectionKeyForUser(userId, GITHUB_CONNECTOR_ID);
+  if (!token) throw new GitHubNotConnectedError();
 
-  const res = await callAsAppUser({
-    gatewayBaseUrl: GATEWAY_BASE_URL,
-    connectionAPIKey,
-    connectorId: GITHUB_CONNECTOR_ID,
-    path,
-    requiredScopes: GITHUB_SCOPES,
-    init: {
+  const url = path.startsWith("http") ? path : `${GITHUB_API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+    Accept: init?.accept ?? "application/vnd.github.v3+json",
+    "User-Agent": "Buggers-App",
+    ...((init?.headers as Record<string, string>) ?? {}),
+  };
+
+  const makeCall = () =>
+    fetch(url, {
       ...init,
-      headers: {
-        Accept: init?.accept ?? "application/vnd.github+json",
-        ...(init?.headers ?? {}),
-      },
-    },
-  });
+      headers,
+    });
 
-  if (await appUserReconnectRequired(res)) {
+  let res = await makeCall();
+
+  // 401 Unauthorized = token was revoked by user or expired
+  if (res.status === 401) {
     await markReconnectRequired(userId, GITHUB_CONNECTOR_ID);
     throw new GitHubReconnectRequiredError();
   }
 
-  // Handle GitHub rate limits (403 or 429) by delaying rather than failing outright
+  // Rate limit handling (403 with x-ratelimit-remaining: 0, or 429)
   const remaining = res.headers.get("x-ratelimit-remaining");
   const isRateLimited = res.status === 429 || (res.status === 403 && remaining === "0");
 
@@ -83,7 +162,6 @@ export async function githubRequest(
       }
     }
 
-    const { logStructured } = await import("@/server/logger.server");
     logStructured("warn", `GitHub rate limit hit. Pausing for ${delayMs}ms before retry...`, {
       status: res.status,
       delayMs,
@@ -91,26 +169,11 @@ export async function githubRequest(
 
     await new Promise((resolve) => setTimeout(resolve, delayMs));
 
-    // Re-attempt once after the rate limit delay
-    const retryRes = await callAsAppUser({
-      gatewayBaseUrl: GATEWAY_BASE_URL,
-      connectionAPIKey,
-      connectorId: GITHUB_CONNECTOR_ID,
-      path,
-      requiredScopes: GITHUB_SCOPES,
-      init: {
-        ...init,
-        headers: {
-          Accept: init?.accept ?? "application/vnd.github+json",
-          ...(init?.headers ?? {}),
-        },
-      },
-    });
+    res = await makeCall();
 
-    if (retryRes.status === 429 || (retryRes.status === 403 && retryRes.headers.get("x-ratelimit-remaining") === "0")) {
+    if (res.status === 429 || (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0")) {
       throw new GitHubRateLimitError();
     }
-    return retryRes;
   }
 
   return res;
