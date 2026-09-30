@@ -84,3 +84,28 @@ export const userSettingsSchema = z.object({
   max_diff_files: z.number().int().min(1).max(200),
   store_code_snippets: z.boolean(),
 });
+
+export const aiFindingSchema = z.object({
+  file: z.string().trim().min(1),
+  line: z.number().int().nullable().optional(),
+  title: z.string().trim().min(1).max(300),
+  severity: z.enum(["critical", "high", "medium", "low"]),
+  category: z.enum([
+    "bug",
+    "security",
+    "performance",
+    "correctness",
+    "maintainability",
+    "testing",
+    "dependency",
+  ]),
+  confidence: z.number().min(0).max(1),
+  problem: z.string().trim().min(1),
+  why_it_matters: z.string().trim().optional().default(""),
+  evidence: z.string().trim().optional().default(""),
+  suggested_fix: z.string().trim().optional().default(""),
+});
+
+export const aiReviewOutputSchema = z.object({
+  findings: z.array(aiFindingSchema).max(25),
+});
