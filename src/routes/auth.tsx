@@ -139,11 +139,9 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6 lg:p-10 antialiased selection:bg-white/20">
-      {/* Outer Card matching the reference side-by-side format */}
-      <div className="w-full max-w-4xl lg:max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0e121a] shadow-[0_24px_70px_rgba(0,0,0,0.85)] grid grid-cols-1 md:grid-cols-12 min-h-[600px]">
-        {/* Left Form Column */}
-        <div className="flex flex-col justify-between p-6 sm:p-8 lg:p-12 col-span-12 md:col-span-6 lg:col-span-6">
+    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 flex flex-col lg:flex-row relative overflow-hidden antialiased selection:bg-white/20">
+      {/* Left Form Column - Full screen height, docked on the side */}
+      <div className="w-full lg:w-[460px] xl:w-[500px] 2xl:w-[540px] shrink-0 min-h-screen flex flex-col justify-between p-6 sm:p-8 lg:p-12 z-20 bg-[#0c1017] border-r border-white/10 shadow-[10px_0_40px_rgba(0,0,0,0.65)]">
           {/* Top Brand & Nav Header */}
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2.5 font-semibold text-white hover:opacity-85 transition-opacity">
@@ -333,20 +331,15 @@ export function AuthPage() {
           </div>
         </div>
 
-        {/* Right Atmospheric Artwork Column */}
-        <div
-          className="hidden md:block md:col-span-6 lg:col-span-6 relative bg-cover bg-center overflow-hidden min-h-[560px]"
-          style={{ backgroundImage: `url('/landing-bg.png')` }}
-        >
-          {/* Subtle natural dark gradient on edge */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0e121a] via-black/25 to-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a]/80 via-transparent to-transparent" />
-
-          {/* Discreet Watermark Branding */}
-          <div className="absolute bottom-8 right-8 flex items-center gap-2 text-white/40 font-mono text-xs select-none">
-            <BugMark className="h-5 w-5 text-white/40 fill-white/40" />
-            <span className="font-semibold tracking-widest text-[11px]">BUGGERS</span>
-          </div>
+      {/* Right Full-Screen Background - Pure artwork, NO FADE overlays as requested */}
+      <div
+        className="hidden lg:flex flex-1 min-h-screen relative bg-cover bg-center bg-no-repeat items-end justify-end p-8"
+        style={{ backgroundImage: `url('/landing-bg.png')` }}
+      >
+        {/* Discreet Watermark Branding */}
+        <div className="flex items-center gap-2 text-white/50 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+          <BugMark className="h-4 w-4 text-white/50 fill-white/50" />
+          <span className="font-semibold tracking-widest text-[10px]">BUGGERS</span>
         </div>
       </div>
     </div>
