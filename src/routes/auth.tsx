@@ -9,9 +9,9 @@ import {
   Mail,
   User,
   Shield,
-  Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -58,13 +58,12 @@ function GoogleIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signup" | "signin">("signup");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showOAuthModal, setShowOAuthModal] = useState(false);
   const [busyProvider, setBusyProvider] = useState<"github" | "google" | "email" | null>(null);
 
   useEffect(() => {
@@ -139,65 +138,109 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#141721] flex flex-col lg:flex-row text-slate-100 antialiased overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#12141a] flex flex-col lg:flex-row text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
       {/* Left Full-Height Form Panel (52% on Desktop, 100% on Mobile) */}
       <div className="w-full lg:w-[52%] min-h-screen flex flex-col justify-between p-6 sm:p-12 lg:p-14 xl:p-16 bg-[#161a24] z-10 border-r border-white/5">
-        {/* Top Header Bar */}
+        {/* Top Header Bar with Official BugMark Logo */}
         <div className="flex items-center justify-between w-full">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <span className="h-3.5 w-3.5 rounded-full bg-[#0084ff] shadow-[0_0_12px_rgba(0,132,255,0.8)]" />
-            <span className="text-sm font-semibold tracking-tight text-white group-hover:text-slate-200">
-              Buggers app.
+          <Link to="/" className="flex items-center gap-2.5 group transition-opacity duration-200 hover:opacity-85">
+            <BugMark className="h-6 w-6 text-white fill-white" />
+            <span className="text-base font-bold tracking-tight text-white">
+              Buggers
             </span>
           </Link>
 
           <div className="flex items-center gap-5 text-xs font-medium text-slate-400">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
-            <button
-              type="button"
-              onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
-              className="hover:text-white transition-colors cursor-pointer"
-            >
-              {mode === "signup" ? "Join" : "Create"}
-            </button>
+            <Link to="/" className="hover:text-white transition-colors duration-200">
+              Home
+            </Link>
+            <Link to="/how-it-works" className="hover:text-white transition-colors duration-200">
+              How it works
+            </Link>
           </div>
         </div>
 
         {/* Center Form Section */}
         <div className="my-auto py-8 max-w-md w-full mx-auto">
-          <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
-            START FOR FREE
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+              START FOR FREE
+            </span>
+            <div className="flex items-center gap-2 text-xs font-medium">
+              <span className="text-slate-400">{mode === "signin" ? "Need an account?" : "Already a member?"}</span>
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                className="text-[#0084ff] hover:underline font-semibold cursor-pointer"
+              >
+                {mode === "signin" ? "Sign Up" : "Log In"}
+              </button>
+            </div>
+          </div>
 
-          <h1 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
-            {mode === "signup" ? (
+          <h1 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
+            {mode === "signin" ? (
               <>
-                Create new account<span className="text-[#0084ff]">.</span>
+                Welcome back<span className="text-[#0084ff]">.</span>
               </>
             ) : (
               <>
-                Welcome back<span className="text-[#0084ff]">.</span>
+                Create account<span className="text-[#0084ff]">.</span>
               </>
             )}
           </h1>
 
           <p className="mt-2 text-xs text-slate-400">
-            {mode === "signup" ? "Already A Member? " : "Need an account? "}
-            <button
-              type="button"
-              onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
-              className="text-[#0084ff] font-medium hover:underline cursor-pointer"
-            >
-              {mode === "signup" ? "Log In" : "Sign Up"}
-            </button>
+            AI-assisted code review and bug triage powered by repository history.
           </p>
 
-          {/* Form */}
-          <form className="mt-7 space-y-3.5" onSubmit={handleSubmit}>
+          {/* Symmetrical Google and GitHub Options AT TOP FIRST (As Requested!) */}
+          <div className="mt-7 space-y-2.5">
+            <button
+              type="button"
+              onClick={() => handleOAuth("github")}
+              disabled={Boolean(busyProvider)}
+              className="group relative flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/30 px-4 py-3 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+            >
+              {busyProvider === "github" ? (
+                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+              ) : (
+                <Github className="h-4 w-4 text-white" />
+              )}
+              <span>{busyProvider === "github" ? "Connecting to GitHub…" : "Continue with GitHub"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleOAuth("google")}
+              disabled={Boolean(busyProvider)}
+              className="group relative flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/30 px-4 py-3 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+            >
+              {busyProvider === "google" ? (
+                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+              ) : (
+                <GoogleIcon className="h-4 w-4" />
+              )}
+              <span>{busyProvider === "google" ? "Connecting to Google…" : "Continue with Google"}</span>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-6 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <span className="relative bg-[#161a24] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+              Or continue with email
+            </span>
+          </div>
+
+          {/* Email / Password Form */}
+          <form className="space-y-3.5" onSubmit={handleSubmit}>
             {/* First & Last Name (in Sign Up Mode) */}
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
                   <label className="block text-[10px] font-medium text-slate-400">First name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -212,7 +255,7 @@ export function AuthPage() {
                   </div>
                 </div>
 
-                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
                   <label className="block text-[10px] font-medium text-slate-400">Last name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -230,7 +273,7 @@ export function AuthPage() {
             )}
 
             {/* Email Field */}
-            <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+            <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
               <label className="block text-[10px] font-medium text-slate-400">Email</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -238,7 +281,7 @@ export function AuthPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="michal.masiak@anywhere.co"
+                  placeholder="name@company.com"
                   className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
                 />
                 <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
@@ -246,7 +289,7 @@ export function AuthPage() {
             </div>
 
             {/* Password Field */}
-            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2.5 transition-all">
+            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2.5 transition-all duration-200">
               <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -268,21 +311,12 @@ export function AuthPage() {
               </div>
             </div>
 
-            {/* Symmetrical Action Buttons (Matching Image 2) */}
-            <div className="pt-3 flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => setShowOAuthModal(!showOAuthModal)}
-                className="rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white px-5 py-2.5 text-xs font-medium transition-all active:scale-[0.985] flex items-center gap-1.5 cursor-pointer"
-              >
-                <Layers className="h-3.5 w-3.5 text-slate-300" />
-                <span>Change method</span>
-              </button>
-
+            {/* Submit Button */}
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={Boolean(busyProvider)}
-                className="rounded-full bg-[#0084ff] hover:bg-[#0074e0] text-white px-7 py-2.5 text-xs font-semibold shadow-[0_0_24px_rgba(0,132,255,0.45)] transition-all active:scale-[0.985] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full rounded-xl bg-[#0084ff] hover:bg-[#0074e0] text-white py-3 text-xs font-semibold shadow-[0_0_24px_rgba(0,132,255,0.45)] transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "email" ? (
                   <>
@@ -290,38 +324,11 @@ export function AuthPage() {
                     <span>Processing…</span>
                   </>
                 ) : (
-                  <span>{mode === "signup" ? "Create account" : "Log In"}</span>
+                  <span>{mode === "signin" ? "Sign In with Email" : "Create Account with Email"}</span>
                 )}
               </button>
             </div>
           </form>
-
-          {/* Quick OAuth Selection Drawer/Card */}
-          {showOAuthModal && (
-            <div className="mt-4 rounded-xl border border-white/15 bg-[#141824] p-4 space-y-2.5 animate-fade-in">
-              <p className="text-[11px] font-medium text-slate-400 mb-2">Continue with 1-click authentication:</p>
-              <div className="grid grid-cols-2 gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("github")}
-                  disabled={Boolean(busyProvider)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 px-3 text-xs font-semibold text-white transition-all cursor-pointer"
-                >
-                  <Github className="h-4 w-4" />
-                  <span>GitHub</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("google")}
-                  disabled={Boolean(busyProvider)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 px-3 text-xs font-semibold text-white transition-all cursor-pointer"
-                >
-                  <GoogleIcon className="h-4 w-4" />
-                  <span>Google</span>
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Footer Security Note */}
@@ -331,32 +338,20 @@ export function AuthPage() {
         </div>
       </div>
 
-      {/* Right Full-Height Cinematic Image Panel (48% on Desktop) */}
+      {/* Right Full-Height Atmospheric Image Panel (Using SAME background image as landing!) */}
       <div
         className="hidden lg:flex lg:w-[48%] min-h-screen relative bg-cover bg-center flex-col justify-between p-12 overflow-hidden"
-        style={{ backgroundImage: `url('/auth-bg.jpg')` }}
+        style={{ backgroundImage: `url('/landing-bg.jpg')` }}
       >
         {/* Soft atmospheric gradient overlay blending with left side */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#161a24] via-transparent to-black/35" />
-
-        {/* Organic curved divider edge blending smoothly into left panel */}
-        <svg
-          className="absolute left-0 top-0 bottom-0 h-full w-14 text-[#161a24] pointer-events-none"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,0 Q35,50 0,100 L0,0 Z"
-            fill="currentColor"
-          />
-        </svg>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#161a24] via-black/40 to-black/60" />
 
         {/* Top spacer */}
         <div className="relative z-10" />
 
-        {/* Bottom Right Monogram Watermark (Matching Image 2) */}
-        <div className="relative z-10 self-end text-white/95 font-black tracking-tighter text-3xl select-none drop-shadow-md">
-          <span>.AW</span>
+        {/* Bottom Right Monogram Watermark */}
+        <div className="relative z-10 self-end text-white/90 font-black tracking-tighter text-3xl select-none drop-shadow-md">
+          <span>.BUGGERS</span>
         </div>
       </div>
     </div>
