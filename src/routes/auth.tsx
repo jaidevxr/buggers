@@ -12,7 +12,6 @@ import {
   Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/auth")({
@@ -154,9 +153,6 @@ export function AuthPage() {
 
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
-        {/* Floating Island Header — Stays persistent across signup/login too */}
-        <PublicHeader />
-
         {/* Symmetrical Centered Form Card */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
           <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_25px_65px_rgba(0,0,0,0.95)] space-y-5 transition-all duration-300">

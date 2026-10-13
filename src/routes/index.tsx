@@ -14,7 +14,6 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/")({
@@ -58,9 +57,6 @@ export function Landing() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Unified Public Floating Pill Header */}
-      <PublicHeader />
-
       {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Preloaded Instant WebP) */}
       <section
         id="hero"
@@ -115,7 +111,8 @@ export function Landing() {
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
               to="/auth"
-              className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-all duration-300 active:scale-[0.985] flex items-center gap-2 hover:-translate-y-0.5"
+              preload="intent"
+              className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center gap-2 hover:-translate-y-0.5"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />
@@ -123,7 +120,8 @@ export function Landing() {
 
             <Link
               to="/how-it-works"
-              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-all duration-300 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
+              preload="intent"
+              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-[background-color,color,transform,border-color] duration-150 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               <span>See How it Works</span>
@@ -153,6 +151,7 @@ export function Landing() {
               <div className="pt-2">
                 <Link
                   to="/how-it-works"
+                  preload="intent"
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-zinc-200 transition-colors group"
                 >
                   <span>Explore triage architecture</span>
@@ -341,6 +340,7 @@ export function Landing() {
               <div className="pt-2">
                 <Link
                   to="/docs"
+                  preload="intent"
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-zinc-200 transition-colors group"
                 >
                   <span>View .buggers.yml configuration reference</span>
@@ -457,14 +457,16 @@ ignore:
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/auth"
-                className="w-full sm:w-auto rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold shadow-md hover:bg-slate-200 transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2"
+                preload="intent"
+                className="w-full sm:w-auto rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold shadow-md hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center justify-center gap-2"
               >
                 <span>Get Started</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/how-it-works"
-                className="w-full sm:w-auto rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-all duration-200 flex items-center justify-center gap-2"
+                preload="intent"
+                className="w-full sm:w-auto rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-[background-color,border-color,transform] duration-150 flex items-center justify-center gap-2 active:scale-[0.985]"
               >
                 <Play className="h-3.5 w-3.5 fill-current" />
                 <span>See How it Works</span>

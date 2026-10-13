@@ -10,7 +10,8 @@ export function PublicHeader() {
         {/* Buggers Logo — Only icon allowed in header/island */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 font-semibold text-white transition-opacity duration-150 hover:opacity-85"
+          preload="intent"
+          className="flex items-center gap-2.5 font-semibold text-white transition-opacity duration-150 hover:opacity-85 active:scale-95"
         >
           <BugMark className="h-5 w-5 text-white fill-white" />
           <span className="tracking-tight text-sm font-bold text-white">
@@ -22,7 +23,8 @@ export function PublicHeader() {
         <nav className="flex items-center gap-6 text-slate-300 font-medium">
           <Link
             to="/"
-            className={`transition-colors duration-150 hover:text-white ${
+            preload="intent"
+            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/" ? "text-white font-semibold" : "text-slate-300"
             }`}
           >
@@ -30,7 +32,8 @@ export function PublicHeader() {
           </Link>
           <Link
             to="/docs"
-            className={`transition-colors duration-150 hover:text-white ${
+            preload="intent"
+            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/docs"
                 ? "text-white font-semibold"
                 : "text-slate-300"
@@ -40,7 +43,8 @@ export function PublicHeader() {
           </Link>
           <Link
             to="/about"
-            className={`transition-colors duration-150 hover:text-white ${
+            preload="intent"
+            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/about"
                 ? "text-white font-semibold"
                 : "text-slate-300"
@@ -53,7 +57,8 @@ export function PublicHeader() {
         {/* Login / Signup Action Pill */}
         <Link
           to="/auth"
-          className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-all duration-150 shadow-xs active:scale-[0.985] ${
+          preload="intent"
+          className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-[background-color,color,transform,box-shadow] duration-150 shadow-xs active:scale-[0.97] ${
             pathname === "/auth"
               ? "bg-white text-black ring-2 ring-white/30"
               : "bg-white text-black hover:bg-slate-200"

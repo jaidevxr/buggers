@@ -11,7 +11,6 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/how-it-works")({
@@ -39,9 +38,6 @@ export const Route = createFileRoute("/how-it-works")({
 export function HowItWorksPage() {
   return (
     <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Unified Public Floating Pill Header */}
-      <PublicHeader />
-
       {/* Main Content Hero - flex-1 ensures it pushes the footer to the bottom */}
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
@@ -203,7 +199,8 @@ export function HowItWorksPage() {
           <div className="mt-6 flex justify-center">
             <Link
               to="/auth"
-              className="rounded-full bg-white text-black px-7 py-3 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-all duration-200 shadow-xl active:scale-[0.985] flex items-center gap-2"
+              preload="intent"
+              className="rounded-full bg-white text-black px-7 py-3 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 shadow-xl active:scale-[0.985] flex items-center gap-2"
             >
               <span>Get Started with GitHub</span>
               <ArrowRight className="h-4 w-4" />

@@ -270,7 +270,9 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-soft);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform, box-shadow;
   }
 
@@ -283,7 +285,7 @@
   .surface-card-interactive:active {
     transform: translateY(0);
     box-shadow: var(--shadow-soft);
-    transition-duration: 0.1s;
+    transition-duration: 0.08s;
   }
 
   .dotted-grid,
@@ -293,7 +295,9 @@
   }
 
   .card-hover {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .card-hover:hover {
@@ -339,7 +343,11 @@
 /* Micro-interaction defaults for smooth, non-abrupt tactile feel */
 button,
 [role="button"] {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button:active:not(:disabled),
@@ -351,14 +359,15 @@ button:active:not(:disabled),
 input,
 textarea,
 select {
-  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 a {
-  transition: color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes shimmer {
@@ -536,76 +545,36 @@ a {
 }
 
 /* ==========================================================================
-   Coordinated, Butter-Smooth Page Transition Motion System
-   180ms - 220ms subtle cross-fade with zero layout jumps, shaking, or jitter
+   Coordinated, Hardware-Accelerated Page Entrance & Motion System
+   140ms ultra-subtle settle with zero layout warping, shaking, or dark dipping
    ========================================================================== */
 
-/* Browser View Transitions API configuration */
-::view-transition-group(root) {
-  animation-duration: 0.20s;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-::view-transition-old(root) {
-  animation: 0.16s cubic-bezier(0.16, 1, 0.3, 1) both buggersViewTransitionFadeOut;
-}
-
-::view-transition-new(root) {
-  animation: 0.20s cubic-bezier(0.16, 1, 0.3, 1) both buggersViewTransitionFadeIn;
-}
-
-@keyframes buggersViewTransitionFadeOut {
+@keyframes pageSettleIn {
   from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes buggersViewTransitionFadeIn {
-  from {
-    opacity: 0;
+    opacity: 0.94;
+    transform: translateY(2px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Anchored header: keeps floating pill perfectly stationary across page navigations */
-.public-header-pill {
-  view-transition-name: public-header;
-}
-
-::view-transition-group(public-header) {
-  animation-duration: 0.18s;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-::view-transition-old(public-header),
-::view-transition-new(public-header) {
-  animation: none;
-}
-
-/* Fallback subtle page transition for environments without view transitions */
-@keyframes pageFadeIn {
-  0% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
+.page-view,
 .page-transition {
-  animation: pageFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: opacity;
+  animation: pageSettleIn 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+/* Floating Public Header Island: stable elevation & zero layout shift */
+.public-header-pill {
+  contain: layout style paint;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
+  .page-view,
+  .page-transition {
     animation: none !important;
   }
   *,

@@ -15,6 +15,7 @@ import { reportError } from "../lib/error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { PublicHeader } from "@/components/layout/PublicHeader";
 
 function NotFoundComponent() {
   return (
@@ -142,8 +143,7 @@ function RootComponent() {
 
   // Coordinated route transition key:
   // For authenticated child routes, keep the authenticated shell persistent so TopBar/Sidebar never flash.
-  // For distinct root pages (Landing '/', Auth '/auth', Docs '/docs', How It Works '/how-it-works'),
-  // use the exact path to trigger smooth, coordinated, 220ms page-transition.
+  // For public routes, use pathname to coordinate smooth content entrance while PublicHeader stays anchored.
   const isAuthRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/repositories") ||
@@ -164,11 +164,19 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  // Clean instant scroll reset on route change without layout jumps
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-[#07090e] page-transition">
-          <Outlet />
+        <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col selection:bg-white/20">
+          {!isAuthRoute && <PublicHeader />}
+          <div key={topRouteKey} className="flex-1 w-full flex flex-col page-view">
+            <Outlet />
+          </div>
         </div>
         <Toaster richColors position="top-right" />
       </ThemeProvider>

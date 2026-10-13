@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck, Cpu, GitPullRequest, Code2, Heart } from "lucide-react";
-import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -27,9 +26,6 @@ export const Route = createFileRoute("/about")({
 export function AboutPage() {
   return (
     <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Unified Public Floating Pill Header */}
-      <PublicHeader />
-
       {/* Main Content */}
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
@@ -93,7 +89,8 @@ export function AboutPage() {
             <div className="mt-6 flex justify-center gap-4">
               <Link
                 to="/auth"
-                className="rounded-full bg-white text-black px-7 py-3 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-all duration-200 active:scale-[0.985] flex items-center gap-2"
+                preload="intent"
+                className="rounded-full bg-white text-black px-7 py-3 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center gap-2"
               >
                 <span>Get Started Now</span>
                 <ArrowRight className="h-4 w-4" />
