@@ -1,27 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  ArrowRight,
-  CheckCircle2,
-  FileCode,
-  GitPullRequest,
-  Github,
-  Sparkles,
-} from "lucide-react";
-import { BugMark } from "@/components/brand/BugMark";
-import { SeverityBadge } from "@/components/status/StatusBadges";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Play, CheckCircle2, Shield, BrainCircuit, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Buggers — Catch risky code before it catches you" },
+      { title: "Buggers — Review with ease" },
       {
         name: "description",
         content:
-          "Buggers reviews your pull requests with AI and your repository history, so risky changes get caught before they ship.",
+          "Design and review smarter with AI that understands your repository. So you can take a breath.",
       },
-      { property: "og:title", content: "Buggers — Catch risky code before it catches you" },
+      { property: "og:title", content: "Buggers — Review with ease" },
       {
         property: "og:description",
         content:
@@ -35,264 +25,208 @@ export const Route = createFileRoute("/")({
 });
 
 export function Landing() {
-  const [activeTab, setActiveTab] = useState<"overview" | "diff" | "triage">("overview");
+  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
-    <div className="min-h-screen w-full bg-black text-slate-100 antialiased selection:bg-white/20 overflow-x-hidden">
-      {/* Header — Professional, clean and simple */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5 text-white transition-opacity hover:opacity-85">
-            <BugMark className="h-6 w-6 text-white fill-white" />
-            <span className="font-display text-lg font-semibold tracking-tight text-white">
-              Buggers
-            </span>
+    <div className="relative min-h-screen w-full bg-[#f4f6f8] text-slate-900 antialiased overflow-x-hidden">
+      {/* Floating Pill Header (Matching Reference Image 1) */}
+      <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
+        <div className="flex items-center gap-6 sm:gap-8 rounded-full bg-white/90 backdrop-blur-md px-5 py-2 sm:px-6 sm:py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.12)] border border-black/5 text-xs font-medium text-slate-700">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 font-semibold text-slate-900 transition-opacity hover:opacity-85">
+            <div className="h-4 w-4 rounded-full border-[2.5px] border-orange-500 bg-orange-100 flex items-center justify-center">
+              <div className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+            </div>
+            <span className="tracking-tight text-sm font-bold text-slate-900">Buggers</span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="rounded-full text-xs text-slate-300 hover:bg-white/10 hover:text-white"
-            >
-              <Link to="/auth">Sign in</Link>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="rounded-full bg-white px-4 text-xs font-semibold text-black shadow-xs hover:bg-slate-200 active:scale-[0.985]"
-            >
-              <Link to="/auth" className="flex items-center gap-1.5">
-                <Github className="h-3.5 w-3.5" /> Continue with GitHub
-              </Link>
-            </Button>
-          </div>
+          {/* Nav Links */}
+          <nav className="hidden md:flex items-center gap-6 text-slate-600 font-medium">
+            <a href="#hero" className="transition-colors hover:text-slate-900">Home</a>
+            <a href="#usecases" className="transition-colors hover:text-slate-900">Usecases</a>
+            <a href="#pricing" className="transition-colors hover:text-slate-900">Pricing</a>
+            <a href="#careers" className="transition-colors hover:text-slate-900">Careers</a>
+            <a href="#contact" className="transition-colors hover:text-slate-900">Contact</a>
+          </nav>
+
+          {/* Login Pill Button */}
+          <Link
+            to="/auth"
+            className="rounded-full bg-[#15171c] text-white px-5 py-1.5 text-xs font-semibold hover:bg-black transition-colors shadow-xs active:scale-[0.985]"
+          >
+            Login
+          </Link>
         </div>
       </header>
 
-      {/* Hero Section with 2-Column Clean Layout */}
-      <section className="relative w-full border-b border-white/10 py-16 sm:py-24 lg:py-28">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
-            {/* Left Column: Headline and Call-to-Actions */}
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Code review for teams that ship fast
-              </span>
+      {/* Main Full-Bleed Scenic Hero Section (Matching Image 1) */}
+      <section
+        id="hero"
+        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-between pt-32 pb-10 px-4 sm:px-6"
+        style={{ backgroundImage: `url('/landing-bg.jpg')` }}
+      >
+        {/* Soft atmospheric gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/20 pointer-events-none" />
 
-              <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Catch risky code <br />
-                before it catches you.
-              </h1>
+        {/* Top Spacer */}
+        <div className="relative z-10" />
 
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg">
-                AI-assisted code review and bug triage powered by your GitHub repository history.
-                Buggers reads the diff and everything that happened to those files before it.
-              </p>
+        {/* Centered Hero Content */}
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          {/* Pill Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-black/5 animate-fade-in">
+            <span>We just raised 20M🚀</span>
+          </div>
 
-              <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
-                <Button
-                  size="lg"
-                  className="rounded-full bg-white px-6 font-semibold text-black shadow-sm hover:bg-slate-200 active:scale-[0.985]"
-                  asChild
-                >
-                  <Link to="/auth" className="flex items-center gap-2">
-                    <Github className="h-4 w-4" /> Continue with GitHub
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="rounded-full border-white/20 bg-white/5 px-5 text-white hover:bg-white/10 hover:text-white"
-                  asChild
-                >
-                  <Link to="/auth" className="flex items-center gap-2">
-                    Explore live demo <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+          {/* Heading */}
+          <h1 className="mt-7 font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-slate-900 drop-shadow-xs">
+            Review with ease.
+          </h1>
+
+          {/* Subtitle */}
+          <p className="mt-5 max-w-xl mx-auto text-sm sm:text-base text-slate-800 font-normal leading-relaxed drop-shadow-xs">
+            Review smarter with AI that understands your repository. <br />
+            So you can take a breath.
+          </p>
+
+          {/* Action Buttons */}
+          <div className="mt-9 flex items-center justify-center gap-4">
+            <Link
+              to="/auth"
+              className="rounded-full bg-white text-slate-900 px-6 py-2.5 sm:px-7 sm:py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-black/10 hover:bg-slate-50 transition-all active:scale-[0.985] flex items-center gap-1.5"
+            >
+              <span>Get Started</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setDemoOpen(true)}
+              className="rounded-full bg-black/10 backdrop-blur-md px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium text-slate-900 hover:bg-white/30 transition-all flex items-center gap-1.5"
+            >
+              <Play className="h-3 w-3 fill-current" />
+              <span>Watch Demo</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom SCROLL Indicator */}
+        <div className="relative z-10 mx-auto pt-10">
+          <a
+            href="#usecases"
+            className="inline-flex items-center gap-1.5 rounded-full bg-black/25 backdrop-blur-md px-4 py-1.5 text-[11px] font-mono tracking-widest text-white/95 border border-white/20 shadow-md hover:bg-black/35 transition-all"
+          >
+            <span>SCROLL</span>
+            <span>↓</span>
+          </a>
+        </div>
+      </section>
+
+      {/* Demo Modal */}
+      {demoOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-[#0e1117] p-6 text-white border border-white/10 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-orange-400" />
+                <h3 className="font-semibold text-sm">Interactive Buggers Walkthrough</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDemoOpen(false)}
+                className="text-slate-400 hover:text-white text-sm px-2 py-1"
+              >
+                ✕ Close
+              </button>
+            </div>
+            <div className="mt-4 space-y-3 text-xs text-slate-300 leading-relaxed font-mono">
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                <p className="text-emerald-400 font-semibold">1. Webhook Triggered</p>
+                <p className="mt-1 text-slate-400">PR #184 opened on payment-service. Automated churn analysis commenced.</p>
+              </div>
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                <p className="text-rose-400 font-semibold">2. Logic Inversion Detected</p>
+                <p className="mt-1 text-slate-400">Lines 42-44 evaluated against historic incident #309. High risk (82/100) flagged.</p>
+              </div>
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                <p className="text-blue-400 font-semibold">3. Deterministic Grounding</p>
+                <p className="mt-1 text-slate-400">Zero phantom citations. Suggested fix wrapped in DB transaction ready for review.</p>
               </div>
             </div>
+            <div className="mt-6 flex justify-end">
+              <Link
+                to="/auth"
+                className="rounded-full bg-white text-black px-5 py-2 text-xs font-semibold hover:bg-slate-200"
+              >
+                Sign In to Review Repositories →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* Right Column: Clean Black GitHub-Referenced Product Preview */}
-            <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#09090b] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]">
-              {/* Window Chrome & Tabs */}
-              <div className="flex flex-wrap items-center justify-between border-b border-white/10 bg-[#121215] px-4 py-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-                  <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-                  <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
-                </div>
+      {/* Usecases & Features Section */}
+      <section id="usecases" className="relative z-10 bg-white py-24 px-4 sm:px-6 border-t border-black/5">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs font-semibold uppercase tracking-wider text-orange-600">Built for Modern Engineering</span>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+              Less noise. More signal. Zero burn out.
+            </h2>
+            <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+              Buggers connects directly with your GitHub pull requests to surface regressions and vulnerabilities before code ever merges.
+            </p>
+          </div>
 
-                <div className="flex items-center gap-1 text-xs font-mono">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("overview")}
-                    className={`flex items-center gap-1.5 rounded-t-md border-t-2 px-3 py-1.5 transition-colors ${
-                      activeTab === "overview"
-                        ? "border-white bg-[#09090b] text-white font-semibold"
-                        : "border-transparent text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    <GitPullRequest className="h-3 w-3" />
-                    PR #184: payment-service
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("diff")}
-                    className={`flex items-center gap-1.5 rounded-t-md border-t-2 px-3 py-1.5 transition-colors ${
-                      activeTab === "diff"
-                        ? "border-white bg-[#09090b] text-white font-semibold"
-                        : "border-transparent text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    <FileCode className="h-3 w-3" />
-                    Diff & Findings
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("triage")}
-                    className={`flex items-center gap-1.5 rounded-t-md border-t-2 px-3 py-1.5 transition-colors ${
-                      activeTab === "triage"
-                        ? "border-white bg-[#09090b] text-white font-semibold"
-                        : "border-transparent text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    <Sparkles className="h-3 w-3" />
-                    AI Triage
-                  </button>
-                </div>
-
-                <div className="hidden text-xs text-slate-400 sm:block">
-                  <span className="inline-flex items-center gap-1 text-emerald-400 font-mono text-[11px]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Analysis Ready
-                  </span>
-                </div>
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-6 transition-all hover:shadow-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                <Shield className="h-5 w-5" />
               </div>
+              <h3 className="mt-4 text-base font-semibold text-slate-900">Grounded Diff Citations</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                Every AI suggestion maps strictly to modified diff lines. Ghost hallucinations and phantom references are completely blocked.
+              </p>
+            </div>
 
-              {/* Product Preview Card Body */}
-              <div className="p-4 sm:p-5">
-                {/* PR Header */}
-                <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">
-                      <span className="text-slate-400 font-mono">payment-service #184</span> Fix payment validation
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400 font-mono">
-                      mira-k · 3 files · <span className="text-emerald-400">+204</span> <span className="text-rose-400">−74</span>
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/25 bg-rose-500/10 px-2.5 py-0.5 text-xs font-medium text-rose-400 whitespace-nowrap">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-                    High risk
-                  </span>
-                </div>
-
-                {/* Risk Score */}
-                <div className="mt-4 rounded-xl border border-white/10 bg-[#121215] p-3.5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-medium text-slate-400">Overall risk score</p>
-                    <span className="font-mono text-[11px] text-slate-400">P95 Regression Rate</span>
-                  </div>
-                  <p className="mt-1 font-display text-2xl font-bold text-rose-400">
-                    HIGH · 82
-                  </p>
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full w-[82%] rounded-full bg-rose-500" />
-                  </div>
-                </div>
-
-                {/* Severity Findings */}
-                <div className="mt-4 space-y-2">
-                  {[
-                    { s: "critical", t: "Partial capture amount silently overwritten" },
-                    { s: "high", t: "Refund no longer wrapped in a transaction" },
-                    { s: "medium", t: "Empty card number treated as valid" },
-                  ].map((f) => (
-                    <div
-                      key={f.t}
-                      className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#121215]/60 px-3 py-2 transition-colors hover:border-white/20"
-                    >
-                      <SeverityBadge severity={f.s} />
-                      <span className="truncate text-xs text-slate-200">{f.t}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Code Diff */}
-                <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black font-mono text-xs">
-                  <div className="border-b border-white/10 bg-[#121215] px-3 py-1.5 text-[11px] text-slate-400">
-                    src/services/paymentValidator.ts
-                  </div>
-                  <div className="p-1 space-y-0.5">
-                    <div className="bg-rose-500/15 px-3 py-1 text-rose-300">
-                      − if amount &lt;= order.total:
-                    </div>
-                    <div className="bg-emerald-500/15 px-3 py-1 text-emerald-300">
-                      + if amount != order.total:
-                    </div>
-                    <div className="bg-emerald-500/15 px-3 py-1 text-emerald-300">
-                      + &nbsp; amount = order.total
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Remediation Box */}
-                <div className="mt-4 rounded-xl border border-white/10 bg-[#121215] p-3.5 text-xs">
-                  <div className="flex items-center gap-1.5 font-semibold text-slate-200">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                    AI Remediation Suggestion
-                  </div>
-                  <p className="mt-1 leading-relaxed text-slate-400 text-[11px]">
-                    Logic inversion detected: Comparing with <code className="text-slate-200 font-mono">!=</code> causes partial refunds to overwrite total amounts. Wrap operations in a database transaction to prevent financial state race conditions.
-                  </p>
-                  <div className="mt-2 flex items-center gap-1 text-[11px] text-emerald-400">
-                    <CheckCircle2 className="h-3 w-3" />
-                    Verified against repository churn history
-                  </div>
-                </div>
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-6 transition-all hover:shadow-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+                <BrainCircuit className="h-5 w-5" />
               </div>
+              <h3 className="mt-4 text-base font-semibold text-slate-900">Historical Churn Intelligence</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                Cross-references previous defect files and author churn history so human attention focuses where regressions historically occur.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-6 transition-all hover:shadow-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+                <CheckCircle2 className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 text-base font-semibold text-slate-900">Instant Triage & Tracking</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                Convert critical findings into GitHub issues or automated fixes with a single click, keeping your release pipeline clean.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Feature Pillars Strip — Sleek, ultra-minimal, high-contrast */}
-      <section className="border-b border-white/10 bg-black py-16">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-3">
-          {[
-            {
-              title: "Risk with reasons",
-              text: "Every score comes with the signals behind it — churn frequency, defect history, missing tests, and dependency shifts.",
-            },
-            {
-              title: "Findings you can act on",
-              text: "Problem, why it matters, diff evidence, and a verified suggested fix. Mark reviewed, resolved, or create tracked GitHub tickets.",
-            },
-            {
-              title: "History as evidence",
-              text: "Buggers learns which files broke before in production, so human review attention lands right where regressions occur.",
-            },
-          ].map((c) => (
-            <div key={c.title} className="rounded-xl border border-white/10 bg-[#09090b] p-6">
-              <h3 className="text-base font-semibold text-white">{c.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">{c.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Minimal Footer */}
+      <footer className="bg-slate-900 py-10 px-4 sm:px-6 text-xs text-slate-400">
+        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-white font-medium">
+            <div className="h-3 w-3 rounded-full border-2 border-orange-500 bg-orange-100" />
+            <span>Buggers</span>
+            <span className="text-slate-500 text-[11px]">&copy; 2026 Buggers, Inc. All rights reserved.</span>
+          </div>
 
-      {/* Footer — Minimalist & Clean */}
-      <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-10 text-xs text-slate-500 sm:px-6">
-        <div className="flex items-center gap-2">
-          <BugMark className="h-5 w-5 text-slate-400 fill-slate-400" />
-          <span className="font-display font-semibold tracking-tight text-slate-300">
-            Buggers
-          </span>
+          <div className="flex items-center gap-5">
+            <a href="https://github.com/jaidevxr/buggers" target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
+            <Link to="/auth" className="hover:text-white">Sign In</Link>
+            <span className="text-emerald-400 font-mono text-[11px]">All Systems Normal</span>
+          </div>
         </div>
-        <span>Demo data shown throughout. Connect GitHub to analyze real repositories.</span>
       </footer>
     </div>
   );

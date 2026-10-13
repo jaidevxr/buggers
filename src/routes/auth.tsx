@@ -2,32 +2,29 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  ArrowLeft,
   Eye,
   EyeOff,
   Github,
   Loader2,
-  Lock,
-  ShieldCheck,
+  Mail,
+  User,
+  Shield,
+  Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BugMark } from "@/components/brand/BugMark";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in & Sign up — Buggers" },
+      { title: "Buggers — Sign in & Sign up" },
       {
         name: "description",
-        content: "Continue with GitHub, Google, or Email to review pull requests with Buggers.",
+        content: "Sign in or create your Buggers account to analyze pull requests.",
       },
-      { property: "og:title", content: "Sign in — Buggers" },
+      { property: "og:title", content: "Buggers — Sign in & Sign up" },
       {
         property: "og:description",
-        content: "Continue with GitHub, Google, or Email to start analyzing pull requests.",
+        content: "Continue with GitHub, Google, or Email to start reviewing code with AI.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -61,22 +58,16 @@ function GoogleIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signup" | "signin">("signup");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showOAuthModal, setShowOAuthModal] = useState(false);
   const [busyProvider, setBusyProvider] = useState<"github" | "google" | "email" | null>(null);
 
   useEffect(() => {
-    // Read optional ?mode=signup from URL
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlMode = urlParams.get("mode");
-      if (urlMode === "signup" || urlMode === "signin") {
-        setMode(urlMode);
-      }
-    }
-
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
@@ -94,22 +85,20 @@ export function AuthPage() {
       });
 
       if (error || !data?.url) {
-        toast.error(
-          `${provider === "github" ? "GitHub" : "Google"} sign-in failed. ${error?.message || "Please try again."}`
-        );
+        toast.error(`${provider === "github" ? "GitHub" : "Google"} authentication failed.`);
         return;
       }
 
       window.location.href = data.url;
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : `Failed to connect with ${provider}.`;
-      toast.error(message);
+      const msg = err instanceof Error ? err.message : `Failed to connect with ${provider}.`;
+      toast.error(msg);
     } finally {
       setBusyProvider(null);
     }
   }
 
-  async function handleEmail(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusyProvider("email");
     try {
@@ -117,7 +106,10 @@ export function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+          options: {
+            data: { first_name: firstName, last_name: lastName },
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
         });
         if (error) {
           toast.error(error.message);
@@ -127,7 +119,7 @@ export function AuthPage() {
           toast.success("Account created! Redirecting to dashboard...");
           navigate({ to: "/dashboard" });
         } else {
-          toast.info("Account created. Please check your email to confirm your account or sign in.");
+          toast.info("Account created. Please check your email to confirm or log in.");
           setMode("signin");
         }
       } else {
@@ -147,195 +139,226 @@ export function AuthPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col justify-between bg-black text-slate-100 antialiased selection:bg-white/20">
-      {/* Top Bar with Clean Back Link */}
-      <header className="w-full px-6 py-6 sm:px-10">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 transition-colors hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Buggers</span>
-        </Link>
-      </header>
-
-      {/* Centered Auth Card */}
-      <main className="mx-auto flex w-full max-w-md flex-col items-center px-4 py-8">
-        <div className="w-full rounded-2xl border border-white/15 bg-[#09090b] p-6 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] sm:p-8">
-          {/* Logo & Headline */}
-          <div className="text-center">
-            <Link to="/" className="inline-block transition-opacity hover:opacity-85">
-              <BugMark className="mx-auto h-12 w-12 text-white fill-white" />
+    <div className="min-h-screen w-full bg-[#12141a] flex items-center justify-center p-4 sm:p-6 lg:p-10 text-slate-100 antialiased">
+      {/* Outer Floating Window Container (Matching Image 2) */}
+      <div className="relative w-full max-w-4xl rounded-[28px] overflow-hidden bg-[#181d29] border border-white/10 shadow-[0_25px_80px_rgba(0,0,0,0.85)] grid grid-cols-1 md:grid-cols-12 min-h-[580px]">
+        {/* Left Form Panel */}
+        <div className="p-8 sm:p-10 flex flex-col justify-between md:col-span-7 bg-[#181d29] z-10">
+          {/* Top Bar inside Card */}
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <span className="h-3.5 w-3.5 rounded-full bg-[#0084ff] shadow-[0_0_10px_rgba(0,132,255,0.8)]" />
+              <span className="text-sm font-semibold tracking-tight text-white group-hover:text-slate-200">
+                Buggers app.
+              </span>
             </Link>
-            <h1 className="mt-5 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              {mode === "signin" ? "Welcome back" : "Create your account"}
-            </h1>
-            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-              AI-assisted code review and risk triage across your repositories.
-            </p>
-          </div>
 
-          {/* Equal First-Class Dual OAuth Buttons: GitHub and Google */}
-          <div className="mt-6 space-y-2.5">
-            {/* Continue with GitHub */}
-            <button
-              type="button"
-              onClick={() => handleOAuth("github")}
-              disabled={Boolean(busyProvider)}
-              className="group relative flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-white/10 hover:border-white/30 hover:shadow-lg hover:shadow-white/5 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {busyProvider === "github" ? (
-                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-              ) : (
-                <Github className="h-4 w-4 text-white" />
-              )}
-              <span>{busyProvider === "github" ? "Connecting to GitHub…" : "Continue with GitHub"}</span>
-            </button>
-
-            {/* Continue with Google */}
-            <button
-              type="button"
-              onClick={() => handleOAuth("google")}
-              disabled={Boolean(busyProvider)}
-              className="group relative flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-white/10 hover:border-white/30 hover:shadow-lg hover:shadow-white/5 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {busyProvider === "google" ? (
-                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-              ) : (
-                <GoogleIcon className="h-4 w-4" />
-              )}
-              <span>{busyProvider === "google" ? "Connecting to Google…" : "Continue with Google"}</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="relative my-6 flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+            <div className="flex items-center gap-5 text-xs font-medium text-slate-400">
+              <Link to="/" className="hover:text-white transition-colors">Home</Link>
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
+                className="hover:text-white transition-colors"
+              >
+                {mode === "signup" ? "Join" : "Create"}
+              </button>
             </div>
-            <span className="relative bg-[#09090b] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">
-              Or continue with email
+          </div>
+
+          {/* Form Content Area */}
+          <div className="mt-8 mb-6">
+            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+              START FOR FREE
             </span>
-          </div>
 
-          {/* Mode Switcher Pills */}
-          <div className="mb-4 grid grid-cols-2 gap-1 rounded-lg border border-white/10 bg-black/50 p-1 text-xs font-medium">
-            <button
-              type="button"
-              onClick={() => setMode("signin")}
-              className={`rounded-md py-1.5 transition-colors ${
-                mode === "signin"
-                  ? "bg-white text-black font-semibold shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("signup")}
-              className={`rounded-md py-1.5 transition-colors ${
-                mode === "signup"
-                  ? "bg-white text-black font-semibold shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Create Account
-            </button>
-          </div>
+            <h1 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              {mode === "signup" ? (
+                <>
+                  Create new account<span className="text-[#0084ff]">.</span>
+                </>
+              ) : (
+                <>
+                  Welcome back<span className="text-[#0084ff]">.</span>
+                </>
+              )}
+            </h1>
 
-          {/* Email / Password Form */}
-          <form className="space-y-3.5" onSubmit={handleEmail}>
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium text-slate-300">
-                Email address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-10 rounded-xl border-white/15 bg-black/60 text-sm text-white placeholder:text-slate-500 focus:border-white/40 focus:ring-1 focus:ring-white/20"
-              />
-            </div>
+            <p className="mt-2 text-xs text-slate-400">
+              {mode === "signup" ? "Already A Member? " : "Need an account? "}
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
+                className="text-[#0084ff] font-medium hover:underline"
+              >
+                {mode === "signup" ? "Log In" : "Sign Up"}
+              </button>
+            </p>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-xs font-medium text-slate-300">
-                  Password
-                </Label>
-                {mode === "signin" && (
+            {/* Input Form */}
+            <form className="mt-7 space-y-3.5" onSubmit={handleSubmit}>
+              {/* First & Last name row (when in sign-up mode) */}
+              {mode === "signup" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                    <label className="block text-[10px] font-medium text-slate-400">First name</label>
+                    <div className="flex items-center justify-between">
+                      <input
+                        type="text"
+                        required
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="Michał"
+                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                      />
+                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                    </div>
+                  </div>
+
+                  <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                    <label className="block text-[10px] font-medium text-slate-400">Last name</label>
+                    <div className="flex items-center justify-between">
+                      <input
+                        type="text"
+                        required
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Masiak"
+                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                      />
+                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Email row */}
+              <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <label className="block text-[10px] font-medium text-slate-400">Email</label>
+                <div className="flex items-center justify-between">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="michal.masiak@anywhere.co"
+                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                  />
+                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                </div>
+              </div>
+
+              {/* Password row */}
+              <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2 transition-all">
+                <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
+                <div className="flex items-center justify-between">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none font-mono"
+                  />
                   <button
                     type="button"
-                    onClick={() => toast.info("Please use your registered email or GitHub account to access Buggers.")}
-                    className="text-[11px] text-slate-400 hover:text-white hover:underline"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-400 hover:text-white shrink-0 ml-1"
                   >
-                    Forgot password?
+                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                   </button>
-                )}
+                </div>
               </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  minLength={6}
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 rounded-xl border-white/15 bg-black/60 pr-10 text-sm text-white placeholder:text-slate-500 focus:border-white/40 focus:ring-1 focus:ring-white/20"
-                />
+
+              {/* Bottom Action Buttons (Matching Image 2) */}
+              <div className="pt-3 flex items-center justify-between gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  onClick={() => setShowOAuthModal(!showOAuthModal)}
+                  className="rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white px-5 py-2.5 text-xs font-medium transition-all active:scale-[0.985] flex items-center gap-1.5"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <Layers className="h-3.5 w-3.5 text-slate-300" />
+                  <span>Change method</span>
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={Boolean(busyProvider)}
+                  className="rounded-full bg-[#0084ff] hover:bg-[#0074e0] text-white px-7 py-2.5 text-xs font-semibold shadow-[0_0_24px_rgba(0,132,255,0.45)] transition-all active:scale-[0.985] flex items-center gap-2 disabled:opacity-50"
+                >
+                  {busyProvider === "email" ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Processing…</span>
+                    </>
+                  ) : (
+                    <span>{mode === "signup" ? "Create account" : "Log In"}</span>
+                  )}
                 </button>
               </div>
-              {mode === "signup" && (
-                <p className="text-[11px] text-slate-500">Must be at least 6 characters.</p>
-              )}
-            </div>
+            </form>
 
-            <Button
-              type="submit"
-              disabled={Boolean(busyProvider)}
-              className="mt-2 h-10 w-full rounded-xl bg-white font-semibold text-black hover:bg-slate-200 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {busyProvider === "email" ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-black" />
-                  {mode === "signin" ? "Signing in…" : "Creating account…"}
-                </span>
-              ) : mode === "signin" ? (
-                "Sign In with Email"
-              ) : (
-                "Create Account"
-              )}
-            </Button>
-          </form>
+            {/* Quick OAuth Selection Modal / Card when "Change method" clicked */}
+            {showOAuthModal && (
+              <div className="mt-4 rounded-xl border border-white/15 bg-[#141824] p-3.5 space-y-2 animate-fade-in">
+                <p className="text-[11px] font-medium text-slate-400 mb-2">Continue with third-party authentication:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOAuth("github")}
+                    disabled={Boolean(busyProvider)}
+                    className="flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 py-2 px-3 text-xs font-semibold text-white transition-all"
+                  >
+                    <Github className="h-4 w-4" />
+                    <span>GitHub</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOAuth("google")}
+                    disabled={Boolean(busyProvider)}
+                    className="flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 py-2 px-3 text-xs font-semibold text-white transition-all"
+                  >
+                    <GoogleIcon className="h-4 w-4" />
+                    <span>Google</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
-          {/* Security Guarantee */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-500">
-            <Lock className="h-3 w-3 text-slate-400" />
-            <span>End-to-end encrypted repository credentials</span>
+          {/* Footer security note */}
+          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-2">
+            <Shield className="h-3 w-3 text-emerald-400" />
+            <span>End-to-end encrypted repository credentials.</span>
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="w-full px-6 py-6 text-center text-xs text-slate-500">
-        <div className="flex items-center justify-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
-          <span>Buggers uses read-only tokens for pull request risk triage.</span>
+        {/* Right Photo Panel (Matching Image 2) */}
+        <div
+          className="relative hidden md:block md:col-span-5 bg-cover bg-center overflow-hidden"
+          style={{ backgroundImage: `url('/auth-bg.jpg')` }}
+        >
+          {/* Subtle dark gradient overlay blending into left panel */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#181d29] via-transparent to-black/40" />
+
+          {/* Organic soft curved boundary line on left edge */}
+          <svg
+            className="absolute left-0 top-0 bottom-0 h-full w-12 text-[#181d29] pointer-events-none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,0 Q30,50 0,100 L0,0 Z"
+              fill="currentColor"
+            />
+          </svg>
+
+          {/* Bottom-right stylized watermark logo matching Image 2 */}
+          <div className="absolute bottom-8 right-8 text-white/90 font-black tracking-tighter text-2xl flex items-center gap-1 select-none pointer-events-none drop-shadow-md">
+            <span>.AW</span>
+          </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
