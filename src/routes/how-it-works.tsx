@@ -54,6 +54,9 @@ export function HowItWorksPage() {
               <Sparkles className="h-3.5 w-3.5 text-amber-400" />
               <span>How it works</span>
             </Link>
+            <Link to="/docs" className="transition-colors duration-200 hover:text-white">
+              Docs
+            </Link>
           </nav>
 
           <Link
@@ -247,6 +250,9 @@ export function HowItWorksPage() {
           <div className="flex items-center gap-6">
             <Link to="/" className="hover:text-white transition-colors duration-200">
               Home
+            </Link>
+            <Link to="/docs" className="hover:text-white transition-colors duration-200">
+              Docs
             </Link>
             <Link to="/auth" className="hover:text-white transition-colors duration-200">
               Sign In
