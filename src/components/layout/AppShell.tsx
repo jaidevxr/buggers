@@ -89,7 +89,7 @@ export function AppShell() {
         </aside>
         <main className="min-w-0 flex-1 px-6 py-6 lg:px-8 xl:px-10">
           <ErrorBoundary>
-            <div className="page-container w-full">
+            <div key={pathname} className="page-container w-full">
               <Outlet />
             </div>
           </ErrorBoundary>

@@ -151,8 +151,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        {/* Silky smooth animated page transition between routes */}
-        <div key={pathname} className="page-transition min-h-screen w-full">
+        <div className="min-h-screen w-full">
           <Outlet />
         </div>
         <Toaster richColors position="top-right" />

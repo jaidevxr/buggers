@@ -10,7 +10,6 @@ import {
   Mail,
   User,
   Shield,
-  Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BugMark } from "@/components/brand/BugMark";
@@ -73,28 +72,6 @@ export function AuthPage() {
       if (data.session) navigate({ to: "/dashboard" });
     });
   }, [navigate]);
-
-  async function handleDemoLogin() {
-    setBusyProvider("email");
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: "demo@buggers.com",
-        password: "BuggersDemo2026!",
-      });
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-      if (data.session) {
-        toast.success("Welcome! Logged in as demo reviewer.");
-        navigate({ to: "/dashboard" });
-      }
-    } catch {
-      toast.error("Failed to sign in with demo credentials.");
-    } finally {
-      setBusyProvider(null);
-    }
-  }
 
   async function handleOAuth(provider: "github" | "google") {
     setBusyProvider(provider);
@@ -250,17 +227,6 @@ export function AuthPage() {
                 <GoogleIcon className="h-4 w-4" />
               )}
               <span>{busyProvider === "google" ? "Connecting to Google…" : "Continue with Google"}</span>
-            </button>
-
-            {/* Instant Demo Sign-In (Guaranteed instant entry to Dashboard) */}
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              disabled={Boolean(busyProvider)}
-              className="group relative flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2.5 text-xs font-semibold text-amber-200 transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50 shadow-sm"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span>1-Click Instant Demo Login</span>
             </button>
           </div>
 
