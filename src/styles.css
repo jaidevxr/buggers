@@ -199,6 +199,7 @@
 
   html {
     color-scheme: dark;
+    background-color: #07090e;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
   }
@@ -227,7 +228,7 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background-color: #07090e;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -533,23 +534,79 @@ a {
   background-size: 100% 4px;
 }
 
+/* ==========================================================================
+   Coordinated, Butter-Smooth Page Transition Motion System
+   180ms - 220ms subtle cross-fade with zero layout jumps, shaking, or jitter
+   ========================================================================== */
+
+/* Browser View Transitions API configuration */
+::view-transition-group(root) {
+  animation-duration: 0.20s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root) {
+  animation: 0.16s cubic-bezier(0.16, 1, 0.3, 1) both buggersViewTransitionFadeOut;
+}
+
+::view-transition-new(root) {
+  animation: 0.20s cubic-bezier(0.16, 1, 0.3, 1) both buggersViewTransitionFadeIn;
+}
+
+@keyframes buggersViewTransitionFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes buggersViewTransitionFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Anchored header: keeps floating pill perfectly stationary across page navigations */
+.public-header-pill {
+  view-transition-name: public-header;
+}
+
+::view-transition-group(public-header) {
+  animation-duration: 0.18s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(public-header),
+::view-transition-new(public-header) {
+  animation: none;
+}
+
+/* Fallback subtle page transition for environments without view transitions */
 @keyframes pageFadeIn {
   0% {
-    opacity: 0;
-    transform: translateY(4px);
+    opacity: 0.9;
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .page-transition {
-  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: opacity, transform;
+  animation: pageFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {
@@ -558,4 +615,5 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
 

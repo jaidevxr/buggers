@@ -156,7 +156,9 @@ export function AuthPage() {
           </Link>
           <div className="flex items-center gap-6 text-xs font-medium text-slate-300">
             <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
+            <Link to="/how-it-works" className="hover:text-white transition-colors duration-200">How it works</Link>
             <Link to="/docs" className="hover:text-white transition-colors duration-200">Docs</Link>
+            <Link to="/about" className="hover:text-white transition-colors duration-200">About</Link>
           </div>
         </header>
 

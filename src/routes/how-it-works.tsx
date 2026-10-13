@@ -11,6 +11,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/how-it-works")({
@@ -38,35 +39,8 @@ export const Route = createFileRoute("/how-it-works")({
 export function HowItWorksPage() {
   return (
     <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Floating Pill Header */}
-      <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
-        <div className="flex items-center gap-6 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200">
-          <Link to="/" className="flex items-center gap-2.5 font-semibold text-white transition-opacity hover:opacity-85">
-            <BugMark className="h-5 w-5 text-white fill-white" />
-            <span className="tracking-tight text-sm font-bold text-white">Buggers</span>
-          </Link>
-
-          <nav className="flex items-center gap-5 text-slate-300 font-medium">
-            <Link to="/" className="transition-colors duration-200 hover:text-white">
-              Home
-            </Link>
-            <Link to="/how-it-works" className="text-white font-semibold flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span>How it works</span>
-            </Link>
-            <Link to="/docs" className="transition-colors duration-200 hover:text-white">
-              Docs
-            </Link>
-          </nav>
-
-          <Link
-            to="/auth"
-            className="rounded-full bg-white text-black px-5 py-1.5 text-xs font-semibold hover:bg-slate-200 transition-all duration-200 shadow-xs active:scale-[0.985]"
-          >
-            Login
-          </Link>
-        </div>
-      </header>
+      {/* Unified Public Floating Pill Header */}
+      <PublicHeader />
 
       {/* Main Content Hero - flex-1 ensures it pushes the footer to the bottom */}
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">

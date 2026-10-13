@@ -14,6 +14,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/")({
@@ -54,47 +55,8 @@ export function Landing() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Floating Pill Header — Clean, focused, official BugMark, Docs & How it works */}
-      <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
-        <div className="flex items-center gap-6 sm:gap-8 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200 transition-all duration-300">
-          {/* Official Buggers Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 font-semibold text-white transition-opacity duration-200 hover:opacity-85"
-          >
-            <BugMark className="h-5 w-5 text-white fill-white" />
-            <span className="tracking-tight text-sm font-bold text-white">
-              Buggers
-            </span>
-          </Link>
-
-          {/* Useful Header Navigation */}
-          <nav className="flex items-center gap-6 text-slate-300 font-medium">
-            <Link
-              to="/how-it-works"
-              className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors duration-200"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
-              <span>How it works</span>
-            </Link>
-            <Link
-              to="/docs"
-              className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors duration-200"
-            >
-              <BookOpen className="h-3.5 w-3.5 text-zinc-500" />
-              <span>Docs</span>
-            </Link>
-          </nav>
-
-          {/* Login Pill Button */}
-          <Link
-            to="/auth"
-            className="rounded-full bg-white text-black px-5 py-1.5 text-xs font-semibold hover:bg-slate-200 transition-all duration-200 shadow-xs active:scale-[0.985]"
-          >
-            Login
-          </Link>
-        </div>
-      </header>
+      {/* Unified Public Floating Pill Header */}
+      <PublicHeader />
 
       {/* Main Full-Bleed Atmospheric Night Studio Hero Section (4K Uncompressed Background) */}
       <section
