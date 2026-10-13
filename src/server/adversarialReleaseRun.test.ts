@@ -152,20 +152,31 @@ describe("Adversarial Scenario C: Partial Batch Remediation Accounting", () => {
 
 describe("Adversarial Scenario D: Webhook Signature & Duplicate Delivery Defense", () => {
   it("rejects webhook requests with forged or invalid HMAC signature when secret is configured", async () => {
-    const req = new Request("http://localhost:8080/api/webhook/github", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-GitHub-Event": "pull_request",
-        "X-Hub-Signature-256": "sha256=0000000000000000000000000000000000000000000000000000000000000000",
-      },
-      body: JSON.stringify({ action: "opened" }),
-    });
+    const originalSecret = process.env["GITHUB_WEBHOOK_SECRET"];
+    process.env["GITHUB_WEBHOOK_SECRET"] = "test-adversarial-secret-32-bytes";
 
-    const res = await handleGitHubWebhook(req);
-    expect(res.status).toBe(401);
-    const body = await res.json();
-    expect(body.error).toBe("Invalid webhook signature");
+    try {
+      const req = new Request("http://localhost:8080/api/webhook/github", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-GitHub-Event": "pull_request",
+          "X-Hub-Signature-256": "sha256=0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        body: JSON.stringify({ action: "opened" }),
+      });
+
+      const res = await handleGitHubWebhook(req);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body.error).toBe("Invalid webhook signature");
+    } finally {
+      if (originalSecret) {
+        process.env["GITHUB_WEBHOOK_SECRET"] = originalSecret;
+      } else {
+        delete process.env["GITHUB_WEBHOOK_SECRET"];
+      }
+    }
   });
 
   it("handles ping events cleanly without error", async () => {
