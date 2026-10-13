@@ -38,3 +38,4 @@ dist-ssr
 # Scratch & local temps
 scratch/
 supabase/.temp/
+.vercel
