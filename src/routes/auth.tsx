@@ -141,9 +141,9 @@ export function AuthPage() {
   return (
     <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6 lg:p-10 antialiased selection:bg-white/20">
       {/* Outer Card matching the reference side-by-side format */}
-      <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0e121a] shadow-[0_24px_70px_rgba(0,0,0,0.85)] grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+      <div className="w-full max-w-4xl lg:max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0e121a] shadow-[0_24px_70px_rgba(0,0,0,0.85)] grid grid-cols-1 md:grid-cols-12 min-h-[600px]">
         {/* Left Form Column */}
-        <div className="flex flex-col justify-between p-6 sm:p-10 lg:p-12 col-span-12 lg:col-span-6 xl:col-span-6">
+        <div className="flex flex-col justify-between p-6 sm:p-8 lg:p-12 col-span-12 md:col-span-6 lg:col-span-6">
           {/* Top Brand & Nav Header */}
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2.5 font-semibold text-white hover:opacity-85 transition-opacity">
@@ -335,7 +335,7 @@ export function AuthPage() {
 
         {/* Right Atmospheric Artwork Column */}
         <div
-          className="hidden lg:block lg:col-span-6 xl:col-span-6 relative bg-cover bg-center overflow-hidden min-h-[640px]"
+          className="hidden md:block md:col-span-6 lg:col-span-6 relative bg-cover bg-center overflow-hidden min-h-[560px]"
           style={{ backgroundImage: `url('/landing-bg.png')` }}
         >
           {/* Subtle natural dark gradient on edge */}
