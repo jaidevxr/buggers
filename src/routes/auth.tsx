@@ -12,6 +12,7 @@ import {
   Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PublicHeader } from "@/components/layout/PublicHeader";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/auth")({
@@ -153,22 +154,11 @@ export function AuthPage() {
 
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
-        {/* Top Header across the top */}
-        <header className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pt-6 sm:pt-8">
-          <Link to="/" className="flex items-center gap-2.5 font-semibold text-white hover:opacity-85 transition-opacity">
-            <BugMark className="h-5 w-5 text-white fill-white" />
-            <span className="text-sm font-bold tracking-tight">Buggers</span>
-          </Link>
-          <div className="flex items-center gap-6 text-xs font-medium text-slate-300">
-            <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
-            <Link to="/how-it-works" className="hover:text-white transition-colors duration-200">How it works</Link>
-            <Link to="/docs" className="hover:text-white transition-colors duration-200">Docs</Link>
-            <Link to="/about" className="hover:text-white transition-colors duration-200">About</Link>
-          </div>
-        </header>
+        {/* Floating Island Header — Stays persistent across signup/login too */}
+        <PublicHeader />
 
         {/* Symmetrical Centered Form Card */}
-        <main className="w-full flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+        <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
           <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_25px_65px_rgba(0,0,0,0.85)] space-y-5 transition-all duration-300">
             <div className="text-center space-y-1">
               <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">

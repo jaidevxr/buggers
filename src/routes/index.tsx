@@ -20,17 +20,17 @@ import { BugMark } from "@/components/brand/BugMark";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Buggers — Review with ease" },
+      { title: "Buggers — Catch critical issues before they reach production" },
       {
         name: "description",
         content:
-          "Review smarter with AI that understands your repository. So you can take a breath.",
+          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.",
       },
-      { property: "og:title", content: "Buggers — Review with ease" },
+      { property: "og:title", content: "Buggers — Catch critical issues before they reach production" },
       {
         property: "og:description",
         content:
-          "AI-assisted code review and bug triage powered by your GitHub repository history.",
+          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -91,15 +91,24 @@ export function Landing() {
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          {/* Main Heading: Buggers */}
-          <h1 className="font-display text-6xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
-            Buggers
+          {/* Category Pill Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-1 text-[11px] font-mono tracking-wider text-slate-300 shadow-sm backdrop-blur-md mb-6">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 inline-block animate-pulse" />
+            <span className="uppercase text-[10px] tracking-widest text-slate-300">Automated Code Review</span>
+          </div>
+
+          {/* Main Headline */}
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.12] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+            Catch critical issues <br />
+            <span className="font-serif italic font-normal text-amber-300/95 tracking-wide px-1">
+              before
+            </span>{" "}
+            they reach production
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 max-w-xl mx-auto text-base sm:text-lg text-slate-300 font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
-            Review smarter with AI that understands your repository. <br />
-            So you can take a breath.
+          <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-slate-300 font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.
           </p>
 
           {/* Action Buttons with silky smooth micro-interactions */}
