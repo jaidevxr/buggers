@@ -139,208 +139,205 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 flex flex-col lg:flex-row relative overflow-hidden antialiased selection:bg-white/20">
-      {/* Left Form Column - Full screen height, docked on the side */}
-      <div className="w-full lg:w-[460px] xl:w-[500px] 2xl:w-[540px] shrink-0 min-h-screen flex flex-col justify-between p-6 sm:p-8 lg:p-12 z-20 bg-[#0c1017] border-r border-white/10 shadow-[10px_0_40px_rgba(0,0,0,0.65)]">
-          {/* Top Brand & Nav Header */}
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2.5 font-semibold text-white hover:opacity-85 transition-opacity">
-              <BugMark className="h-5 w-5 text-white fill-white" />
-              <span className="text-sm font-bold tracking-tight">Buggers</span>
-            </Link>
-            <div className="flex items-center gap-4 text-xs font-medium text-slate-400">
-              <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
-              <Link to="/docs" className="hover:text-white transition-colors duration-200">Docs</Link>
-            </div>
+    <div
+      className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-cover bg-center bg-no-repeat text-slate-100 flex flex-col justify-between"
+      style={{ backgroundImage: `url('/landing-bg.png')` }}
+    >
+      {/* Overall backdrop tint: subtly darker on the side where the form sits, preserving the full background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/92 via-[#07090e]/65 to-black/20 pointer-events-none" />
+
+      {/* Main Content Layout */}
+      <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
+        {/* Top Header across the top */}
+        <header className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pt-6 sm:pt-8">
+          <Link to="/" className="flex items-center gap-2.5 font-semibold text-white hover:opacity-85 transition-opacity">
+            <BugMark className="h-5 w-5 text-white fill-white" />
+            <span className="text-sm font-bold tracking-tight">Buggers</span>
+          </Link>
+          <div className="flex items-center gap-6 text-xs font-medium text-slate-300">
+            <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
+            <Link to="/docs" className="hover:text-white transition-colors duration-200">Docs</Link>
           </div>
+        </header>
 
-          {/* Form Content Area */}
-          <div className="my-6 space-y-5">
-            <div>
-              <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
-                START FOR FREE
-              </span>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                {mode === "signin" ? (
-                  <>Welcome back<span className="text-[#0084ff]">.</span></>
-                ) : (
-                  <>Create new account<span className="text-[#0084ff]">.</span></>
-                )}
-              </h1>
-              <p className="mt-1.5 text-xs text-slate-400">
-                {mode === "signin" ? "Need an account? " : "Already a member? "}
-                <button
-                  type="button"
-                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                  className="text-[#0084ff] font-semibold hover:underline cursor-pointer transition-colors duration-200"
-                >
-                  {mode === "signin" ? "Sign Up" : "Log In"}
-                </button>
-              </p>
-            </div>
-
-            {/* Symmetrical Social OAuth Buttons */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => handleOAuth("github")}
-                disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
-              >
-                {busyProvider === "github" ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-                ) : (
-                  <Github className="h-4 w-4 text-white" />
-                )}
-                <span className="truncate">{busyProvider === "github" ? "Connecting…" : "GitHub"}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleOAuth("google")}
-                disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
-              >
-                {busyProvider === "google" ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-                ) : (
-                  <GoogleIcon className="h-4 w-4" />
-                )}
-                <span className="truncate">{busyProvider === "google" ? "Connecting…" : "Google"}</span>
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="relative flex items-center justify-center">
-              <div className="w-full border-t border-white/10" />
-              <span className="absolute bg-[#0e121a] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                Or continue with email
-              </span>
-            </div>
-
-            {/* Form Fields */}
-            <form className="space-y-3" onSubmit={handleSubmit}>
-              {mode === "signup" && (
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-xl border border-white/10 bg-[#151923] px-3.5 py-2 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                    <label className="block text-[10px] font-medium text-slate-400">First name</label>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <input
-                        type="text"
-                        required
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="Michał"
-                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-[#151923] px-3.5 py-2 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                    <label className="block text-[10px] font-medium text-slate-400">Last name</label>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <input
-                        type="text"
-                        required
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Masiak"
-                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Email Input */}
-              <div className="rounded-xl border border-white/10 bg-[#151923] px-3.5 py-2 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                <label className="block text-[10px] font-medium text-slate-400">Email</label>
-                <div className="flex items-center justify-between mt-0.5">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
-                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                  />
-                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                </div>
-              </div>
-
-              {/* Password Input */}
-              <div className="rounded-xl border border-white/10 bg-[#151923] px-3.5 py-2 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                <label className="block text-[10px] font-medium text-slate-400">Password</label>
-                <div className="flex items-center justify-between mt-0.5">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
-                  >
-                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Action Buttons Row */}
-              <div className="pt-2 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                  className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-xs font-medium text-slate-300 transition-all duration-200 active:scale-[0.985] cursor-pointer"
-                >
-                  {mode === "signin" ? "Create account" : "Log In"}
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={Boolean(busyProvider)}
-                  className="flex-1 rounded-xl bg-[#0084ff] hover:bg-[#0074e0] text-white py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {busyProvider === "email" ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Processing…</span>
-                    </>
-                  ) : (
-                    <span>{mode === "signin" ? "Sign In" : "Create account"}</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Bottom Security Note */}
-          <div className="flex items-center justify-between text-[11px] text-slate-500 pt-3 border-t border-white/5">
-            <span className="flex items-center gap-1.5">
-              <Shield className="h-3 w-3 text-emerald-400" />
-              <span>Encrypted repository credentials</span>
+        {/* Center/Side Form - Comfortably sized and spacious, NOT compressed against left */}
+        <div className="w-full max-w-xl lg:max-w-2xl px-6 sm:px-12 lg:px-20 py-8 my-auto space-y-6">
+          <div>
+            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+              START FOR FREE
             </span>
-            <span>&copy; 2026 Buggers</span>
+            <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              {mode === "signin" ? (
+                <>Welcome back<span className="text-[#0084ff]">.</span></>
+              ) : (
+                <>Create new account<span className="text-[#0084ff]">.</span></>
+              )}
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-slate-300">
+              {mode === "signin" ? "Need an account? " : "Already a member? "}
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                className="text-[#0084ff] font-semibold hover:underline cursor-pointer transition-colors duration-200"
+              >
+                {mode === "signin" ? "Sign Up" : "Log In"}
+              </button>
+            </p>
           </div>
+
+          {/* Symmetrical Social OAuth Buttons */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => handleOAuth("github")}
+              disabled={Boolean(busyProvider)}
+              className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50 backdrop-blur-xs"
+            >
+              {busyProvider === "github" ? (
+                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+              ) : (
+                <Github className="h-4 w-4 text-white" />
+              )}
+              <span className="truncate">{busyProvider === "github" ? "Connecting…" : "GitHub"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleOAuth("google")}
+              disabled={Boolean(busyProvider)}
+              className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50 backdrop-blur-xs"
+            >
+              {busyProvider === "google" ? (
+                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+              ) : (
+                <GoogleIcon className="h-4 w-4" />
+              )}
+              <span className="truncate">{busyProvider === "google" ? "Connecting…" : "Google"}</span>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative flex items-center justify-center">
+            <div className="w-full border-t border-white/10" />
+            <span className="absolute bg-[#0c1017]/80 backdrop-blur-sm px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              Or continue with email
+            </span>
+          </div>
+
+          {/* Form Fields */}
+          <form className="space-y-3.5" onSubmit={handleSubmit}>
+            {mode === "signup" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                  <label className="block text-[10px] font-medium text-slate-400">First name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Michał"
+                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                  <label className="block text-[10px] font-medium text-slate-400">Last name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Masiak"
+                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+              <label className="block text-[10px] font-medium text-slate-400">Email</label>
+              <div className="flex items-center justify-between mt-0.5">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                />
+                <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+              <label className="block text-[10px] font-medium text-slate-400">Password</label>
+              <div className="flex items-center justify-between mt-0.5">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
+                >
+                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons Row */}
+            <div className="pt-2 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                className="rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-medium text-slate-300 transition-all duration-200 active:scale-[0.985] cursor-pointer"
+              >
+                {mode === "signin" ? "Create account" : "Log In"}
+              </button>
+
+              <button
+                type="submit"
+                disabled={Boolean(busyProvider)}
+                className="flex-1 rounded-xl bg-[#0084ff] hover:bg-[#0074e0] text-white py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {busyProvider === "email" ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Processing…</span>
+                  </>
+                ) : (
+                  <span>{mode === "signin" ? "Sign In" : "Create account"}</span>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
 
-      {/* Right Full-Screen Background - Pure artwork, NO FADE overlays as requested */}
-      <div
-        className="hidden lg:flex flex-1 min-h-screen relative bg-cover bg-center bg-no-repeat items-end justify-end p-8"
-        style={{ backgroundImage: `url('/landing-bg.png')` }}
-      >
-        {/* Discreet Watermark Branding */}
-        <div className="flex items-center gap-2 text-white/50 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
-          <BugMark className="h-4 w-4 text-white/50 fill-white/50" />
-          <span className="font-semibold tracking-widest text-[10px]">BUGGERS</span>
-        </div>
+        {/* Bottom Footer Row */}
+        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <Shield className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Encrypted repository credentials</span>
+          </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-white/50 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+              <BugMark className="h-3.5 w-3.5 text-white/50 fill-white/50" />
+              <span className="font-semibold tracking-widest text-[10px]">BUGGERS</span>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
