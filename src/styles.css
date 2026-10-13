@@ -54,7 +54,12 @@
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
 
+  --color-primary-soft: var(--primary-soft);
+  --color-surface-strong: var(--surface-strong);
   --color-diff-add: var(--diff-add);
+  --color-diff-add-soft: var(--diff-add-soft);
+  --color-diff-del: var(--diff-del);
+  --color-diff-del-soft: var(--diff-del-soft);
   --color-diff-add-foreground: var(--diff-add-foreground);
   --color-diff-remove: var(--diff-remove);
   --color-diff-remove-foreground: var(--diff-remove-foreground);
@@ -118,7 +123,12 @@
   --info: oklch(0.55 0.17 255);
   --info-soft: oklch(0.955 0.03 255);
 
-  --diff-add: oklch(0.96 0.045 152);
+  --surface-strong: oklch(0.948 0.008 250);
+  --primary-soft: oklch(0.955 0.027 258);
+  --diff-add: oklch(0.48 0.14 152);
+  --diff-add-soft: oklch(0.96 0.045 152);
+  --diff-del: oklch(0.52 0.18 25);
+  --diff-del-soft: oklch(0.96 0.035 25);
   --diff-add-foreground: oklch(0.4 0.11 152);
   --diff-remove: oklch(0.96 0.035 25);
   --diff-remove-foreground: oklch(0.45 0.15 25);
@@ -243,9 +253,20 @@
     transition-duration: 0.1s;
   }
 
-  .dotted-grid {
+  .dotted-grid,
+  .dotted-surface {
     background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-size: 22px 22px;
+  }
+
+  .card-hover {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in oklch, var(--color-primary) 35%, var(--color-border));
   }
 
   .github-grid {
