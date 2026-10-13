@@ -462,6 +462,46 @@ a {
   animation: pulseGlow 5s ease-in-out infinite;
 }
 
+@keyframes floatMote {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-16px) translateX(8px);
+    opacity: 0.8;
+  }
+}
+
+.animate-mote-1 {
+  animation: floatMote 5s ease-in-out infinite;
+}
+
+.animate-mote-2 {
+  animation: floatMote 7s ease-in-out 1.5s infinite;
+}
+
+.animate-mote-3 {
+  animation: floatMote 6s ease-in-out 3s infinite;
+}
+
+@keyframes scanlineFlicker {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+.scanline-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.35) 50%
+  );
+  background-size: 100% 4px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
