@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   BrainCircuit,
@@ -38,28 +38,40 @@ export const Route = createFileRoute("/")({
 
 export function Landing() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
+
+  // Very subtle cursor ambient drift (pure natural warmth, no neon, no harsh glow)
+  useEffect(() => {
+    function handleMouseMove(e: MouseEvent) {
+      const x = Math.round((e.clientX / window.innerWidth) * 100);
+      const y = Math.round((e.clientY / window.innerHeight) * 100);
+      setMousePos({ x, y });
+    }
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#f4f6f8] text-slate-900 antialiased overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden select-none">
       {/* Floating Pill Header — Clean, focused, only useful options */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
-        <div className="flex items-center gap-5 sm:gap-7 rounded-full bg-white/95 backdrop-blur-md px-5 py-2 sm:px-6 sm:py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.12)] border border-black/5 text-xs font-medium text-slate-700">
+        <div className="flex items-center gap-5 sm:gap-7 rounded-full bg-black/70 backdrop-blur-md px-5 py-2 sm:px-6 sm:py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 text-xs font-medium text-slate-200">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-semibold text-slate-900 transition-opacity hover:opacity-85">
-            <div className="h-4 w-4 rounded-full border-[2.5px] border-orange-500 bg-orange-100 flex items-center justify-center">
-              <div className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+          <Link to="/" className="flex items-center gap-2 font-semibold text-white transition-opacity hover:opacity-85">
+            <div className="h-4 w-4 rounded-full border-[2px] border-amber-500/80 bg-amber-500/20 flex items-center justify-center">
+              <div className="h-1.5 w-1.5 rounded-full bg-amber-400" />
             </div>
-            <span className="tracking-tight text-sm font-bold text-slate-900">Buggers</span>
+            <span className="tracking-tight text-sm font-bold text-white">Buggers</span>
           </Link>
 
           {/* Useful Header Options Only */}
-          <nav className="flex items-center gap-5 text-slate-700 font-medium">
+          <nav className="flex items-center gap-5 text-slate-300 font-medium">
             <button
               type="button"
               onClick={() => setShowHowItWorks(true)}
-              className="flex items-center gap-1.5 transition-colors hover:text-black font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 transition-colors hover:text-white font-semibold cursor-pointer"
             >
-              <Sparkles className="h-3.5 w-3.5 text-orange-500" />
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
               <span>How it works</span>
             </button>
 
@@ -67,7 +79,7 @@ export function Landing() {
               href="https://github.com/jaidevxr/buggers"
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:flex items-center gap-1.5 transition-colors hover:text-black"
+              className="hidden sm:flex items-center gap-1.5 transition-colors hover:text-white"
             >
               <Github className="h-3.5 w-3.5" />
               <span>GitHub</span>
@@ -77,21 +89,35 @@ export function Landing() {
           {/* Login Pill Button */}
           <Link
             to="/auth"
-            className="rounded-full bg-[#15171c] text-white px-5 py-1.5 text-xs font-semibold hover:bg-black transition-colors shadow-xs active:scale-[0.985]"
+            className="rounded-full bg-white text-black px-5 py-1.5 text-xs font-semibold hover:bg-slate-200 transition-colors shadow-xs active:scale-[0.985]"
           >
             Login
           </Link>
         </div>
       </header>
 
-      {/* Main Full-Bleed Scenic Hero Section (Matching Image 1) */}
+      {/* Main Full-Bleed Atmospheric Night Studio Hero Section */}
       <section
         id="hero"
         className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-between pt-32 pb-10 px-4 sm:px-6"
         style={{ backgroundImage: `url('/landing-bg.jpg')` }}
       >
-        {/* Soft atmospheric gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/20 pointer-events-none" />
+        {/* Soft atmospheric night vignette overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
+
+        {/* Natural Ambient Lamp Breathing Animation (Centered near the warm desk lamp) */}
+        <div className="pointer-events-none absolute left-[40%] bottom-[30%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
+
+        {/* Subtle, Organic Lakeside Light Twinkling (Distant cottage reflections on the water) */}
+        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1" />
+        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2" />
+        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3" />
+
+        {/* Gentle, Natural Warm Filament Accent Following Cursor (Zero neon, zero harsh bloom) */}
+        <div
+          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
+          style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
+        />
 
         {/* Top Spacer */}
         <div className="relative z-10" />
@@ -99,17 +125,18 @@ export function Landing() {
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-black/5 animate-fade-in">
-            <span>AI Code Review 2026🚀</span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-slate-200 shadow-lg border border-white/10 animate-fade-in">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span>AI Code Review 2026</span>
           </div>
 
           {/* Heading */}
-          <h1 className="mt-7 font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-slate-900 drop-shadow-xs">
+          <h1 className="mt-7 font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
             Review with ease.
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-5 max-w-xl mx-auto text-sm sm:text-base text-slate-800 font-normal leading-relaxed drop-shadow-xs">
+          <p className="mt-5 max-w-xl mx-auto text-sm sm:text-base text-slate-300 font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
             Review smarter with AI that understands your repository. <br />
             So you can take a breath.
           </p>
@@ -118,7 +145,7 @@ export function Landing() {
           <div className="mt-9 flex items-center justify-center gap-4">
             <Link
               to="/auth"
-              className="rounded-full bg-white text-slate-900 px-6 py-2.5 sm:px-7 sm:py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-black/10 hover:bg-slate-50 transition-all active:scale-[0.985] flex items-center gap-1.5"
+              className="rounded-full bg-white text-black px-6 py-2.5 sm:px-7 sm:py-3 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-all active:scale-[0.985] flex items-center gap-1.5"
             >
               <span>Get Started</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -127,7 +154,7 @@ export function Landing() {
             <button
               type="button"
               onClick={() => setShowHowItWorks(true)}
-              className="rounded-full bg-black/10 backdrop-blur-md px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium text-slate-900 hover:bg-white/30 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="rounded-full bg-black/40 backdrop-blur-md px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium text-white hover:bg-black/60 border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Play className="h-3 w-3 fill-current" />
               <span>See How it Works</span>
@@ -140,7 +167,7 @@ export function Landing() {
           <button
             type="button"
             onClick={() => setShowHowItWorks(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-black/25 backdrop-blur-md px-4 py-1.5 text-[11px] font-mono tracking-widest text-white/95 border border-white/20 shadow-md hover:bg-black/35 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-md px-4 py-1.5 text-[11px] font-mono tracking-widest text-slate-300 border border-white/10 shadow-lg hover:bg-black/70 hover:text-white transition-all cursor-pointer"
           >
             <span>HOW IT WORKS</span>
             <span>↓</span>
@@ -150,12 +177,12 @@ export function Landing() {
 
       {/* Interactive "How It Works" Overlay (Shows when clicked from header or hero) */}
       {showHowItWorks && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
           <div className="relative w-full max-w-3xl rounded-2xl bg-[#0d1117] border border-white/15 text-slate-100 shadow-2xl overflow-hidden my-auto animate-fade-in">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-[#161b22] px-6 py-4">
               <div className="flex items-center gap-2.5">
-                <div className="h-3 w-3 rounded-full bg-orange-500 animate-pulse" />
+                <div className="h-3 w-3 rounded-full bg-amber-400 animate-pulse" />
                 <h2 className="font-display font-bold text-sm sm:text-base text-white">
                   How Buggers Works: Pull Request Triage
                 </h2>
@@ -175,7 +202,7 @@ export function Landing() {
               {/* 4-Step Process Strip */}
               <div className="grid gap-3 sm:grid-cols-4 font-mono text-xs">
                 <div className="rounded-xl border border-white/10 bg-[#161b22] p-3">
-                  <span className="text-orange-400 font-semibold">01. Webhook</span>
+                  <span className="text-amber-400 font-semibold">01. Webhook</span>
                   <p className="mt-1 text-[11px] text-slate-400">PR opens on your repo & triggers analysis in &lt;1s.</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-[#161b22] p-3">
@@ -249,11 +276,11 @@ export function Landing() {
         </div>
       )}
 
-      {/* Minimal Footer */}
-      <footer className="bg-slate-900 py-10 px-4 sm:px-6 text-xs text-slate-400">
+      {/* Minimal Dark Footer */}
+      <footer className="bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 border-t border-white/10">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-white font-medium">
-            <div className="h-3 w-3 rounded-full border-2 border-orange-500 bg-orange-100" />
+          <div className="flex items-center gap-2 text-slate-300 font-medium">
+            <div className="h-3 w-3 rounded-full border border-amber-500/80 bg-amber-500/20" />
             <span>Buggers</span>
             <span className="text-slate-500 text-[11px]">&copy; 2026 Buggers, Inc. All rights reserved.</span>
           </div>

@@ -402,6 +402,50 @@ a {
   }
 }
 
+@keyframes softLampBreathe {
+  0%, 100% {
+    opacity: 0.16;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.24;
+    transform: scale(1.02);
+  }
+  55% {
+    opacity: 0.14;
+    transform: scale(0.99);
+  }
+  75% {
+    opacity: 0.22;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes softTwinkle {
+  0%, 100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.animate-lamp-breathe {
+  animation: softLampBreathe 6s ease-in-out infinite;
+}
+
+.animate-soft-twinkle-1 {
+  animation: softTwinkle 4s ease-in-out infinite;
+}
+
+.animate-soft-twinkle-2 {
+  animation: softTwinkle 5.5s ease-in-out 1.2s infinite;
+}
+
+.animate-soft-twinkle-3 {
+  animation: softTwinkle 3.5s ease-in-out 2.4s infinite;
+}
+
 .animate-float-slow {
   animation: floatSlow 6s ease-in-out infinite;
 }
@@ -427,3 +471,4 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
