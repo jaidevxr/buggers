@@ -75,7 +75,7 @@ export function DocsPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased selection:bg-white/20">
+    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased selection:bg-white/20 flex flex-col justify-between">
       {/* Floating Pill Header */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
         <div className="flex items-center gap-6 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200">
@@ -109,8 +109,8 @@ export function DocsPage() {
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      {/* Main Container - flex-1 pushes footer to the bottom */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full flex-1 flex flex-col">
         {/* Docs Header */}
         <div className="mb-8 pb-6 border-b border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -139,8 +139,8 @@ export function DocsPage() {
           </div>
         </div>
 
-        {/* Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Two-Column Layout - flex-1 ensures it fills available space */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-1">
           {/* Left Sidebar */}
           <aside className="lg:col-span-4 sticky top-28 space-y-4">
             <div className="rounded-2xl bg-[#11141e] border border-white/10 p-3 shadow-lg">
@@ -168,8 +168,8 @@ export function DocsPage() {
             </div>
           </aside>
 
-          {/* Right Main Content */}
-          <main className="lg:col-span-8 space-y-8">
+          {/* Right Main Content - consistent min-height prevents layout shifts when switching topics */}
+          <main className="lg:col-span-8 space-y-8 min-h-[600px] flex flex-col">
             {/* Quickstart */}
             {activeSection === "quickstart" && (
               <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
@@ -500,8 +500,8 @@ jobs:
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500">
+      {/* Footer - Pinned to bottom */}
+      <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

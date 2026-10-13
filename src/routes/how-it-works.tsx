@@ -37,7 +37,7 @@ export const Route = createFileRoute("/how-it-works")({
 
 export function HowItWorksPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
+    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Floating Pill Header */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
         <div className="flex items-center gap-6 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200">
@@ -68,8 +68,8 @@ export function HowItWorksPage() {
         </div>
       </header>
 
-      {/* Main Content Hero */}
-      <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto">
+      {/* Main Content Hero - flex-1 ensures it pushes the footer to the bottom */}
+      <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
         <div className="text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-xs font-medium text-slate-300">
@@ -238,8 +238,8 @@ export function HowItWorksPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500">
+      {/* Footer - Pinned to bottom */}
+      <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

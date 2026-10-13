@@ -53,7 +53,7 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
+    <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Floating Pill Header — Clean, focused, official BugMark, Docs & How it works */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
         <div className="flex items-center gap-6 sm:gap-8 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200 transition-all duration-300">
@@ -499,8 +499,8 @@ ignore:
         </div>
       </section>
 
-      {/* Minimal Dark Footer */}
-      <footer className="bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 border-t border-white/10">
+      {/* Minimal Dark Footer - Pinned to bottom */}
+      <footer className="bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 border-t border-white/10 mt-auto">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-slate-300 font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />
