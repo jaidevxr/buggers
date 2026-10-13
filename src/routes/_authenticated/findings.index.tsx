@@ -67,6 +67,7 @@ function Findings() {
                     <td className="p-3">#{f.pr_number}</td>
                     <td className="max-w-[200px] truncate p-3 font-mono text-xs">{f.file_path}{f.line_number ? `:${f.line_number}` : ""}</td>
                     <td className="p-3"><SeverityBadge severity={f.severity} /></td>
+                    <td className="p-3"><ConfidenceMeter value={Number(f.confidence ?? 0.8)} /></td>
                     <td className="p-3">
                       <StatusPill
                         status={

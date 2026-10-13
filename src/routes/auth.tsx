@@ -328,8 +328,8 @@ export function AuthPage() {
             </div>
 
             {/* Password Field */}
-            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200">
-              <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
+            <div className="relative rounded-xl border border-white/10 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+              <label className="block text-[10px] font-medium text-slate-400">Password</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
                   type={showPassword ? "text" : "password"}
