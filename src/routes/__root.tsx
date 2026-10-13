@@ -139,6 +139,21 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  // Coordinated route transition key:
+  // For authenticated child routes, keep the authenticated shell persistent so TopBar/Sidebar never flash.
+  // For distinct root pages (Landing '/', Auth '/auth', Docs '/docs', How It Works '/how-it-works'),
+  // use the exact path to trigger smooth, coordinated, 220ms page-transition.
+  const isAuthRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/repositories") ||
+    pathname.startsWith("/pull-requests") ||
+    pathname.startsWith("/findings") ||
+    pathname.startsWith("/analytics") ||
+    pathname.startsWith("/tickets") ||
+    pathname.startsWith("/settings");
+
+  const topRouteKey = isAuthRoute ? "authenticated-shell" : pathname;
+
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
@@ -151,7 +166,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full">
+        <div key={topRouteKey} className="min-h-screen w-full page-transition">
           <Outlet />
         </div>
         <Toaster richColors position="top-right" />
