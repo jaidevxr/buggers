@@ -76,14 +76,14 @@ export function DocsPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#020203] text-slate-100 antialiased selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased selection:bg-white/20 flex flex-col justify-between">
       {/* Unified Public Floating Pill Header */}
       <PublicHeader />
 
       {/* Main Container - flex-1 pushes footer to the bottom */}
       <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full flex-1 flex flex-col">
         {/* Docs Header */}
-        <div className="mb-8 pb-6 border-b border-white/5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="mb-8 pb-6 border-b border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono text-amber-400 mb-2">
               <Sparkles className="h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ export function DocsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter topics..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#09090c] border border-white/5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/30 transition-colors"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ export function DocsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-1">
           {/* Left Sidebar */}
           <aside className="lg:col-span-4 sticky top-28 space-y-4">
-            <div className="rounded-2xl bg-[#07070a] border border-white/5 p-3 shadow-lg">
+            <div className="rounded-2xl bg-[#11141e] border border-white/10 p-3 shadow-lg">
               <div className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">
                 Topics
               </div>
@@ -143,7 +143,7 @@ export function DocsPage() {
           <main className="lg:col-span-8 space-y-8 min-h-[600px] flex flex-col">
             {/* Quickstart */}
             {activeSection === "quickstart" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <Zap className="h-4 w-4" />
                   <span>GETTING STARTED</span>
@@ -154,7 +154,7 @@ export function DocsPage() {
                 </p>
 
                 <div className="space-y-3 font-sans">
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 flex items-start gap-3">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       1
                     </span>
@@ -166,7 +166,7 @@ export function DocsPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 flex items-start gap-3">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       2
                     </span>
@@ -178,7 +178,7 @@ export function DocsPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 flex items-start gap-3">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       3
                     </span>
@@ -191,8 +191,8 @@ export function DocsPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-[#030304] border border-white/5 overflow-hidden font-mono text-xs">
-                  <div className="px-4 py-2.5 bg-white/[0.03] border-b border-white/5 flex items-center justify-between text-slate-400 text-[11px]">
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
                     <div className="flex items-center gap-2">
                       <Terminal className="h-3.5 w-3.5 text-amber-400" />
                       <span>Local Analysis Command</span>
@@ -218,7 +218,7 @@ export function DocsPage() {
 
             {/* GitHub Setup */}
             {activeSection === "github-setup" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <FolderGit2 className="h-4 w-4" />
                   <span>PERMISSIONS</span>
@@ -228,16 +228,16 @@ export function DocsPage() {
                   Buggers requests only the minimal scopes required to analyze code diffs and post check runs:
                 </p>
 
-                <div className="rounded-2xl border border-white/5 overflow-hidden bg-[#030304] text-xs">
+                <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/40 text-xs">
                   <table className="w-full text-left">
-                    <thead className="bg-white/[0.03] border-b border-white/5 text-slate-300 font-semibold">
+                    <thead className="bg-white/5 border-b border-white/10 text-slate-300 font-semibold">
                       <tr>
                         <th className="py-2.5 px-4">Scope</th>
                         <th className="py-2.5 px-4">Level</th>
                         <th className="py-2.5 px-4">Purpose</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5 text-slate-400 font-mono text-[11px]">
+                    <tbody className="divide-y divide-white/10 text-slate-400 font-mono text-[11px]">
                       <tr>
                         <td className="py-3 px-4 text-white">Pull requests</td>
                         <td className="py-3 px-4 text-amber-400">Read & write</td>
@@ -267,7 +267,7 @@ export function DocsPage() {
 
             {/* How Triage Works */}
             {activeSection === "triage-pipeline" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <Cpu className="h-4 w-4" />
                   <span>ARCHITECTURE</span>
@@ -278,7 +278,7 @@ export function DocsPage() {
                 </p>
 
                 <div className="space-y-3 font-sans text-xs">
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 space-y-1">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
                     <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
                       Stage 1 · Webhook Diff Parsing
                     </span>
@@ -287,7 +287,7 @@ export function DocsPage() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 space-y-1">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
                     <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
                       Stage 2 · Churn Cross-Reference
                     </span>
@@ -296,7 +296,7 @@ export function DocsPage() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 space-y-1">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
                     <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
                       Stage 3 · Risk Scoring
                     </span>
@@ -305,7 +305,7 @@ export function DocsPage() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-[#040406] border border-white/5 space-y-1">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
                     <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
                       Stage 4 · Grounded Remediation
                     </span>
@@ -319,7 +319,7 @@ export function DocsPage() {
 
             {/* Risk Scoring */}
             {activeSection === "risk-scoring" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <Sparkles className="h-4 w-4" />
                   <span>SCORING</span>
@@ -330,21 +330,21 @@ export function DocsPage() {
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-                  <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/30 space-y-1">
+                  <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 space-y-1">
                     <span className="text-rose-400 font-bold">Critical / High (75–100)</span>
                     <p className="font-sans text-[11px] text-slate-300">
                       Unwrapped database transactions, silent partial overwrites, or broken auth checks.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-900/30 space-y-1">
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1">
                     <span className="text-amber-400 font-bold">Medium (40–74)</span>
                     <p className="font-sans text-[11px] text-slate-300">
                       Untested boundary inputs, missing error fallback branches, or signature shifts.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-900/30 space-y-1">
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-1">
                     <span className="text-emerald-400 font-bold">Low (0–39)</span>
                     <p className="font-sans text-[11px] text-slate-300">
                       Documentation updates, localized utility changes with comprehensive test coverage.
@@ -356,18 +356,18 @@ export function DocsPage() {
 
             {/* Repository Config */}
             {activeSection === "configuration" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <FileCode className="h-4 w-4" />
                   <span>CONFIGURATION</span>
                 </div>
                 <h2 className="text-2xl font-bold text-white">Repository Config (.buggers.yml)</h2>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Place a <code className="text-amber-300 bg-white/[0.04] px-1.5 py-0.5 rounded font-mono">.buggers.yml</code> in your repository root to configure thresholds:
+                  Place a <code className="text-amber-300 bg-white/5 px-1.5 py-0.5 rounded font-mono">.buggers.yml</code> in your repository root to configure thresholds:
                 </p>
 
-                <div className="rounded-2xl bg-[#030304] border border-white/5 overflow-hidden font-mono text-xs">
-                  <div className="px-4 py-2.5 bg-white/[0.03] border-b border-white/5 flex items-center justify-between text-slate-400 text-[11px]">
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
                     <span>.buggers.yml</span>
                     <button
                       onClick={() =>
@@ -402,7 +402,7 @@ ignore:
 
             {/* GitHub Actions */}
             {activeSection === "ci-cd-actions" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <GitBranch className="h-4 w-4" />
                   <span>CI / CD</span>
@@ -412,8 +412,8 @@ ignore:
                   You can also invoke Buggers as a step inside your existing GitHub Actions workflow:
                 </p>
 
-                <div className="rounded-2xl bg-[#030304] border border-white/5 overflow-hidden font-mono text-xs">
-                  <div className="px-4 py-2.5 bg-white/[0.03] border-b border-white/5 flex items-center justify-between text-slate-400 text-[11px]">
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
                     <span>.github/workflows/buggers.yml</span>
                     <button
                       onClick={() =>
@@ -450,7 +450,7 @@ jobs:
 
             {/* Webhook Payloads */}
             {activeSection === "api-reference" && (
-              <div className="rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
                   <Code2 className="h-4 w-4" />
                   <span>WEBHOOKS</span>
@@ -460,7 +460,7 @@ jobs:
                   Buggers receives GitHub webhook payloads signed with HMAC-SHA256 headers:
                 </p>
 
-                <div className="rounded-2xl bg-[#030304] border border-white/5 p-4 font-mono text-xs text-slate-300 space-y-2">
+                <div className="rounded-2xl bg-black border border-white/10 p-4 font-mono text-xs text-slate-300 space-y-2">
                   <div className="text-[11px] text-slate-500">Headers:</div>
                   <div className="text-amber-300">X-GitHub-Event: pull_request</div>
                   <div className="text-amber-300">X-Hub-Signature-256: sha256=...</div>
@@ -472,7 +472,7 @@ jobs:
       </div>
 
       {/* Footer - Pinned to bottom */}
-      <footer className="border-t border-white/5 bg-[#020203] py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
+      <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

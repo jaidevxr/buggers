@@ -38,7 +38,7 @@ export const Route = createFileRoute("/how-it-works")({
 
 export function HowItWorksPage() {
   return (
-    <div className="min-h-screen w-full bg-[#020203] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Unified Public Floating Pill Header */}
       <PublicHeader />
 
@@ -62,8 +62,8 @@ export function HowItWorksPage() {
 
         {/* 4-Step Architecture Grid */}
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-6 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400">
+          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400">
               <Zap className="h-5 w-5" />
             </div>
             <span className="mt-4 block font-mono text-xs font-semibold text-orange-400">Step 01</span>
@@ -73,8 +73,8 @@ export function HowItWorksPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-6 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-400">
               <BrainCircuit className="h-5 w-5" />
             </div>
             <span className="mt-4 block font-mono text-xs font-semibold text-blue-400">Step 02</span>
@@ -84,8 +84,8 @@ export function HowItWorksPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-6 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400">
+          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400">
               <ShieldAlert className="h-5 w-5" />
             </div>
             <span className="mt-4 block font-mono text-xs font-semibold text-rose-400">Step 03</span>
@@ -95,8 +95,8 @@ export function HowItWorksPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-6 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
               <CheckCircle2 className="h-5 w-5" />
             </div>
             <span className="mt-4 block font-mono text-xs font-semibold text-emerald-400">Step 04</span>
@@ -108,12 +108,12 @@ export function HowItWorksPage() {
         </div>
 
         {/* Live Scenario Card: PR #184 */}
-        <div className="mt-16 rounded-3xl border border-white/5 bg-[#07070a] p-6 sm:p-8 shadow-2xl">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-5">
+        <div className="mt-16 rounded-3xl border border-white/10 bg-[#12151e] p-6 sm:p-8 shadow-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
             <div>
               <div className="flex items-center gap-3">
                 <span className="font-mono text-sm text-purple-400 font-semibold">PR #184: payment-service</span>
-                <span className="rounded-full bg-rose-500/10 border border-rose-500/20 px-3 py-0.5 text-xs font-semibold text-rose-400">
+                <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-3 py-0.5 text-xs font-semibold text-rose-400">
                   HIGH · 82 Risk
                 </span>
               </div>
@@ -121,7 +121,7 @@ export function HowItWorksPage() {
               <p className="mt-0.5 font-mono text-xs text-slate-400">mira-k · 3 files · +204 −74</p>
             </div>
 
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-xs font-mono text-emerald-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Analysis Complete
             </span>
@@ -129,8 +129,8 @@ export function HowItWorksPage() {
 
           {/* Finding items */}
           <div className="mt-6 space-y-3">
-            <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0e] p-3.5">
-              <span className="rounded-md bg-rose-500/15 px-2 py-0.5 font-mono text-xs font-semibold text-rose-400 uppercase">
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#181d29] p-3.5">
+              <span className="rounded-md bg-rose-500/20 px-2 py-0.5 font-mono text-xs font-semibold text-rose-300 uppercase">
                 Critical
               </span>
               <span className="text-sm font-medium text-slate-200">
@@ -138,8 +138,8 @@ export function HowItWorksPage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0e] p-3.5">
-              <span className="rounded-md bg-amber-500/15 px-2 py-0.5 font-mono text-xs font-semibold text-amber-400 uppercase">
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#181d29] p-3.5">
+              <span className="rounded-md bg-amber-500/20 px-2 py-0.5 font-mono text-xs font-semibold text-amber-300 uppercase">
                 High
               </span>
               <span className="text-sm font-medium text-slate-200">
@@ -147,8 +147,8 @@ export function HowItWorksPage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0e] p-3.5">
-              <span className="rounded-md bg-blue-500/15 px-2 py-0.5 font-mono text-xs font-semibold text-blue-400 uppercase">
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#181d29] p-3.5">
+              <span className="rounded-md bg-blue-500/20 px-2 py-0.5 font-mono text-xs font-semibold text-blue-300 uppercase">
                 Medium
               </span>
               <span className="text-sm font-medium text-slate-200">
@@ -158,8 +158,8 @@ export function HowItWorksPage() {
           </div>
 
           {/* Code Diff Display */}
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/5 bg-[#030304] font-mono text-xs">
-            <div className="border-b border-white/5 bg-[#07070a] px-4 py-2 text-slate-400 text-[11px] flex items-center justify-between">
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-black font-mono text-xs">
+            <div className="border-b border-white/10 bg-white/5 px-4 py-2 text-slate-400 text-[11px] flex items-center justify-between">
               <span>src/services/paymentValidator.ts</span>
               <span>Lines 42–44</span>
             </div>
@@ -193,7 +193,7 @@ export function HowItWorksPage() {
         </div>
 
         {/* Bottom CTA Banner */}
-        <div className="mt-16 text-center rounded-3xl border border-white/5 bg-[#07070a] p-10 shadow-2xl">
+        <div className="mt-16 text-center rounded-3xl border border-white/10 bg-[#12151e] p-10 shadow-2xl">
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
             Ready to review pull requests with ease?
           </h2>
@@ -213,7 +213,7 @@ export function HowItWorksPage() {
       </main>
 
       {/* Footer - Pinned to bottom */}
-      <footer className="border-t border-white/5 bg-[#020203] py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
+      <footer className="border-t border-white/10 bg-[#0a0c10] py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

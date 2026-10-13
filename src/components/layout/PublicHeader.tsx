@@ -29,16 +29,6 @@ export function PublicHeader() {
             Home
           </Link>
           <Link
-            to="/how-it-works"
-            className={`transition-colors duration-150 hover:text-white ${
-              pathname === "/how-it-works"
-                ? "text-white font-semibold"
-                : "text-slate-300"
-            }`}
-          >
-            How it works
-          </Link>
-          <Link
             to="/docs"
             className={`transition-colors duration-150 hover:text-white ${
               pathname === "/docs"

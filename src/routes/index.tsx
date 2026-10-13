@@ -57,7 +57,7 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#020203] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Unified Public Floating Pill Header */}
       <PublicHeader />
 
@@ -87,12 +87,12 @@ export function Landing() {
         />
 
         {/* Slight subtle fade at bottom edge below visible screen */}
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#020203] to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#07090e] to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           {/* Category Pill Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-black/60 px-4 py-1 text-[11px] font-mono tracking-wider text-slate-300 shadow-sm backdrop-blur-md mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-1 text-[11px] font-mono tracking-wider text-slate-300 shadow-sm backdrop-blur-md mb-6">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400 inline-block animate-pulse" />
             <span className="uppercase text-[10px] tracking-widest text-slate-300">Automated Code Review</span>
           </div>
@@ -100,7 +100,7 @@ export function Landing() {
           {/* Main Headline */}
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.12] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             Catch critical issues <br />
-            <span className="font-serif italic font-normal text-amber-300/95 tracking-wide px-1">
+            <span className="font-serif italic font-semibold text-[#2d6a4f] tracking-wide px-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
               before
             </span>{" "}
             they reach production
@@ -123,7 +123,7 @@ export function Landing() {
 
             <Link
               to="/how-it-works"
-              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/10 transition-all duration-300 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
+              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-all duration-300 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               <span>See How it Works</span>
@@ -135,7 +135,7 @@ export function Landing() {
       {/* ======================================================== */}
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (MongoDB-Inspired 2-Column Split) */}
       {/* ======================================================== */}
-      <section className="relative z-10 bg-[#020203] pt-12 sm:pt-20 pb-24 sm:pb-36">
+      <section className="relative z-10 bg-[#07090e] pt-12 sm:pt-20 pb-24 sm:pb-36">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Data & Regression Protection (Text on Left, PR #184 Card on Right) */}
@@ -162,8 +162,8 @@ export function Landing() {
             </div>
 
             {/* PR #184 Realistic Triage Card */}
-            <div className="lg:col-span-7 rounded-2xl border border-white/5 bg-[#07070a] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/10 hover:-translate-y-1 hover:shadow-black/80">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-4">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
                 <div>
                   <div className="flex items-center gap-2.5">
                     <span className="font-mono text-xs text-zinc-300 font-semibold">
@@ -189,7 +189,7 @@ export function Landing() {
 
               {/* Real Findings */}
               <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-[#040406] p-2.5">
+                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
                   <span className="rounded bg-rose-950/60 text-rose-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-rose-900/50">
                     Critical
                   </span>
@@ -198,7 +198,7 @@ export function Landing() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-[#040406] p-2.5">
+                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
                   <span className="rounded bg-amber-950/60 text-amber-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-amber-900/50">
                     High
                   </span>
@@ -207,8 +207,8 @@ export function Landing() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-[#040406] p-2.5">
-                  <span className="rounded bg-slate-900/80 text-slate-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-white/5">
+                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
+                  <span className="rounded bg-slate-900 text-slate-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-slate-800">
                     Medium
                   </span>
                   <span className="text-xs font-medium text-slate-200">
@@ -218,8 +218,8 @@ export function Landing() {
               </div>
 
               {/* Real Diff Code Box */}
-              <div className="mt-4 overflow-hidden rounded-xl border border-white/5 bg-[#030304] font-mono text-xs">
-                <div className="border-b border-white/5 bg-white/[0.03] px-3.5 py-1.5 text-slate-400 text-[11px] flex items-center justify-between">
+              <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black font-mono text-xs">
+                <div className="border-b border-white/10 bg-white/5 px-3.5 py-1.5 text-slate-400 text-[11px] flex items-center justify-between">
                   <span>src/services/paymentValidator.ts</span>
                   <span>Lines 42–44</span>
                 </div>
@@ -237,7 +237,7 @@ export function Landing() {
               </div>
 
               {/* Verified Remediation Advisory */}
-              <div className="mt-4 rounded-xl border border-white/5 bg-[#07070a] p-3.5 text-xs text-slate-300 leading-relaxed transition-all duration-200 hover:border-white/10">
+              <div className="mt-4 rounded-xl border border-white/10 bg-[#0e121a] p-3.5 text-xs text-slate-300 leading-relaxed transition-all duration-200 hover:border-white/15">
                 <div className="flex items-center gap-2 font-semibold text-slate-200 text-xs">
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>AI Remediation Suggestion</span>
@@ -256,8 +256,8 @@ export function Landing() {
           {/* Feature 2: Churn & P95 Risk Engine (Alternating: Metrics Card on Left, Text on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Churn & Volatility Visual Card */}
-            <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl border border-white/5 bg-[#07070a] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/10 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+            <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="h-4 w-4 text-slate-400" />
                   <span className="text-xs font-semibold text-white">Repository Churn &amp; Volatility Metrics</span>
@@ -266,13 +266,13 @@ export function Landing() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/5 bg-[#040406] p-3.5">
+                <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
                   <div className="text-[10px] font-mono uppercase text-slate-400">Test Coverage Delta</div>
                   <div className="mt-1 text-xl font-bold text-rose-300/85 font-mono">−14.2%</div>
                   <div className="text-[10px] text-slate-500 mt-0.5">Critical paths left uncovered</div>
                 </div>
 
-                <div className="rounded-xl border border-white/5 bg-[#040406] p-3.5">
+                <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
                   <div className="text-[10px] font-mono uppercase text-slate-400">Cyclomatic Complexity</div>
                   <div className="mt-1 text-xl font-bold text-amber-300/85 font-mono">+8 Delta</div>
                   <div className="text-[10px] text-slate-500 mt-0.5">Nested conditional branches</div>
@@ -280,7 +280,7 @@ export function Landing() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between rounded-lg border border-white/5 bg-[#040406] px-3 py-2 text-xs">
+                <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-rose-900/80" />
                     <span className="text-slate-200">paymentValidator.ts</span>
@@ -288,7 +288,7 @@ export function Landing() {
                   <span className="font-mono text-[11px] text-slate-400">Top 5% volatile in repo (12 defect rollbacks)</span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border border-white/5 bg-[#040406] px-3 py-2 text-xs">
+                <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-900/80" />
                     <span className="text-slate-200">stripeGateway.ts</span>
@@ -297,7 +297,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/5 bg-[#040406] p-3 flex items-center justify-between text-xs">
+              <div className="rounded-xl border border-white/10 bg-black/30 p-3 flex items-center justify-between text-xs">
                 <span className="text-slate-400">Risk Score Evaluation:</span>
                 <span className="font-mono font-bold text-amber-300/80">82 / 100 (HIGH REGRESSION RISK)</span>
               </div>
@@ -336,7 +336,7 @@ export function Landing() {
                 Enforce quality gates with declarative repository rules
               </h2>
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                Define review thresholds with a simple <code className="font-mono text-zinc-300 bg-white/[0.04] px-1.5 py-0.5 rounded">.buggers.yml</code> in your repository root. Set GitHub check runs to automatically block pull request merges when critical severity findings or high risk are detected.
+                Define review thresholds with a simple <code className="font-mono text-zinc-300 bg-white/5 px-1.5 py-0.5 rounded">.buggers.yml</code> in your repository root. Set GitHub check runs to automatically block pull request merges when critical severity findings or high risk are detected.
               </p>
               <div className="pt-2">
                 <Link
@@ -350,8 +350,8 @@ export function Landing() {
             </div>
 
             {/* Config & Check Run Card */}
-            <div className="lg:col-span-7 rounded-2xl border border-white/5 bg-[#07070a] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/10 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
                   <FileCode className="h-4 w-4 text-slate-400" />
                   <span className="text-xs font-semibold text-white">.buggers.yml</span>
@@ -359,7 +359,7 @@ export function Landing() {
                 <span className="font-mono text-[11px] text-slate-400">Repository Root Config</span>
               </div>
 
-              <div className="rounded-xl bg-[#030304] border border-white/5 p-4 font-mono text-xs text-slate-300 overflow-x-auto">
+              <div className="rounded-xl bg-black border border-white/10 p-4 font-mono text-xs text-slate-300 overflow-x-auto">
                 <pre className="text-[11px] leading-relaxed">
 {`version: 1
 risk:
@@ -374,7 +374,7 @@ ignore:
               </div>
 
               {/* GitHub Check Run Status Simulation */}
-              <div className="rounded-xl border border-rose-900/30 bg-rose-950/20 p-3.5 flex items-center justify-between transition-all duration-200 hover:border-rose-900/40">
+              <div className="rounded-xl border border-rose-900/30 bg-rose-950/25 p-3.5 flex items-center justify-between transition-all duration-200 hover:border-rose-900/40">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-950/60 text-rose-300/80 font-bold text-xs border border-rose-900/40">
                     ✕
@@ -393,7 +393,7 @@ ignore:
 
           {/* Section 4: 4 Core Pillars of Buggers */}
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 pt-6">
-            <div className="rounded-2xl border border-white/5 bg-[#07070a] p-5 space-y-2.5 transition-all duration-300 hover:border-white/10 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0a0a0e]">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-amber-300/80">
                 <Zap className="h-4 w-4" />
               </div>
@@ -406,7 +406,7 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/5 bg-[#07070a] p-5 space-y-2.5 transition-all duration-300 hover:border-white/10 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0a0a0e]">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-slate-300">
                 <BrainCircuit className="h-4 w-4" />
               </div>
@@ -419,7 +419,7 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/5 bg-[#07070a] p-5 space-y-2.5 transition-all duration-300 hover:border-white/10 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0a0a0e]">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-rose-300/80">
                 <ShieldAlert className="h-4 w-4" />
               </div>
@@ -432,7 +432,7 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/5 bg-[#07070a] p-5 space-y-2.5 transition-all duration-300 hover:border-white/10 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0a0a0e]">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-emerald-300/80">
                 <CheckCircle2 className="h-4 w-4" />
               </div>
@@ -447,7 +447,7 @@ ignore:
           </div>
 
           {/* Section 5: Bottom CTA */}
-          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-8 sm:p-12 text-center space-y-4 shadow-2xl transition-all duration-300 hover:border-white/10">
+          <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-8 sm:p-12 text-center space-y-4 shadow-2xl transition-all duration-300 hover:border-white/15">
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Ready to review pull requests with ease?
             </h3>
@@ -476,7 +476,7 @@ ignore:
       </section>
 
       {/* Minimal Dark Footer - Pinned to bottom */}
-      <footer className="bg-[#020203] py-10 px-4 sm:px-6 text-xs text-slate-500 border-t border-white/5 mt-auto">
+      <footer className="bg-black py-10 px-4 sm:px-6 text-xs text-slate-500 border-t border-white/10 mt-auto">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-slate-300 font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />
