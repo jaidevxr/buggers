@@ -47,6 +47,32 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const url = new URL(request.url);
+      if (url.pathname === "/api/webhooks/github" || url.pathname === "/api/webhook") {
+        const { handleGitHubWebhook } = await import("./server/webhook.server");
+        return await handleGitHubWebhook(request);
+      }
+
+      if (url.pathname === "/api/cron/worker") {
+        const { handleCronWorkerRequest } = await import("./server/queueWorker.server");
+        return await handleCronWorkerRequest(request);
+      }
+
+      if (url.pathname === "/api/health") {
+        return new Response(
+          JSON.stringify({
+            status: "healthy",
+            service: "buggers-security-engine",
+            timestamp: new Date().toISOString(),
+            uptimeSeconds: Math.floor(process.uptime()),
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

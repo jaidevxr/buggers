@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getGitHubConnection, listRepositories } from "@/lib/github.functions";
 import { PageHeader, errMsg } from "@/components/layout/PageHeader";
-import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { PullRequestsSkeleton } from "@/components/LoadingSkeletons";
+import { EmptyState, ErrorState } from "@/components/status/EmptyState";
 import { ConnectGitHubCard } from "@/components/github/ConnectGitHubCard";
 import { PullList } from "@/components/github/PullList";
 
@@ -18,11 +19,17 @@ function PullRequests() {
   const [repo, setRepo] = useState("");
   const selected = repo || repos.data?.repositories[0]?.fullName || "";
 
-  if (conn.isLoading) return <LoadingState />;
-  if (!conn.data?.connected) return (<div><PageHeader title="Pull requests" /><ConnectGitHubCard reconnect={conn.data?.reconnectRequired} /></div>);
+  if (conn.isLoading) return <PullRequestsSkeleton />;
+  if (!conn.data?.connected)
+    return (
+      <div className="page-view">
+        <PageHeader title="Pull requests" />
+        <ConnectGitHubCard reconnect={conn.data?.reconnectRequired} />
+      </div>
+    );
 
   return (
-    <div>
+    <div className="page-view">
       <PageHeader
         title="Pull requests"
         description="Select a repository, then analyze any pull request."
@@ -39,7 +46,11 @@ function PullRequests() {
           ) : null
         }
       />
-      {repos.isLoading ? <LoadingState /> : repos.error ? <ErrorState message={errMsg(repos.error)} /> : !selected ? (
+      {repos.isLoading ? (
+        <PullRequestsSkeleton />
+      ) : repos.error ? (
+        <ErrorState message={errMsg(repos.error)} onRetry={() => repos.refetch()} />
+      ) : !selected ? (
         <EmptyState title="No repositories available" description="Your GitHub account has no accessible repositories." />
       ) : (
         <PullList key={selected} repoFullName={selected} />

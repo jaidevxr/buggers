@@ -1,0 +1,51 @@
+name: CI & Security Verification
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for committed secrets (.env guard)
+        run: |
+          if git ls-files --error-unmatch .env > /dev/null 2>&1; then
+            echo "ERROR: .env file is tracked in git! Never commit environment secrets."
+            exit 1
+          fi
+          echo "Verified: .env is not tracked in git repository."
+
+      - name: Run TypeScript typecheck
+        run: npm run typecheck
+
+      - name: Run unit & security scanner tests
+        run: npm test
+
+      - name: Build production bundles
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_SUPABASE_URL: "https://ci-test.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "ci-publishable-key"

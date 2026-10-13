@@ -11,6 +11,7 @@ describe("Standalone AI Provider & Risk Engine Boundary", () => {
     delete process.env["OPENAI_API_KEY"];
     delete process.env["ANTHROPIC_API_KEY"];
     delete process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
+    delete process.env["OPENROUTER_API_KEY"];
     delete process.env["AI_MODEL"];
   });
 

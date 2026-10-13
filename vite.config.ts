@@ -46,7 +46,7 @@ export default defineConfig(({ command }) => {
       }),
       command === "build"
         ? nitro({
-            preset: "vercel",
+            preset: (process.env["NITRO_PRESET"] as any) || "vercel",
           })
         : undefined,
       viteReact(),

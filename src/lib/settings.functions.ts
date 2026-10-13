@@ -57,3 +57,39 @@ export const deleteMyAnalysisData = createServerFn({ method: "POST" })
     await supabaseAdmin.from("notifications").delete().eq("user_id", context.userId);
     return { ok: true };
   });
+
+export const testWebhookPing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { handleGitHubWebhook } = await import("@/server/webhook.server");
+    const secret = process.env["GITHUB_WEBHOOK_SECRET"];
+    const payload = JSON.stringify({
+      zen: "Practicality beats purity.",
+      hook_id: 101,
+      sender: { login: "buggers-admin" },
+    });
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "x-github-event": "ping",
+      "x-github-delivery": `test-${Date.now()}`,
+    };
+    if (secret) {
+      const crypto = await import("crypto");
+      headers["x-hub-signature-256"] =
+        "sha256=" + crypto.createHmac("sha256", secret).update(payload, "utf8").digest("hex");
+    }
+
+    const testReq = new Request("http://localhost:8080/api/webhooks/github", {
+      method: "POST",
+      headers,
+      body: payload,
+    });
+
+    const res = await handleGitHubWebhook(testReq);
+    const data = (await res.json()) as { ok?: boolean; zen?: string; error?: string; message?: string };
+    if (!res.ok) {
+      throw new Error(data.error ?? `Webhook endpoint returned HTTP ${res.status}`);
+    }
+    return { ok: true, zen: data.zen ?? "pong", message: data.message ?? "Verified" };
+  });
+

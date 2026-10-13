@@ -4,7 +4,8 @@ import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Too
 import { listAnalyses } from "@/lib/analysis.functions";
 import { listFindings } from "@/lib/findings.functions";
 import { PageHeader, errMsg } from "@/components/layout/PageHeader";
-import { ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { AnalyticsSkeleton } from "@/components/LoadingSkeletons";
+import { ErrorState } from "@/components/status/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Buggers" }] }),
@@ -23,8 +24,17 @@ function Card({ title, children, enough }: { title: string; children: React.Reac
 function Analytics() {
   const a = useQuery({ queryKey: ["analyses"], queryFn: () => listAnalyses({ data: {} }) });
   const f = useQuery({ queryKey: ["findings"], queryFn: () => listFindings() });
-  if (a.isLoading || f.isLoading) return <LoadingState />;
-  if (a.error || f.error) return <ErrorState message={errMsg(a.error ?? f.error)} />;
+  if (a.isLoading || f.isLoading) return <AnalyticsSkeleton />;
+  if (a.error || f.error)
+    return (
+      <ErrorState
+        message={errMsg(a.error ?? f.error)}
+        onRetry={() => {
+          void a.refetch();
+          void f.refetch();
+        }}
+      />
+    );
 
   const done = a.data!.analyses.filter((x) => x.status === "completed").reverse();
   const riskOverTime = done.map((x) => ({ name: `#${x.pr_number}`, score: Number(x.risk_score ?? 0) }));
@@ -38,7 +48,7 @@ function Analytics() {
   const volume = done.map((x) => ({ name: `#${x.pr_number}`, additions: x.additions ?? 0, deletions: x.deletions ?? 0 }));
 
   return (
-    <div>
+    <div className="page-view">
       <PageHeader title="Analytics" description="Built only from your stored analyses and findings." />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Risk over time" enough={riskOverTime.length >= 2}>

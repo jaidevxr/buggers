@@ -23,6 +23,10 @@ export const startAnalysisSchema = z.object({
   prNumber: prNumberSchema,
 });
 
+export const analyzeAllPullRequestsSchema = z.object({
+  repoFullName: repoFullNameSchema,
+});
+
 export const runAnalysisSchema = z.object({
   analysisId: uuidSchema,
 });
@@ -50,7 +54,23 @@ export const updateFindingStatusSchema = z.object({
 export const createTicketFromFindingSchema = z.object({
   findingId: uuidSchema,
   assignee: z.string().trim().max(100).optional(),
+  createGitHubIssue: z.boolean().optional(),
 });
+
+export const postReportToGitHubPRSchema = z.object({
+  analysisId: uuidSchema,
+});
+
+export const applyFindingFixSchema = z.object({
+  findingId: uuidSchema,
+  customFix: z.string().optional(),
+});
+
+export const applyBatchFindingFixesSchema = z.object({
+  analysisId: uuidSchema,
+  findingIds: z.array(uuidSchema).optional(),
+});
+
 
 export const updateTicketSchema = z.object({
   ticketId: uuidSchema,

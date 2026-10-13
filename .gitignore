@@ -34,3 +34,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Scratch & local temps
+scratch/
+supabase/.temp/

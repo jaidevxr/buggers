@@ -1,0 +1,13 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+node_modules
+.output
+.vercel
+.wrangler
+scratch
+coverage
+*.log
+.DS_Store

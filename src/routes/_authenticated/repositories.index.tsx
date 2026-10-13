@@ -5,7 +5,8 @@ import { GitFork, Lock, Star } from "lucide-react";
 import { getGitHubConnection, listRepositories } from "@/lib/github.functions";
 import { listAnalyses } from "@/lib/analysis.functions";
 import { PageHeader, timeAgo, errMsg } from "@/components/layout/PageHeader";
-import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { RepositoriesSkeleton } from "@/components/LoadingSkeletons";
+import { EmptyState, ErrorState } from "@/components/status/EmptyState";
 import { RiskBadge } from "@/components/status/StatusBadges";
 import { ConnectGitHubCard } from "@/components/github/ConnectGitHubCard";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,10 @@ function Repositories() {
   const [page, setPage] = useState(0);
 
   const latestByRepo = useMemo(() => {
-    const m = new Map<string, { risk_level: string | null; risk_score: number | null; created_at: string }>();
+    const m = new Map<
+      string,
+      { pr_number?: number; risk_level: string | null; risk_score: number | null; created_at: string; status: string }
+    >();
     for (const a of analyses.data?.analyses ?? []) if (!m.has(a.repo_full_name)) m.set(a.repo_full_name, a);
     return m;
   }, [analyses.data]);
@@ -45,17 +49,20 @@ function Repositories() {
   }, [repos.data, q, sort]);
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE));
 
-  if (conn.isLoading) return <LoadingState />;
+  if (conn.isLoading) return <RepositoriesSkeleton />;
   if (!conn.data?.connected)
     return (
-      <div>
+      <div className="page-view">
         <PageHeader title="Repositories" />
         <ConnectGitHubCard reconnect={conn.data?.reconnectRequired} />
       </div>
     );
 
+  if (repos.isLoading) return <RepositoriesSkeleton />;
+  if (repos.error) return <ErrorState message={errMsg(repos.error)} onRetry={() => repos.refetch()} />;
+
   return (
-    <div>
+    <div className="page-view">
       <PageHeader title="Repositories" description={`Signed in to GitHub as ${conn.data.login}`} />
       <div className="mb-4 flex flex-wrap gap-2">
         <Input
@@ -79,11 +86,7 @@ function Repositories() {
           <option value="stars">Stars</option>
         </select>
       </div>
-      {repos.isLoading ? (
-        <LoadingState label="Loading repositories from GitHub…" />
-      ) : repos.error ? (
-        <ErrorState message={errMsg(repos.error)} />
-      ) : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <EmptyState title="No repositories available" description="No GitHub repositories match your search." />
       ) : (
         <>
@@ -95,7 +98,7 @@ function Repositories() {
                   key={r.id}
                   to="/repositories/$owner/$repo"
                   params={{ owner: r.owner, repo: r.name }}
-                  className="surface-card flex flex-col gap-2 p-4 transition-shadow hover:shadow-md"
+                  className="surface-card-interactive flex flex-col gap-2.5 p-4.5"
                 >
                   <div className="flex items-center gap-2">
                     <span className="truncate font-semibold">{r.fullName}</span>
@@ -111,8 +114,19 @@ function Repositories() {
                     <span>Active {timeAgo(r.pushedAt)}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{last ? `Analyzed ${timeAgo(last.created_at)}` : "Never analyzed"}</span>
-                    <RiskBadge level={last?.risk_level} />
+                    <span>
+                      {!last
+                        ? "Never analyzed"
+                        : last.status === "processing" || last.status === "queued"
+                        ? "Analysis in progress…"
+                        : last.status === "failed"
+                        ? (last.pr_number ? `PR #${last.pr_number} failed` : "Analysis failed")
+                        : (last.pr_number ? `PR #${last.pr_number} analyzed ${timeAgo(last.created_at)}` : `Analyzed ${timeAgo(last.created_at)}`)}
+                    </span>
+                    <RiskBadge
+                      level={last?.status === "completed" ? last.risk_level : null}
+                      status={last?.status !== "completed" ? last?.status : null}
+                    />
                   </div>
                 </Link>
               );

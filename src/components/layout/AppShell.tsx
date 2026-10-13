@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
   Bell,
   FolderGit2,
@@ -12,6 +13,9 @@ import {
   Settings as SettingsIcon,
   Ticket,
   LogOut,
+  Sun,
+  Moon,
+  Laptop,
 } from "lucide-react";
 import { BuggersWordmark } from "@/components/brand/BugMark";
 import { Button } from "@/components/ui/button";
@@ -27,6 +31,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getGitHubConnection } from "@/lib/github.functions";
 import { getDashboardSummary, markNotificationsRead } from "@/lib/analysis.functions";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
 const nav = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -41,14 +46,20 @@ const nav = [
 export function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isLoading = useRouterState({ select: (s) => s.isLoading });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-150">
+      {isLoading && (
+        <div className="fixed top-0 left-0 right-0 z-50 h-[2.5px] overflow-hidden bg-primary/20 pointer-events-none">
+          <div className="h-full bg-primary animate-indeterminate-bar w-2/5" />
+        </div>
+      )}
       <TopBar onToggleMenu={() => setMobileOpen((v) => !v)} />
-      <div className="mx-auto flex max-w-[1400px]">
+      <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
         <aside
           className={cn(
-            "w-60 shrink-0 border-r border-sidebar-border bg-sidebar px-3 py-5 md:block",
+            "w-64 shrink-0 border-r border-sidebar-border bg-sidebar px-3 py-5 md:block",
             mobileOpen ? "fixed inset-y-14 left-0 z-40 block overflow-y-auto" : "hidden",
           )}
         >
@@ -59,11 +70,12 @@ export function AppShell() {
                 <Link
                   key={item.to}
                   to={item.to}
+                  preload="intent"
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
                   )}
                   aria-current={active ? "page" : undefined}
@@ -75,8 +87,12 @@ export function AppShell() {
             })}
           </nav>
         </aside>
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6">
-          <Outlet />
+        <main className="min-w-0 flex-1 px-6 py-6 lg:px-8 xl:px-10">
+          <ErrorBoundary>
+            <div className="page-container w-full">
+              <Outlet />
+            </div>
+          </ErrorBoundary>
         </main>
       </div>
     </div>
@@ -86,6 +102,7 @@ export function AppShell() {
 function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
   const connection = useQuery({
     queryKey: ["github-connection"],
     queryFn: () => getGitHubConnection(),
@@ -100,14 +117,31 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b border-border bg-background/90 px-4 backdrop-blur">
+    <header className="sticky top-0 z-50 flex h-14 w-full items-center gap-3 border-b border-border bg-background/95 px-4 lg:px-6 backdrop-blur">
       <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleMenu} aria-label="Toggle navigation">
         <Menu className="h-5 w-5" />
       </Button>
       <Link to="/dashboard" className="shrink-0">
         <BuggersWordmark />
       </Link>
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-1.5">
+        {/* Quick Theme Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+          title={`Current: ${theme} (${resolvedTheme}) — click to toggle`}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          {resolvedTheme === "dark" ? (
+            <Sun className="h-4 w-4 text-amber-400" />
+          ) : (
+            <Moon className="h-4 w-4 text-slate-700" />
+          )}
+        </Button>
+
+        {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
@@ -150,6 +184,7 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* User Account & Theme Preferences */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
@@ -167,12 +202,40 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
               </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               {connection.data?.connected
                 ? `GitHub: ${connection.data.login}`
                 : "GitHub not connected"}
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Appearance</div>
+            <div className="grid grid-cols-3 gap-1 px-2 py-1">
+              <Button
+                variant={theme === "light" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-1.5 text-xs font-normal"
+                onClick={() => setTheme("light")}
+              >
+                <Sun className="mr-1 h-3 w-3" /> Light
+              </Button>
+              <Button
+                variant={theme === "dark" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-1.5 text-xs font-normal"
+                onClick={() => setTheme("dark")}
+              >
+                <Moon className="mr-1 h-3 w-3" /> Dark
+              </Button>
+              <Button
+                variant={theme === "system" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-1.5 text-xs font-normal"
+                onClick={() => setTheme("system")}
+              >
+                <Laptop className="mr-1 h-3 w-3" /> Auto
+              </Button>
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/settings">Settings</Link>

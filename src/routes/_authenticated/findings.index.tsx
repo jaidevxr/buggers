@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { listFindings } from "@/lib/findings.functions";
 import { PageHeader, StatCard, errMsg } from "@/components/layout/PageHeader";
-import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { EmptyState, ErrorState } from "@/components/status/EmptyState";
+import { FindingsTableSkeleton } from "@/components/LoadingSkeletons";
 import { ConfidenceMeter, SeverityBadge, StatusPill } from "@/components/status/StatusBadges";
 
 export const Route = createFileRoute("/_authenticated/findings/")({
@@ -19,8 +20,8 @@ function Findings() {
   const [status, setStatus] = useState("");
   const [minConf, setMinConf] = useState(0);
 
-  if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState message={errMsg(q.error)} />;
+  if (q.isLoading) return <FindingsTableSkeleton />;
+  if (q.error) return <ErrorState message={errMsg(q.error)} onRetry={() => q.refetch()} />;
   const all = q.data!.findings;
   const uniq = (k: "repo_full_name" | "category") => [...new Set(all.map((f) => f[k]))];
   const rows = all.filter(
@@ -35,7 +36,7 @@ function Findings() {
   );
 
   return (
-    <div>
+    <div className="page-view">
       <PageHeader title="Findings" description="Every finding from your real analyses." />
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {["critical", "high", "medium", "low"].map((s) => <StatCard key={s} label={s} value={count(s)} />)}
@@ -66,8 +67,15 @@ function Findings() {
                     <td className="p-3">#{f.pr_number}</td>
                     <td className="max-w-[200px] truncate p-3 font-mono text-xs">{f.file_path}{f.line_number ? `:${f.line_number}` : ""}</td>
                     <td className="p-3"><SeverityBadge severity={f.severity} /></td>
-                    <td className="p-3"><ConfidenceMeter value={Number(f.confidence)} /></td>
-                    <td className="p-3"><StatusPill status={f.status} /></td>
+                    <td className="p-3">
+                      <StatusPill
+                        status={
+                          f.status === "fixed" && f.source === "automated_fix"
+                            ? "automated_fix"
+                            : f.status
+                        }
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

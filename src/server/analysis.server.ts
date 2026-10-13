@@ -1,4 +1,6 @@
 import {
+  collectProjectContext,
+  createGitHubCommitStatus,
   githubJson,
   githubJsonWithHeaders,
   type GitHubCommit,
@@ -13,6 +15,17 @@ import {
   type RiskResult,
 } from "@/lib/risk-engine";
 import { runAiReview, validateAiFindings, type AiTokenUsage } from "@/server/aiReview.server";
+import { scanFilesForSecrets } from "@/server/secretScanner.server";
+import { scanFilesForVulnerableDependencies } from "@/server/dependencyScanner.server";
+import { scanFilesForSast } from "@/server/sastScanner.server";
+import {
+  computeDiffCacheKey,
+  getCachedDiffFindings,
+  setCachedDiffFindings,
+} from "@/server/diffCache.server";
+import { evaluateQualityGate, DEFAULT_SECURITY_POLICY } from "@/lib/security-policy";
+import { postPrReviewComments } from "@/server/prReviewBot.server";
+import { dispatchSecurityAlert } from "@/server/notificationWebhook.server";
 import { logStructured } from "@/server/logger.server";
 
 export const ANALYSIS_STAGES = [
@@ -102,27 +115,45 @@ function parseLinkHeaderLastUrl(linkHeader: string | null): string | null {
 export async function collectFileHistory(
   userId: string,
   repoFullName: string,
-  filenames: string[],
+  filesToInspect: Array<{ filename: string; status?: string } | string>,
+  branchOrSha?: string,
 ): Promise<FileHistoryStat[]> {
   const stats: FileHistoryStat[] = [];
   const sinceDate = new Date(Date.now() - CHURN_WINDOW_DAYS * 86_400_000).toISOString();
 
-  for (const filename of filenames.slice(0, HISTORY_FILE_LIMIT)) {
+  const normalized = filesToInspect.map((f) => (typeof f === "string" ? { filename: f } : f));
+
+  for (const fileObj of normalized.slice(0, HISTORY_FILE_LIMIT)) {
+    const filename = fileObj.filename;
+    // Newly added file in PR: inception age is 0 days, 1 initial commit, 0 historical defects
+    if (fileObj.status === "added") {
+      stats.push({
+        filename,
+        commitCount: 1,
+        defectCommitCount: 0,
+        authorCount: 1,
+        ageDays: 0,
+        insufficient: false,
+      });
+      continue;
+    }
+
     try {
-      // Churn: commits in the 90-day window (up to 100 per page; sufficient for churn signal)
+      const branchParam = branchOrSha ? `&sha=${encodeURIComponent(branchOrSha)}` : "";
       const commits = await githubJson<GitHubCommit[]>(
         userId,
-        `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}&since=${sinceDate}&per_page=100`,
+        `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}${branchParam}&since=${sinceDate}&per_page=100`,
       );
 
       if (!commits.length) {
+        // If file has no commit on default branch within 90 days, treat as newly created file
         stats.push({
           filename,
-          commitCount: 0,
+          commitCount: 1,
           defectCommitCount: 0,
-          authorCount: 0,
-          ageDays: null,
-          insufficient: true,
+          authorCount: 1,
+          ageDays: 0,
+          insufficient: false,
         });
         continue;
       }
@@ -132,24 +163,20 @@ export async function collectFileHistory(
         commits.map((c) => c.author?.login ?? c.commit.author?.name ?? "unknown"),
       );
 
-      // True file inception age: fetch per_page=1, read Link header to find last page,
-      // then fetch that page to get the very first commit on this path.
       let ageDays: number | null = null;
       try {
         const { headers } = await githubJsonWithHeaders<GitHubCommit[]>(
           userId,
-          `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}&per_page=1`,
+          `/repos/${repoFullName}/commits?path=${encodeURIComponent(filename)}${branchParam}&per_page=1`,
         );
         const lastUrl = parseLinkHeaderLastUrl(headers.get("Link") ?? headers.get("link"));
         if (lastUrl) {
-          // Link header contains full URLs (e.g. https://api.github.com/repos/...).
-          // githubRequest expects a path, so extract /repos/... portion.
           let lastPath: string;
           try {
             const parsed = new URL(lastUrl);
             lastPath = parsed.pathname + parsed.search;
           } catch {
-            lastPath = lastUrl; // fallback: assume it's already a path
+            lastPath = lastUrl;
           }
           const lastPageCommits = await githubJson<GitHubCommit[]>(userId, lastPath);
           const firstCommit = lastPageCommits[lastPageCommits.length - 1];
@@ -158,12 +185,10 @@ export async function collectFileHistory(
               (Date.now() - new Date(firstCommit.commit.author.date).getTime()) / 86_400_000;
           }
         } else {
-          // Single page = the first commit is the only commit (or latest single)
           const oldest = commits[commits.length - 1]?.commit.author?.date;
           ageDays = oldest ? (Date.now() - new Date(oldest).getTime()) / 86_400_000 : null;
         }
       } catch {
-        // file_age becomes insufficient_data if the Link header trick fails
         const oldest = commits[commits.length - 1]?.commit.author?.date;
         ageDays = oldest ? (Date.now() - new Date(oldest).getTime()) / 86_400_000 : null;
       }
@@ -179,11 +204,11 @@ export async function collectFileHistory(
     } catch {
       stats.push({
         filename,
-        commitCount: 0,
+        commitCount: 1,
         defectCommitCount: 0,
-        authorCount: 0,
-        ageDays: null,
-        insufficient: true,
+        authorCount: 1,
+        ageDays: 0,
+        insufficient: false,
       });
     }
   }
@@ -321,6 +346,15 @@ export async function processAnalysis(userId: string, analysisId: string) {
       })
       .eq("id", analysisId);
 
+    // Post pending commit status on GitHub PR
+    void createGitHubCommitStatus(
+      userId,
+      repoFullName,
+      pr.head.sha,
+      "pending",
+      "Buggers AI is reviewing security & risk...",
+    ).catch(() => {});
+
     // ── Stage: historical_analysis ────────────────────────────────
     let history: FileHistoryStat[];
     if (stageData["history"] && Array.isArray(stageData["history"])) {
@@ -333,7 +367,8 @@ export async function processAnalysis(userId: string, analysisId: string) {
       history = await collectFileHistory(
         userId,
         repoFullName,
-        ranked.map((f) => f.filename),
+        ranked.map((f) => ({ filename: f.filename, status: f.status })),
+        pr.head.sha,
       );
       await setStage(analysisId, "historical_analysis", { history });
       logStructured("info", "stage_completed", {
@@ -346,29 +381,71 @@ export async function processAnalysis(userId: string, analysisId: string) {
     // ── Stage: ai_review ──────────────────────────────────────────
     const stageStart = Date.now();
     await setStage(analysisId, "ai_review");
-    const ranked = [...files].sort((a, b) => b.changes - a.changes);
+
+    // Prioritize security-sensitive files (routes, api, auth, db, sql, middleware) and high churn files
+    const securityPattern = /(routes|controllers|api|auth|login|db|models|middleware|sql|payment|token|session|password|user|server)/i;
+    const ranked = [...files].sort((a, b) => {
+      const aSec = securityPattern.test(a.filename) ? 1 : 0;
+      const bSec = securityPattern.test(b.filename) ? 1 : 0;
+      if (aSec !== bSec) return bSec - aSec;
+      return b.changes - a.changes;
+    });
+
     const historyNotes = history
       .filter((h) => !h.insufficient)
       .map(
         (h) =>
           `${h.filename}: ${h.commitCount} recent commits, ${h.defectCommitCount} referencing fixes, ${h.authorCount} author(s).`,
       );
-    const review = await runAiReview({
+
+    // Collect project-wide context (manifests, dependencies, frameworks, repo structure) for large projects
+    const projectContext = await collectProjectContext(userId, repoFullName, pr.head.sha).catch(
+      () => undefined,
+    );
+
+    // Check diff cache for the pull request's changed files
+    const prDiffCacheKey = computeDiffCacheKey(
       repoFullName,
-      prNumber,
-      prTitle: pr.title,
-      prBody: pr.body ?? null,
-      baseBranch: pr.base.ref,
-      headBranch: pr.head.ref,
-      files: ranked.slice(0, 30).map((f) => ({
-        filename: f.filename,
-        status: f.status,
-        additions: f.additions,
-        deletions: f.deletions,
-        patch: f.patch,
-      })),
-      historyNotes,
-    });
+      files.map((f) => f.filename + (f.patch ?? "")).join("::"),
+      "gpt-4o",
+    );
+    const cachedReview = getCachedDiffFindings(prDiffCacheKey);
+
+    let review: Awaited<ReturnType<typeof runAiReview>>;
+    if (cachedReview) {
+      logStructured("info", "ai_review_diff_cache_hit", {
+        repoFullName,
+        prNumber,
+        cachedFindingsCount: cachedReview.length,
+      });
+      review = {
+        ok: true,
+        findings: cachedReview as never,
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      };
+    } else {
+      review = await runAiReview({
+        repoFullName,
+        prNumber,
+        prTitle: pr.title,
+        prBody: pr.body ?? null,
+        baseBranch: pr.base.ref,
+        headBranch: pr.head.ref,
+        files: ranked.slice(0, 15).map((f) => ({
+          filename: f.filename,
+          status: f.status,
+          additions: f.additions,
+          deletions: f.deletions,
+          patch: f.patch,
+        })),
+        historyNotes,
+        projectContext,
+      });
+
+      if (review.ok) {
+        setCachedDiffFindings(prDiffCacheKey, review.findings as never);
+      }
+    }
 
     const aiUsage: AiTokenUsage = review.usage ?? {
       promptTokens: 0,
@@ -394,6 +471,29 @@ export async function processAnalysis(userId: string, analysisId: string) {
     const validated = review.ok
       ? validateAiFindings(review.findings, reviewFiles)
       : { valid: [], rejected: 0 };
+
+    // ── Dedicated Scanners: Credential Leaks, Dependency CVEs, and OWASP SAST
+    const secretFindings = scanFilesForSecrets(reviewFiles);
+    const dependencyFindings = scanFilesForVulnerableDependencies(reviewFiles);
+    const sastFindings = scanFilesForSast(reviewFiles);
+
+    // Merge high-precision scanner findings (avoiding duplicates)
+    for (const sf of secretFindings) {
+      if (!validated.valid.some((v) => v.file === sf.file && v.line === sf.line)) {
+        validated.valid.unshift(sf);
+      }
+    }
+    for (const sast of sastFindings) {
+      if (!validated.valid.some((v) => v.file === sast.file && v.line === sast.line)) {
+        validated.valid.push(sast);
+      }
+    }
+    for (const df of dependencyFindings) {
+      if (!validated.valid.some((v) => v.file === df.file && v.title === df.title)) {
+        validated.valid.push(df);
+      }
+    }
+
 
     // ── Stage: risk_calculation ────────────────────────────────────
     await setStage(analysisId, "risk_calculation");
@@ -514,6 +614,67 @@ export async function processAnalysis(userId: string, analysisId: string) {
         link: `/analysis/${analysisId}`,
       });
     }
+
+    // Evaluate CI Security Quality Gate
+    const qualityGate = evaluateQualityGate(DEFAULT_SECURITY_POLICY, {
+      riskScore: risk.score ?? 0,
+      findings: validated.valid,
+    });
+
+    // Post final commit status on GitHub PR
+    void createGitHubCommitStatus(
+      userId,
+      repoFullName,
+      pr.head.sha,
+      qualityGate.status,
+      qualityGate.summary.slice(0, 140),
+    ).catch(() => {});
+
+    // Post inline PR review comments (non-blocking)
+    void postPrReviewComments({
+      userId,
+      repoFullName,
+      prNumber,
+      headSha: pr.head.sha,
+      riskScore: risk.score ?? 0,
+      findings: validated.valid.map((f) => ({
+        file_path: f.file,
+        line_number: f.line,
+        title: f.title,
+        description: f.problem,
+        severity: f.severity,
+        category: f.category,
+        confidence: f.confidence,
+        suggested_fix: f.suggested_fix ?? null,
+        evidence: f.evidence ?? null,
+      })),
+      prFiles: files,
+    }).catch((err) => {
+      logStructured("warn", "pr_review_bot_failed", {
+        analysisId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
+
+    // Dispatch security webhook alert (Slack/Discord) if alert webhook configured
+    const criticalCount = validated.valid.filter((f) => f.severity === "critical").length;
+    const highCount = validated.valid.filter((f) => f.severity === "high").length;
+    const appBaseUrl = process.env["APP_URL"] ?? "http://localhost:8080";
+
+    void dispatchSecurityAlert({
+      repoFullName,
+      prNumber,
+      prTitle: pr.title,
+      prAuthor: pr.user?.login,
+      riskScore: risk.score ?? 0,
+      riskLevel: risk.level ?? "medium",
+      qualityGatePassed: qualityGate.passed,
+      qualityGateReason: qualityGate.reason,
+      criticalCount,
+      highCount,
+      totalFindings: validated.valid.length,
+      analysisUrl: `${appBaseUrl}/analysis/${analysisId}`,
+    }).catch(() => {});
 
     return { status: "completed" as const };
   } catch (e) {

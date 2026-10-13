@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Github } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BuggersWordmark } from "@/components/brand/BugMark";
+import { BugMark, BuggersWordmark } from "@/components/brand/BugMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,40 +151,43 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="mx-auto w-full max-w-6xl px-5 py-5">
-        <Link to="/">
-          <BuggersWordmark />
-        </Link>
-      </header>
-      <main className="flex flex-1 items-center justify-center px-5 pb-16">
-        <div className="surface-card w-full max-w-md p-7">
-          <h1 className="text-display text-2xl font-bold">
-            {mode === "signin" ? "Sign in to Buggers" : "Create your Buggers account"}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8">
+      <div className="w-full max-w-[380px]">
+        {/* Centered Brand Header */}
+        <div className="mb-6 flex flex-col items-center text-center">
+          <Link to="/" className="inline-flex items-center gap-2 transition-opacity hover:opacity-80">
+            <BugMark className="h-6 w-6 text-primary" />
+            <span className="text-display text-base font-extrabold tracking-tight">BUGGERS</span>
+          </Link>
+          <h1 className="mt-3 text-display text-xl font-bold tracking-tight text-foreground">
+            {mode === "signin" ? "Sign in to Buggers" : "Create your account"}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             Sign in with GitHub, Google, or email to access your dashboard.
           </p>
+        </div>
 
-          <div className="mt-6 flex flex-col gap-2.5">
+        {/* Auth Card */}
+        <div className="surface-card rounded-xl p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-2">
             <Button
               type="button"
-              className="w-full gap-2 font-medium"
+              className="h-9 w-full gap-2 text-xs font-medium"
               onClick={handleGitHub}
               disabled={busy}
             >
-              <Github className="h-4 w-4" />
+              <Github className="h-3.5 w-3.5" />
               Continue with GitHub
             </Button>
 
             <Button
               type="button"
               variant="outline"
-              className="w-full gap-2 font-medium"
+              className="h-9 w-full gap-2 text-xs font-medium"
               onClick={handleGoogle}
               disabled={busy}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -206,27 +209,28 @@ function AuthPage() {
             </Button>
           </div>
 
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="my-4 flex items-center gap-3 text-[11px] text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
             or use email
             <span className="h-px flex-1 bg-border" />
           </div>
 
-          <form className="space-y-4" onSubmit={handleEmail}>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+          <form className="space-y-3" onSubmit={handleEmail}>
+            <div className="space-y-1">
+              <Label htmlFor="email" className="text-xs">Email</Label>
               <Input
                 id="email"
                 type="email"
                 autoComplete="email"
                 placeholder="you@example.com"
                 required
+                className="h-9 text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1">
+              <Label htmlFor="password" className="text-xs">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -234,11 +238,12 @@ function AuthPage() {
                 placeholder="••••••••"
                 required
                 minLength={6}
+                className="h-9 text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <Button type="submit" variant="secondary" className="w-full" disabled={busy}>
+            <Button type="submit" variant="secondary" className="h-9 w-full text-xs font-medium" disabled={busy}>
               {busy
                 ? "Processing..."
                 : mode === "signin"
@@ -249,7 +254,7 @@ function AuthPage() {
 
           <button
             type="button"
-            className="mt-5 w-full text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
+            className="mt-4 w-full text-center text-xs text-muted-foreground underline-offset-4 hover:underline"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           >
             {mode === "signin"
@@ -257,7 +262,7 @@ function AuthPage() {
               : "Already have an account? Sign in"}
           </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

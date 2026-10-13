@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { getRepositoryOverview } from "@/lib/github.functions";
 import { PageHeader, StatCard, timeAgo, errMsg } from "@/components/layout/PageHeader";
-import { ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { PageSkeleton } from "@/components/LoadingSkeletons";
+import { ErrorState } from "@/components/status/EmptyState";
 import { PullList } from "@/components/github/PullList";
 import { Button } from "@/components/ui/button";
 
@@ -17,11 +18,18 @@ function RepoOverview() {
   const full = `${owner}/${repo}`;
   const q = useQuery({ queryKey: ["repo", full], queryFn: () => getRepositoryOverview({ data: { repoFullName: full } }) });
 
-  if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState message={errMsg(q.error)} action={<Link to="/repositories" className="text-sm underline">Back to repositories</Link>} />;
+  if (q.isLoading) return <PageSkeleton />;
+  if (q.error)
+    return (
+      <ErrorState
+        message={errMsg(q.error)}
+        onRetry={() => q.refetch()}
+        action={<Link to="/repositories" className="text-sm underline">Back to repositories</Link>}
+      />
+    );
   const d = q.data!;
   return (
-    <div>
+    <div className="page-view">
       <PageHeader
         title={d.repo.fullName}
         description={d.repo.description ?? "No description"}

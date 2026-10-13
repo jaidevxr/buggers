@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { listTickets, updateTicket } from "@/lib/findings.functions";
 import { PageHeader, timeAgo, errMsg } from "@/components/layout/PageHeader";
-import { EmptyState, ErrorState, LoadingState } from "@/components/status/EmptyState";
+import { TicketsSkeleton } from "@/components/LoadingSkeletons";
+import { EmptyState, ErrorState } from "@/components/status/EmptyState";
 import { SeverityBadge } from "@/components/status/StatusBadges";
 
 export const Route = createFileRoute("/_authenticated/tickets")({
@@ -26,11 +27,11 @@ function Tickets() {
     } catch (e) { toast.error(errMsg(e)); }
   }
 
-  if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState message={errMsg(q.error)} />;
+  if (q.isLoading) return <TicketsSkeleton />;
+  if (q.error) return <ErrorState message={errMsg(q.error)} onRetry={() => q.refetch()} />;
   const rows = q.data!.tickets;
   return (
-    <div>
+    <div className="page-view">
       <PageHeader title="Tickets" description="Findings turned into actionable work." />
       {rows.length === 0 ? (
         <EmptyState title="No tickets yet" description="Open a finding and choose “Create ticket”." action={<Link to="/findings" className="text-sm underline">Go to findings</Link>} />
