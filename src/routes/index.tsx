@@ -74,14 +74,14 @@ export function Landing() {
               to="/how-it-works"
               className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors duration-200"
             >
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
               <span>How it works</span>
             </Link>
             <Link
               to="/docs"
               className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors duration-200"
             >
-              <BookOpen className="h-3.5 w-3.5 text-slate-400" />
+              <BookOpen className="h-3.5 w-3.5 text-zinc-500" />
               <span>Docs</span>
             </Link>
           </nav>
@@ -99,28 +99,31 @@ export function Landing() {
       {/* Main Full-Bleed Atmospheric Night Studio Hero Section (4K Uncompressed Background) */}
       <section
         id="hero"
-        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-center items-center px-4 sm:px-6 py-24"
+        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
         style={{ backgroundImage: `url('/landing-bg.png')` }}
       >
         {/* Soft atmospheric night vignette overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-[#07090e] pointer-events-none" />
 
         {/* Natural Ambient Lamp Breathing Animation (Positioned near the warm desk lamp) */}
-        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
+        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-950/20 blur-3xl animate-lamp-breathe" />
 
         {/* Subtle, Organic Lakeside Light Twinkling (Distant cottage reflections on the water) */}
-        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1" />
-        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2" />
-        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3" />
+        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-zinc-300/40 blur-[0.5px] animate-soft-twinkle-1" />
+        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-zinc-200/50 blur-[0.5px] animate-soft-twinkle-2" />
+        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-zinc-400/40 blur-[0.5px] animate-soft-twinkle-3" />
 
         {/* Gentle, Natural Warm Filament Accent Following Cursor (Zero neon, zero harsh bloom) */}
         <div
-          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
+          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.015] blur-3xl transition-all duration-700 ease-out"
           style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
         />
 
+        {/* Deep, seamless multi-stop bottom gradient blend melting completely into showcase */}
+        <div className="absolute inset-x-0 bottom-0 h-80 sm:h-[480px] bg-gradient-to-t from-[#07090e] via-[#07090e]/95 via-45% via-[#07090e]/60 via-75% to-transparent pointer-events-none z-10" />
+
         {/* Centered Hero Content */}
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
+        <div className="relative z-20 mx-auto max-w-4xl text-center">
           {/* Main Heading: Buggers */}
           <h1 className="font-display text-6xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             Buggers
@@ -154,18 +157,16 @@ export function Landing() {
       </section>
 
       {/* ======================================================== */}
-      {/* AUTHENTIC BUGGERS PRODUCT SECTION (Pure project functionality) */}
-      {/* ======================================================== */}
-      {/* ======================================================== */}
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (MongoDB-Inspired 2-Column Split) */}
       {/* ======================================================== */}
-      <section className="relative z-10 bg-[#0a0c10] border-t border-white/10 py-24 sm:py-32">
+      <section className="relative z-10 bg-[#07090e] -mt-1 pt-12 sm:pt-20 pb-24 sm:pb-36">
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#07090e] to-transparent pointer-events-none" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Data & Regression Protection (Text on Left, PR #184 Card on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-4">
-              <span className="text-[11px] font-mono font-bold tracking-wider text-amber-400 uppercase">
+              <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
                 CODE REVIEW &amp; REGRESSION PROTECTION
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-[1.15]">
@@ -177,7 +178,7 @@ export function Landing() {
               <div className="pt-2">
                 <Link
                   to="/how-it-works"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-amber-300 transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-zinc-200 transition-colors group"
                 >
                   <span>Explore triage architecture</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -186,14 +187,14 @@ export function Landing() {
             </div>
 
             {/* PR #184 Realistic Triage Card */}
-            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#11141e] p-5 sm:p-7 shadow-xl">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
                 <div>
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs text-amber-400 font-semibold">
+                    <span className="font-mono text-xs text-zinc-300 font-semibold">
                       PR #184: payment-service
                     </span>
-                    <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-rose-400 font-mono">
+                    <span className="rounded-full bg-rose-950/40 border border-rose-900/40 px-2.5 py-0.5 text-[11px] font-semibold text-rose-300/80 font-mono">
                       HIGH · 82 Risk
                     </span>
                   </div>
@@ -205,7 +206,7 @@ export function Landing() {
                   </p>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-mono text-emerald-400">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-900/40 bg-emerald-950/40 px-2.5 py-1 text-xs font-mono text-emerald-300/80">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Analysis Ready
                 </span>
@@ -214,7 +215,7 @@ export function Landing() {
               {/* Real Findings */}
               <div className="mt-4 space-y-2">
                 <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
-                  <span className="rounded bg-rose-500/20 text-rose-400 px-2 py-0.5 font-mono text-[10px] font-bold uppercase border border-rose-500/30">
+                  <span className="rounded bg-rose-950/60 text-rose-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-rose-900/50">
                     Critical
                   </span>
                   <span className="text-xs font-medium text-slate-200">
@@ -223,7 +224,7 @@ export function Landing() {
                 </div>
 
                 <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
-                  <span className="rounded bg-amber-500/20 text-amber-400 px-2 py-0.5 font-mono text-[10px] font-bold uppercase border border-amber-500/30">
+                  <span className="rounded bg-amber-950/60 text-amber-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-amber-900/50">
                     High
                   </span>
                   <span className="text-xs font-medium text-slate-200">
@@ -232,7 +233,7 @@ export function Landing() {
                 </div>
 
                 <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-black/40 p-2.5">
-                  <span className="rounded bg-blue-500/20 text-blue-400 px-2 py-0.5 font-mono text-[10px] font-bold uppercase border border-blue-500/30">
+                  <span className="rounded bg-slate-900 text-slate-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-slate-800">
                     Medium
                   </span>
                   <span className="text-xs font-medium text-slate-200">
@@ -248,30 +249,30 @@ export function Landing() {
                   <span>Lines 42–44</span>
                 </div>
                 <div className="p-3 space-y-1 text-[11px]">
-                  <div className="rounded bg-rose-500/15 text-rose-300 px-2.5 py-1">
+                  <div className="rounded bg-rose-950/30 text-rose-300/80 px-2.5 py-1 border-l-2 border-rose-900/60">
                     − if amount &lt;= order.total:
                   </div>
-                  <div className="rounded bg-emerald-500/15 text-emerald-300 px-2.5 py-1">
+                  <div className="rounded bg-emerald-950/30 text-emerald-300/80 px-2.5 py-1 border-l-2 border-emerald-900/60">
                     + if amount != order.total:
                   </div>
-                  <div className="rounded bg-emerald-500/15 text-emerald-300 px-2.5 py-1">
+                  <div className="rounded bg-emerald-950/30 text-emerald-300/80 px-2.5 py-1 border-l-2 border-emerald-900/60">
                     + &nbsp; amount = order.total
                   </div>
                 </div>
               </div>
 
               {/* Verified Remediation Advisory */}
-              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-slate-300 leading-relaxed">
-                <div className="flex items-center gap-2 font-semibold text-amber-300 text-xs">
+              <div className="mt-4 rounded-xl border border-white/10 bg-[#0e121a] p-3.5 text-xs text-slate-300 leading-relaxed transition-all duration-200 hover:border-white/15">
+                <div className="flex items-center gap-2 font-semibold text-slate-200 text-xs">
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>AI Remediation Suggestion</span>
                 </div>
                 <p className="mt-1.5 text-[11px] text-slate-300">
-                  Logic inversion detected: Comparing with <code className="font-mono text-amber-300">!=</code> causes partial refunds to overwrite total amounts. Wrap operations in a database transaction to prevent race conditions.
+                  Logic inversion detected: Comparing with <code className="font-mono text-zinc-300">!=</code> causes partial refunds to overwrite total amounts. Wrap operations in a database transaction to prevent race conditions.
                 </p>
-                <div className="mt-2 flex items-center gap-1.5 text-emerald-400 font-mono text-[10px]">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>Verified against repository churn history</span>
+                <div className="mt-2 flex items-center gap-1.5 text-zinc-400 font-mono text-[10px]">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-800/80" />
+                  <span className="text-slate-400">Verified against repository churn history</span>
                 </div>
               </div>
             </div>
@@ -280,10 +281,10 @@ export function Landing() {
           {/* Feature 2: Churn & P95 Risk Engine (Alternating: Metrics Card on Left, Text on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Churn & Volatility Visual Card */}
-            <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl border border-white/10 bg-[#11141e] p-5 sm:p-7 shadow-xl space-y-4">
+            <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
-                  <BrainCircuit className="h-4 w-4 text-blue-400" />
+                  <BrainCircuit className="h-4 w-4 text-slate-400" />
                   <span className="text-xs font-semibold text-white">Repository Churn &amp; Volatility Metrics</span>
                 </div>
                 <span className="font-mono text-[11px] text-slate-400">P95 Confidence: 99.4%</span>
@@ -292,13 +293,13 @@ export function Landing() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
                   <div className="text-[10px] font-mono uppercase text-slate-400">Test Coverage Delta</div>
-                  <div className="mt-1 text-xl font-bold text-rose-400 font-mono">−14.2%</div>
+                  <div className="mt-1 text-xl font-bold text-rose-300/85 font-mono">−14.2%</div>
                   <div className="text-[10px] text-slate-500 mt-0.5">Critical paths left uncovered</div>
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
                   <div className="text-[10px] font-mono uppercase text-slate-400">Cyclomatic Complexity</div>
-                  <div className="mt-1 text-xl font-bold text-amber-400 font-mono">+8 Delta</div>
+                  <div className="mt-1 text-xl font-bold text-amber-300/85 font-mono">+8 Delta</div>
                   <div className="text-[10px] text-slate-500 mt-0.5">Nested conditional branches</div>
                 </div>
               </div>
@@ -306,7 +307,7 @@ export function Landing() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-rose-400" />
+                    <span className="h-2 w-2 rounded-full bg-rose-900/80" />
                     <span className="text-slate-200">paymentValidator.ts</span>
                   </div>
                   <span className="font-mono text-[11px] text-slate-400">Top 5% volatile in repo (12 defect rollbacks)</span>
@@ -314,7 +315,7 @@ export function Landing() {
 
                 <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-900/80" />
                     <span className="text-slate-200">stripeGateway.ts</span>
                   </div>
                   <span className="font-mono text-[11px] text-slate-400">Clean ownership pattern (98% author overlap)</span>
@@ -323,13 +324,13 @@ export function Landing() {
 
               <div className="rounded-xl border border-white/10 bg-black/30 p-3 flex items-center justify-between text-xs">
                 <span className="text-slate-400">Risk Score Evaluation:</span>
-                <span className="font-mono font-bold text-amber-400">82 / 100 (HIGH REGRESSION RISK)</span>
+                <span className="font-mono font-bold text-amber-300/80">82 / 100 (HIGH REGRESSION RISK)</span>
               </div>
             </div>
 
             {/* Text on Right */}
             <div className="lg:col-span-5 order-1 lg:order-2 space-y-4">
-              <span className="text-[11px] font-mono font-bold tracking-wider text-blue-400 uppercase">
+              <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
                 INTELLIGENCE &amp; VOLATILITY ENGINE
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-[1.15]">
@@ -341,7 +342,7 @@ export function Landing() {
               <div className="pt-2">
                 <Link
                   to="/docs"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-blue-300 transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-zinc-200 transition-colors group"
                 >
                   <span>Explore risk methodology in Docs</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -353,19 +354,19 @@ export function Landing() {
           {/* Feature 3: CI Quality Gates & Policy (Text on Left, Config Card on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-4">
-              <span className="text-[11px] font-mono font-bold tracking-wider text-emerald-400 uppercase">
+              <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
                 CI / CD &amp; MERGE GATES
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-[1.15]">
                 Enforce quality gates with declarative repository rules
               </h2>
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                Define review thresholds with a simple <code className="font-mono text-emerald-300 bg-white/5 px-1.5 py-0.5 rounded">.buggers.yml</code> in your repository root. Set GitHub check runs to automatically block pull request merges when critical severity findings or high risk are detected.
+                Define review thresholds with a simple <code className="font-mono text-zinc-300 bg-white/5 px-1.5 py-0.5 rounded">.buggers.yml</code> in your repository root. Set GitHub check runs to automatically block pull request merges when critical severity findings or high risk are detected.
               </p>
               <div className="pt-2">
                 <Link
                   to="/docs"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-emerald-300 transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white hover:text-zinc-200 transition-colors group"
                 >
                   <span>View .buggers.yml configuration reference</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -374,10 +375,10 @@ export function Landing() {
             </div>
 
             {/* Config & Check Run Card */}
-            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#11141e] p-5 sm:p-7 shadow-xl space-y-4">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#0b0e15] p-5 sm:p-7 shadow-2xl transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-black/80 space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
-                  <FileCode className="h-4 w-4 text-emerald-400" />
+                  <FileCode className="h-4 w-4 text-slate-400" />
                   <span className="text-xs font-semibold text-white">.buggers.yml</span>
                 </div>
                 <span className="font-mono text-[11px] text-slate-400">Repository Root Config</span>
@@ -398,9 +399,9 @@ ignore:
               </div>
 
               {/* GitHub Check Run Status Simulation */}
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 flex items-center justify-between">
+              <div className="rounded-xl border border-rose-900/30 bg-rose-950/25 p-3.5 flex items-center justify-between transition-all duration-200 hover:border-rose-900/40">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 font-bold text-xs">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-950/60 text-rose-300/80 font-bold text-xs border border-rose-900/40">
                     ✕
                   </span>
                   <div>
@@ -408,7 +409,7 @@ ignore:
                     <div className="text-[11px] text-slate-400">Risk 82 exceeds threshold 75 · Merge Blocked</div>
                   </div>
                 </div>
-                <span className="font-mono text-[10px] text-rose-400 uppercase tracking-wider font-semibold">
+                <span className="font-mono text-[10px] text-rose-300/70 uppercase tracking-wider font-semibold">
                   Required Check
                 </span>
               </div>
@@ -417,11 +418,11 @@ ignore:
 
           {/* Section 4: 4 Core Pillars of Buggers */}
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 pt-6">
-            <div className="rounded-2xl border border-white/10 bg-[#11141e] p-5 space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500/15 text-orange-400">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-amber-300/80">
                 <Zap className="h-4 w-4" />
               </div>
-              <span className="font-mono text-[11px] font-semibold text-orange-400 block">
+              <span className="font-mono text-[11px] font-semibold text-zinc-500 block">
                 01 · Instant Webhook
               </span>
               <h3 className="text-sm font-semibold text-white">Sub-Second Trigger</h3>
@@ -430,11 +431,11 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#11141e] p-5 space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/15 text-blue-400">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-slate-300">
                 <BrainCircuit className="h-4 w-4" />
               </div>
-              <span className="font-mono text-[11px] font-semibold text-blue-400 block">
+              <span className="font-mono text-[11px] font-semibold text-zinc-500 block">
                 02 · Commit Churn
               </span>
               <h3 className="text-sm font-semibold text-white">Historical Context</h3>
@@ -443,11 +444,11 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#11141e] p-5 space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/15 text-rose-400">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-rose-300/80">
                 <ShieldAlert className="h-4 w-4" />
               </div>
-              <span className="font-mono text-[11px] font-semibold text-rose-400 block">
+              <span className="font-mono text-[11px] font-semibold text-zinc-500 block">
                 03 · Risk Scoring
               </span>
               <h3 className="text-sm font-semibold text-white">P95 Regression Rate</h3>
@@ -456,11 +457,11 @@ ignore:
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#11141e] p-5 space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+            <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-5 space-y-2.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-1.5 hover:shadow-xl hover:bg-[#0e121c]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/5 text-emerald-300/80">
                 <CheckCircle2 className="h-4 w-4" />
               </div>
-              <span className="font-mono text-[11px] font-semibold text-emerald-400 block">
+              <span className="font-mono text-[11px] font-semibold text-zinc-500 block">
                 04 · Grounded Fixes
               </span>
               <h3 className="text-sm font-semibold text-white">Zero Phantom Lines</h3>
@@ -471,7 +472,7 @@ ignore:
           </div>
 
           {/* Section 5: Bottom CTA */}
-          <div className="rounded-2xl border border-white/10 bg-[#11141e] p-8 sm:p-12 text-center space-y-4 shadow-xl">
+          <div className="rounded-2xl border border-white/10 bg-[#0b0e15] p-8 sm:p-12 text-center space-y-4 shadow-2xl transition-all duration-300 hover:border-white/15">
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Ready to review pull requests with ease?
             </h3>
@@ -529,7 +530,8 @@ ignore:
             >
               Sign In
             </Link>
-            <span className="text-emerald-400 font-mono text-[11px]">
+            <span className="inline-flex items-center gap-1.5 text-zinc-400 font-mono text-[11px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-800/80" />
               All Systems Normal
             </span>
           </div>

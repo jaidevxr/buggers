@@ -168,9 +168,9 @@ export function AuthPage() {
             </span>
             <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
               {mode === "signin" ? (
-                <>Welcome back<span className="text-[#0084ff]">.</span></>
+                <>Welcome back<span className="text-zinc-500">.</span></>
               ) : (
-                <>Create new account<span className="text-[#0084ff]">.</span></>
+                <>Create new account<span className="text-zinc-500">.</span></>
               )}
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-slate-300">
@@ -178,7 +178,7 @@ export function AuthPage() {
               <button
                 type="button"
                 onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                className="text-[#0084ff] font-semibold hover:underline cursor-pointer transition-colors duration-200"
+                className="text-white font-semibold hover:underline cursor-pointer transition-colors duration-200"
               >
                 {mode === "signin" ? "Sign Up" : "Log In"}
               </button>
@@ -228,7 +228,7 @@ export function AuthPage() {
           <form className="space-y-3.5" onSubmit={handleSubmit}>
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
                   <label className="block text-[10px] font-medium text-slate-400">First name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -243,7 +243,7 @@ export function AuthPage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
                   <label className="block text-[10px] font-medium text-slate-400">Last name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -260,7 +260,7 @@ export function AuthPage() {
               </div>
             )}
 
-            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
               <label className="block text-[10px] font-medium text-slate-400">Email</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -275,7 +275,7 @@ export function AuthPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
               <label className="block text-[10px] font-medium text-slate-400">Password</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -310,11 +310,11 @@ export function AuthPage() {
               <button
                 type="submit"
                 disabled={Boolean(busyProvider)}
-                className="flex-1 rounded-xl bg-[#0084ff] hover:bg-[#0074e0] text-white py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="flex-1 rounded-xl bg-white hover:bg-slate-200 text-black py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "email" ? (
                   <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-black" />
                     <span>Processing…</span>
                   </>
                 ) : (
@@ -328,7 +328,7 @@ export function AuthPage() {
         {/* Bottom Footer Row */}
         <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-slate-400">
           <span className="flex items-center gap-1.5">
-            <Shield className="h-3.5 w-3.5 text-emerald-400" />
+            <Shield className="h-3.5 w-3.5 text-zinc-500" />
             <span>Encrypted repository credentials</span>
           </span>
           <div className="flex items-center gap-4">
