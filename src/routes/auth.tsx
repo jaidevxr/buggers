@@ -143,8 +143,8 @@ export function AuthPage() {
       className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-cover bg-center bg-no-repeat text-slate-100 flex flex-col justify-between"
       style={{ backgroundImage: `url('/landing-bg.png')` }}
     >
-      {/* Overall backdrop tint: subtly darker on the side where the form sits, preserving the full background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/92 via-[#07090e]/65 to-black/20 pointer-events-none" />
+      {/* Overall backdrop tint: balanced atmospheric studio darkening */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/75 pointer-events-none" />
 
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
@@ -160,170 +160,164 @@ export function AuthPage() {
           </div>
         </header>
 
-        {/* Center/Side Form - Comfortably sized and spacious, NOT compressed against left */}
-        <div className="w-full max-w-xl lg:max-w-2xl px-6 sm:px-12 lg:px-20 py-8 my-auto space-y-6">
-          <div>
-            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
-              START FOR FREE
-            </span>
-            <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              {mode === "signin" ? (
-                <>Welcome back<span className="text-zinc-500">.</span></>
-              ) : (
-                <>Create new account<span className="text-zinc-500">.</span></>
-              )}
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-300">
-              {mode === "signin" ? "Need an account? " : "Already a member? "}
-              <button
-                type="button"
-                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                className="text-white font-semibold hover:underline cursor-pointer transition-colors duration-200"
-              >
-                {mode === "signin" ? "Sign Up" : "Log In"}
-              </button>
-            </p>
-          </div>
-
-          {/* Symmetrical Social OAuth Buttons */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => handleOAuth("github")}
-              disabled={Boolean(busyProvider)}
-              className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50 backdrop-blur-xs"
-            >
-              {busyProvider === "github" ? (
-                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-              ) : (
-                <Github className="h-4 w-4 text-white" />
-              )}
-              <span className="truncate">{busyProvider === "github" ? "Connecting…" : "GitHub"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleOAuth("google")}
-              disabled={Boolean(busyProvider)}
-              className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50 backdrop-blur-xs"
-            >
-              {busyProvider === "google" ? (
-                <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
-              ) : (
-                <GoogleIcon className="h-4 w-4" />
-              )}
-              <span className="truncate">{busyProvider === "google" ? "Connecting…" : "Google"}</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-white/10" />
-            <span className="absolute bg-[#0c1017]/80 backdrop-blur-sm px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-              Or continue with email
-            </span>
-          </div>
-
-          {/* Form Fields */}
-          <form className="space-y-3.5" onSubmit={handleSubmit}>
-            {mode === "signup" && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
-                  <label className="block text-[10px] font-medium text-slate-400">First name</label>
-                  <div className="flex items-center justify-between mt-0.5">
-                    <input
-                      type="text"
-                      required
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Virat"
-                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
-                    />
-                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
-                  <label className="block text-[10px] font-medium text-slate-400">Last name</label>
-                  <div className="flex items-center justify-between mt-0.5">
-                    <input
-                      type="text"
-                      required
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Kohli"
-                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
-                    />
-                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
-              <label className="block text-[10px] font-medium text-slate-400">Email</label>
-              <div className="flex items-center justify-between mt-0.5">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="virat.kohli@company.com"
-                  className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
-                />
-                <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
-              <label className="block text-[10px] font-medium text-slate-400">Password</label>
-              <div className="flex items-center justify-between mt-0.5">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none font-mono"
-                />
+        {/* Symmetrical Centered Form Card */}
+        <main className="w-full flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_25px_65px_rgba(0,0,0,0.85)] space-y-5 transition-all duration-300">
+            <div className="text-center space-y-1">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+                START FOR FREE
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                {mode === "signin" ? (
+                  <>Welcome back<span className="text-zinc-500">.</span></>
+                ) : (
+                  <>Create new account<span className="text-zinc-500">.</span></>
+                )}
+              </h1>
+              <p className="text-xs text-slate-300">
+                {mode === "signin" ? "Need an account? " : "Already a member? "}
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
+                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                  className="text-white font-semibold hover:underline cursor-pointer transition-colors duration-200"
                 >
-                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  {mode === "signin" ? "Sign Up" : "Log In"}
                 </button>
-              </div>
+              </p>
             </div>
 
-            {/* Action Buttons Row */}
-            <div className="pt-2 flex items-center justify-between gap-3">
+            {/* Symmetrical Social OAuth Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
               <button
                 type="button"
-                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                className="rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-medium text-slate-300 transition-all duration-200 active:scale-[0.985] cursor-pointer"
+                onClick={() => handleOAuth("github")}
+                disabled={Boolean(busyProvider)}
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
-                {mode === "signin" ? "Create account" : "Log In"}
+                {busyProvider === "github" ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+                ) : (
+                  <Github className="h-4 w-4 text-white" />
+                )}
+                <span className="truncate">{busyProvider === "github" ? "Connecting…" : "GitHub"}</span>
               </button>
 
               <button
-                type="submit"
+                type="button"
+                onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex-1 rounded-xl bg-white hover:bg-slate-200 text-black py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
-                {busyProvider === "email" ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-black" />
-                    <span>Processing…</span>
-                  </>
+                {busyProvider === "google" ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
                 ) : (
-                  <span>{mode === "signin" ? "Sign In" : "Create account"}</span>
+                  <GoogleIcon className="h-4 w-4" />
                 )}
+                <span className="truncate">{busyProvider === "google" ? "Connecting…" : "Google"}</span>
               </button>
             </div>
-          </form>
-        </div>
+
+            {/* Symmetrical Divider */}
+            <div className="relative flex items-center justify-center my-3">
+              <div className="w-full border-t border-white/10" />
+              <span className="absolute bg-[#0a0d14] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                Or continue with email
+              </span>
+            </div>
+
+            {/* Form Fields */}
+            <form className="space-y-3.5" onSubmit={handleSubmit}>
+              {mode === "signup" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                    <label className="block text-[10px] font-medium text-slate-400">First name</label>
+                    <div className="flex items-center justify-between mt-0.5">
+                      <input
+                        type="text"
+                        required
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="Virat"
+                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                      />
+                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                    <label className="block text-[10px] font-medium text-slate-400">Last name</label>
+                    <div className="flex items-center justify-between mt-0.5">
+                      <input
+                        type="text"
+                        required
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Kohli"
+                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                      />
+                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                <label className="block text-[10px] font-medium text-slate-400">Email</label>
+                <div className="flex items-center justify-between mt-0.5">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="virat.kohli@company.com"
+                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                  />
+                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                <label className="block text-[10px] font-medium text-slate-400">Password</label>
+                <div className="flex items-center justify-between mt-0.5">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
+                  >
+                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={Boolean(busyProvider)}
+                  className="w-full rounded-xl bg-white hover:bg-slate-200 text-black py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {busyProvider === "email" ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-black" />
+                      <span>Processing…</span>
+                    </>
+                  ) : (
+                    <span>{mode === "signin" ? "Sign In" : "Create account"}</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </main>
 
         {/* Bottom Footer Row */}
         <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-slate-400">
