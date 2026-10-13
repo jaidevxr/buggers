@@ -39,3 +39,4 @@ dist-ssr
 scratch/
 supabase/.temp/
 .vercel
+.env*
