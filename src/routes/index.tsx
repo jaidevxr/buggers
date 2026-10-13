@@ -103,27 +103,27 @@ export function Landing() {
         style={{ backgroundImage: `url('/landing-bg.png')` }}
       >
         {/* Soft atmospheric night vignette overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-[#07090e] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
 
         {/* Natural Ambient Lamp Breathing Animation (Positioned near the warm desk lamp) */}
-        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-950/20 blur-3xl animate-lamp-breathe" />
+        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
 
         {/* Subtle, Organic Lakeside Light Twinkling (Distant cottage reflections on the water) */}
-        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-zinc-300/40 blur-[0.5px] animate-soft-twinkle-1" />
-        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-zinc-200/50 blur-[0.5px] animate-soft-twinkle-2" />
-        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-zinc-400/40 blur-[0.5px] animate-soft-twinkle-3" />
+        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1" />
+        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2" />
+        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3" />
 
         {/* Gentle, Natural Warm Filament Accent Following Cursor (Zero neon, zero harsh bloom) */}
         <div
-          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.015] blur-3xl transition-all duration-700 ease-out"
+          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
           style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
         />
 
-        {/* Deep, seamless multi-stop bottom gradient blend melting completely into showcase */}
-        <div className="absolute inset-x-0 bottom-0 h-80 sm:h-[480px] bg-gradient-to-t from-[#07090e] via-[#07090e]/95 via-45% via-[#07090e]/60 via-75% to-transparent pointer-events-none z-10" />
+        {/* Slight subtle fade at bottom edge below visible screen */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#07090e] to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
-        <div className="relative z-20 mx-auto max-w-4xl text-center">
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
           {/* Main Heading: Buggers */}
           <h1 className="font-display text-6xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             Buggers
@@ -159,8 +159,7 @@ export function Landing() {
       {/* ======================================================== */}
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (MongoDB-Inspired 2-Column Split) */}
       {/* ======================================================== */}
-      <section className="relative z-10 bg-[#07090e] -mt-1 pt-12 sm:pt-20 pb-24 sm:pb-36">
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#07090e] to-transparent pointer-events-none" />
+      <section className="relative z-10 bg-[#07090e] pt-12 sm:pt-20 pb-24 sm:pb-36">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Data & Regression Protection (Text on Left, PR #184 Card on Right) */}
