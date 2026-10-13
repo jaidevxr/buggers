@@ -236,7 +236,7 @@ export function AuthPage() {
                       required
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Michał"
+                      placeholder="Virat"
                       className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
                     />
                     <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
@@ -251,7 +251,7 @@ export function AuthPage() {
                       required
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Masiak"
+                      placeholder="Kohli"
                       className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
                     />
                     <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
@@ -268,7 +268,7 @@ export function AuthPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
+                  placeholder="virat.kohli@company.com"
                   className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
                 />
                 <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
