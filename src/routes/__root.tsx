@@ -167,7 +167,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-[#07090e] page-transition">
+        <div className="min-h-screen w-full bg-[#030304] page-transition">
           <Outlet />
         </div>
         <Toaster richColors position="top-right" />

@@ -26,7 +26,7 @@ export const Route = createFileRoute("/about")({
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#020203] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Unified Public Floating Pill Header */}
       <PublicHeader />
 
@@ -34,7 +34,7 @@ export function AboutPage() {
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-xs font-medium text-slate-300">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/5 px-4 py-1.5 text-xs font-medium text-slate-300">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span>Built For Engineering Teams</span>
           </div>
@@ -50,8 +50,8 @@ export function AboutPage() {
 
         {/* 3 Core Pillars */}
         <div className="mt-16 grid gap-6 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-7 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-400">
+          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-7 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
               <Cpu className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-white">Repository Churn Context</h3>
@@ -60,8 +60,8 @@ export function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-7 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-7 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-white">Zero Noise Guarantee</h3>
@@ -70,8 +70,8 @@ export function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#12151e] p-7 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 shadow-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400">
+          <div className="rounded-2xl border border-white/5 bg-[#07070a] p-7 transition-all duration-300 hover:border-white/10 hover:-translate-y-1 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
               <GitPullRequest className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-white">Instant GitHub Integration</h3>
@@ -82,7 +82,7 @@ export function AboutPage() {
         </div>
 
         {/* CTA Banner */}
-        <div className="mt-16 rounded-3xl border border-white/10 bg-[#0e111a] p-8 sm:p-12 text-center relative overflow-hidden">
+        <div className="mt-16 rounded-3xl border border-white/5 bg-[#060608] p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
           <div className="relative z-10 max-w-xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Ready to ship safer pull requests?
@@ -104,7 +104,7 @@ export function AboutPage() {
       </main>
 
       {/* Consistent Matte-Black Footer */}
-      <footer className="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500 bg-[#0a0c10]">
+      <footer className="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500 bg-[#020203]">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-400">Buggers</span>

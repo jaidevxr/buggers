@@ -159,7 +159,7 @@ export function AuthPage() {
 
         {/* Symmetrical Centered Form Card */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
-          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_25px_65px_rgba(0,0,0,0.85)] space-y-5 transition-all duration-300">
+          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/5 bg-[#060608]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_25px_65px_rgba(0,0,0,0.95)] space-y-5 transition-all duration-300">
             <div className="text-center space-y-1">
               <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
                 START FOR FREE
@@ -189,7 +189,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("github")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/5 bg-[#0a0a0e] hover:bg-[#121217] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "github" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -203,7 +203,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/5 bg-[#0a0a0e] hover:bg-[#121217] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "google" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -216,8 +216,8 @@ export function AuthPage() {
 
             {/* Symmetrical Divider */}
             <div className="relative flex items-center justify-center my-3">
-              <div className="w-full border-t border-white/10" />
-              <span className="absolute bg-[#0a0d14] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="w-full border-t border-white/5" />
+              <span className="absolute bg-[#060608] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
                 Or continue with email
               </span>
             </div>
@@ -226,7 +226,7 @@ export function AuthPage() {
             <form className="space-y-3.5" onSubmit={handleSubmit}>
               {mode === "signup" && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                  <div className="rounded-xl border border-white/5 bg-[#0a0a0e] px-4 py-2.5 transition-all duration-200 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/5">
                     <label className="block text-[10px] font-medium text-slate-400">First name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
@@ -241,7 +241,7 @@ export function AuthPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+                  <div className="rounded-xl border border-white/5 bg-[#0a0a0e] px-4 py-2.5 transition-all duration-200 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/5">
                     <label className="block text-[10px] font-medium text-slate-400">Last name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
@@ -258,7 +258,7 @@ export function AuthPage() {
                 </div>
               )}
 
-              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+              <div className="rounded-xl border border-white/5 bg-[#0a0a0e] px-4 py-2.5 transition-all duration-200 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/5">
                 <label className="block text-[10px] font-medium text-slate-400">Email</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
@@ -273,7 +273,7 @@ export function AuthPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10">
+              <div className="rounded-xl border border-white/5 bg-[#0a0a0e] px-4 py-2.5 transition-all duration-200 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/5">
                 <label className="block text-[10px] font-medium text-slate-400">Password</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
