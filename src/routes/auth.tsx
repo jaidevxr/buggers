@@ -139,224 +139,224 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#12141a] flex items-center justify-center p-4 sm:p-6 lg:p-10 text-slate-100 antialiased">
-      {/* Outer Floating Window Container (Matching Image 2) */}
-      <div className="relative w-full max-w-4xl rounded-[28px] overflow-hidden bg-[#181d29] border border-white/10 shadow-[0_25px_80px_rgba(0,0,0,0.85)] grid grid-cols-1 md:grid-cols-12 min-h-[580px]">
-        {/* Left Form Panel */}
-        <div className="p-8 sm:p-10 flex flex-col justify-between md:col-span-7 bg-[#181d29] z-10">
-          {/* Top Bar inside Card */}
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <span className="h-3.5 w-3.5 rounded-full bg-[#0084ff] shadow-[0_0_10px_rgba(0,132,255,0.8)]" />
-              <span className="text-sm font-semibold tracking-tight text-white group-hover:text-slate-200">
-                Buggers app.
-              </span>
-            </Link>
-
-            <div className="flex items-center gap-5 text-xs font-medium text-slate-400">
-              <Link to="/" className="hover:text-white transition-colors">Home</Link>
-              <button
-                type="button"
-                onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
-                className="hover:text-white transition-colors"
-              >
-                {mode === "signup" ? "Join" : "Create"}
-              </button>
-            </div>
-          </div>
-
-          {/* Form Content Area */}
-          <div className="mt-8 mb-6">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
-              START FOR FREE
+    <div className="min-h-screen w-full bg-[#141721] flex flex-col lg:flex-row text-slate-100 antialiased overflow-x-hidden">
+      {/* Left Full-Height Form Panel (52% on Desktop, 100% on Mobile) */}
+      <div className="w-full lg:w-[52%] min-h-screen flex flex-col justify-between p-6 sm:p-12 lg:p-14 xl:p-16 bg-[#161a24] z-10 border-r border-white/5">
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between w-full">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <span className="h-3.5 w-3.5 rounded-full bg-[#0084ff] shadow-[0_0_12px_rgba(0,132,255,0.8)]" />
+            <span className="text-sm font-semibold tracking-tight text-white group-hover:text-slate-200">
+              Buggers app.
             </span>
+          </Link>
 
-            <h1 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              {mode === "signup" ? (
-                <>
-                  Create new account<span className="text-[#0084ff]">.</span>
-                </>
-              ) : (
-                <>
-                  Welcome back<span className="text-[#0084ff]">.</span>
-                </>
-              )}
-            </h1>
-
-            <p className="mt-2 text-xs text-slate-400">
-              {mode === "signup" ? "Already A Member? " : "Need an account? "}
-              <button
-                type="button"
-                onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
-                className="text-[#0084ff] font-medium hover:underline"
-              >
-                {mode === "signup" ? "Log In" : "Sign Up"}
-              </button>
-            </p>
-
-            {/* Input Form */}
-            <form className="mt-7 space-y-3.5" onSubmit={handleSubmit}>
-              {/* First & Last name row (when in sign-up mode) */}
-              {mode === "signup" && (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                    <label className="block text-[10px] font-medium text-slate-400">First name</label>
-                    <div className="flex items-center justify-between">
-                      <input
-                        type="text"
-                        required
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="Michał"
-                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                    </div>
-                  </div>
-
-                  <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                    <label className="block text-[10px] font-medium text-slate-400">Last name</label>
-                    <div className="flex items-center justify-between">
-                      <input
-                        type="text"
-                        required
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Masiak"
-                        className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Email row */}
-              <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
-                <label className="block text-[10px] font-medium text-slate-400">Email</label>
-                <div className="flex items-center justify-between">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="michal.masiak@anywhere.co"
-                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                  />
-                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
-                </div>
-              </div>
-
-              {/* Password row */}
-              <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2 transition-all">
-                <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
-                <div className="flex items-center justify-between">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-white shrink-0 ml-1"
-                  >
-                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Bottom Action Buttons (Matching Image 2) */}
-              <div className="pt-3 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowOAuthModal(!showOAuthModal)}
-                  className="rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white px-5 py-2.5 text-xs font-medium transition-all active:scale-[0.985] flex items-center gap-1.5"
-                >
-                  <Layers className="h-3.5 w-3.5 text-slate-300" />
-                  <span>Change method</span>
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={Boolean(busyProvider)}
-                  className="rounded-full bg-[#0084ff] hover:bg-[#0074e0] text-white px-7 py-2.5 text-xs font-semibold shadow-[0_0_24px_rgba(0,132,255,0.45)] transition-all active:scale-[0.985] flex items-center gap-2 disabled:opacity-50"
-                >
-                  {busyProvider === "email" ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Processing…</span>
-                    </>
-                  ) : (
-                    <span>{mode === "signup" ? "Create account" : "Log In"}</span>
-                  )}
-                </button>
-              </div>
-            </form>
-
-            {/* Quick OAuth Selection Modal / Card when "Change method" clicked */}
-            {showOAuthModal && (
-              <div className="mt-4 rounded-xl border border-white/15 bg-[#141824] p-3.5 space-y-2 animate-fade-in">
-                <p className="text-[11px] font-medium text-slate-400 mb-2">Continue with third-party authentication:</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleOAuth("github")}
-                    disabled={Boolean(busyProvider)}
-                    className="flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 py-2 px-3 text-xs font-semibold text-white transition-all"
-                  >
-                    <Github className="h-4 w-4" />
-                    <span>GitHub</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleOAuth("google")}
-                    disabled={Boolean(busyProvider)}
-                    className="flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 py-2 px-3 text-xs font-semibold text-white transition-all"
-                  >
-                    <GoogleIcon className="h-4 w-4" />
-                    <span>Google</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Footer security note */}
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-2">
-            <Shield className="h-3 w-3 text-emerald-400" />
-            <span>End-to-end encrypted repository credentials.</span>
+          <div className="flex items-center gap-5 text-xs font-medium text-slate-400">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              {mode === "signup" ? "Join" : "Create"}
+            </button>
           </div>
         </div>
 
-        {/* Right Photo Panel (Matching Image 2) */}
-        <div
-          className="relative hidden md:block md:col-span-5 bg-cover bg-center overflow-hidden"
-          style={{ backgroundImage: `url('/auth-bg.jpg')` }}
+        {/* Center Form Section */}
+        <div className="my-auto py-8 max-w-md w-full mx-auto">
+          <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+            START FOR FREE
+          </span>
+
+          <h1 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            {mode === "signup" ? (
+              <>
+                Create new account<span className="text-[#0084ff]">.</span>
+              </>
+            ) : (
+              <>
+                Welcome back<span className="text-[#0084ff]">.</span>
+              </>
+            )}
+          </h1>
+
+          <p className="mt-2 text-xs text-slate-400">
+            {mode === "signup" ? "Already A Member? " : "Need an account? "}
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
+              className="text-[#0084ff] font-medium hover:underline cursor-pointer"
+            >
+              {mode === "signup" ? "Log In" : "Sign Up"}
+            </button>
+          </p>
+
+          {/* Form */}
+          <form className="mt-7 space-y-3.5" onSubmit={handleSubmit}>
+            {/* First & Last Name (in Sign Up Mode) */}
+            {mode === "signup" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                  <label className="block text-[10px] font-medium text-slate-400">First name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Michał"
+                      className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                  </div>
+                </div>
+
+                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                  <label className="block text-[10px] font-medium text-slate-400">Last name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Masiak"
+                      className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Email Field */}
+            <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+              <label className="block text-[10px] font-medium text-slate-400">Email</label>
+              <div className="flex items-center justify-between mt-0.5">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="michal.masiak@anywhere.co"
+                  className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none"
+                />
+                <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2.5 transition-all">
+              <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
+              <div className="flex items-center justify-between mt-0.5">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Symmetrical Action Buttons (Matching Image 2) */}
+            <div className="pt-3 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setShowOAuthModal(!showOAuthModal)}
+                className="rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white px-5 py-2.5 text-xs font-medium transition-all active:scale-[0.985] flex items-center gap-1.5 cursor-pointer"
+              >
+                <Layers className="h-3.5 w-3.5 text-slate-300" />
+                <span>Change method</span>
+              </button>
+
+              <button
+                type="submit"
+                disabled={Boolean(busyProvider)}
+                className="rounded-full bg-[#0084ff] hover:bg-[#0074e0] text-white px-7 py-2.5 text-xs font-semibold shadow-[0_0_24px_rgba(0,132,255,0.45)] transition-all active:scale-[0.985] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {busyProvider === "email" ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Processing…</span>
+                  </>
+                ) : (
+                  <span>{mode === "signup" ? "Create account" : "Log In"}</span>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Quick OAuth Selection Drawer/Card */}
+          {showOAuthModal && (
+            <div className="mt-4 rounded-xl border border-white/15 bg-[#141824] p-4 space-y-2.5 animate-fade-in">
+              <p className="text-[11px] font-medium text-slate-400 mb-2">Continue with 1-click authentication:</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("github")}
+                  disabled={Boolean(busyProvider)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 px-3 text-xs font-semibold text-white transition-all cursor-pointer"
+                >
+                  <Github className="h-4 w-4" />
+                  <span>GitHub</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={Boolean(busyProvider)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 px-3 text-xs font-semibold text-white transition-all cursor-pointer"
+                >
+                  <GoogleIcon className="h-4 w-4" />
+                  <span>Google</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Security Note */}
+        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 pt-4 border-t border-white/5">
+          <Shield className="h-3.5 w-3.5 text-emerald-400" />
+          <span>End-to-end encrypted repository credentials.</span>
+        </div>
+      </div>
+
+      {/* Right Full-Height Cinematic Image Panel (48% on Desktop) */}
+      <div
+        className="hidden lg:flex lg:w-[48%] min-h-screen relative bg-cover bg-center flex-col justify-between p-12 overflow-hidden"
+        style={{ backgroundImage: `url('/auth-bg.jpg')` }}
+      >
+        {/* Soft atmospheric gradient overlay blending with left side */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#161a24] via-transparent to-black/35" />
+
+        {/* Organic curved divider edge blending smoothly into left panel */}
+        <svg
+          className="absolute left-0 top-0 bottom-0 h-full w-14 text-[#161a24] pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
         >
-          {/* Subtle dark gradient overlay blending into left panel */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#181d29] via-transparent to-black/40" />
+          <path
+            d="M0,0 Q35,50 0,100 L0,0 Z"
+            fill="currentColor"
+          />
+        </svg>
 
-          {/* Organic soft curved boundary line on left edge */}
-          <svg
-            className="absolute left-0 top-0 bottom-0 h-full w-12 text-[#181d29] pointer-events-none"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0,0 Q30,50 0,100 L0,0 Z"
-              fill="currentColor"
-            />
-          </svg>
+        {/* Top spacer */}
+        <div className="relative z-10" />
 
-          {/* Bottom-right stylized watermark logo matching Image 2 */}
-          <div className="absolute bottom-8 right-8 text-white/90 font-black tracking-tighter text-2xl flex items-center gap-1 select-none pointer-events-none drop-shadow-md">
-            <span>.AW</span>
-          </div>
+        {/* Bottom Right Monogram Watermark (Matching Image 2) */}
+        <div className="relative z-10 self-end text-white/95 font-black tracking-tighter text-3xl select-none drop-shadow-md">
+          <span>.AW</span>
         </div>
       </div>
     </div>
