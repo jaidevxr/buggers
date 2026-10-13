@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
+  ArrowLeft,
   Eye,
   EyeOff,
   Github,
@@ -138,64 +139,68 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#12141a] flex flex-col lg:flex-row text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
-      {/* Left Full-Height Form Panel (52% on Desktop, 100% on Mobile) */}
-      <div className="w-full lg:w-[52%] min-h-screen flex flex-col justify-between p-6 sm:p-12 lg:p-14 xl:p-16 bg-[#161a24] z-10 border-r border-white/5">
-        {/* Top Header Bar with Official BugMark Logo */}
-        <div className="flex items-center justify-between w-full">
-          <Link to="/" className="flex items-center gap-2.5 group transition-opacity duration-200 hover:opacity-85">
-            <BugMark className="h-6 w-6 text-white fill-white" />
-            <span className="text-base font-bold tracking-tight text-white">
-              Buggers
-            </span>
-          </Link>
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex flex-col justify-between items-center relative p-4 sm:p-6 lg:p-10 text-slate-100 antialiased selection:bg-white/20"
+      style={{ backgroundImage: `url('/landing-bg.png')` }}
+    >
+      {/* Whole Screen Dark Overlay (Making it darker and atmospheric as requested) */}
+      <div className="absolute inset-0 bg-black/82 backdrop-blur-[3px] pointer-events-none" />
 
-          <div className="flex items-center gap-5 text-xs font-medium text-slate-400">
-            <Link to="/" className="hover:text-white transition-colors duration-200">
-              Home
-            </Link>
-            <Link to="/how-it-works" className="hover:text-white transition-colors duration-200">
-              How it works
-            </Link>
-          </div>
-        </div>
+      {/* Top Header Link */}
+      <header className="relative z-10 w-full max-w-4xl flex items-center justify-between py-2">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-colors duration-200 group"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
+          <span>Back to Buggers</span>
+        </Link>
 
-        {/* Center Form Section */}
-        <div className="my-auto py-8 max-w-md w-full mx-auto">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
-              START FOR FREE
-            </span>
-            <div className="flex items-center gap-2 text-xs font-medium">
-              <span className="text-slate-400">{mode === "signin" ? "Need an account?" : "Already a member?"}</span>
+        <Link to="/" className="flex items-center gap-2 font-semibold text-white transition-opacity duration-200 hover:opacity-85">
+          <BugMark className="h-5 w-5 text-white fill-white" />
+          <span className="text-sm font-bold tracking-tight text-white">Buggers</span>
+        </Link>
+      </header>
+
+      {/* Center Auth Card */}
+      <main className="relative z-10 w-full max-w-md my-auto py-6">
+        <div className="w-full rounded-3xl border border-white/10 bg-[#0e121a]/90 backdrop-blur-xl p-8 sm:p-9 shadow-[0_30px_90px_rgba(0,0,0,0.9)] transition-all duration-300">
+          {/* Logo & Headline */}
+          <div className="text-center">
+            <BugMark className="mx-auto h-10 w-10 text-white fill-white" />
+
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+                START FOR FREE
+              </span>
+            </div>
+
+            <h1 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              {mode === "signin" ? (
+                <>
+                  Welcome back<span className="text-[#0084ff]">.</span>
+                </>
+              ) : (
+                <>
+                  Create account<span className="text-[#0084ff]">.</span>
+                </>
+              )}
+            </h1>
+
+            <p className="mt-2 text-xs text-slate-400">
+              {mode === "signin" ? "Need an account? " : "Already a member? "}
               <button
                 type="button"
                 onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                className="text-[#0084ff] hover:underline font-semibold cursor-pointer"
+                className="text-[#0084ff] font-semibold hover:underline cursor-pointer transition-colors duration-200"
               >
                 {mode === "signin" ? "Sign Up" : "Log In"}
               </button>
-            </div>
+            </p>
           </div>
 
-          <h1 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {mode === "signin" ? (
-              <>
-                Welcome back<span className="text-[#0084ff]">.</span>
-              </>
-            ) : (
-              <>
-                Create account<span className="text-[#0084ff]">.</span>
-              </>
-            )}
-          </h1>
-
-          <p className="mt-2 text-xs text-slate-400">
-            AI-assisted code review and bug triage powered by repository history.
-          </p>
-
           {/* Symmetrical Google and GitHub Options AT TOP FIRST (As Requested!) */}
-          <div className="mt-7 space-y-2.5">
+          <div className="mt-6 space-y-2.5">
             <button
               type="button"
               onClick={() => handleOAuth("github")}
@@ -230,7 +235,7 @@ export function AuthPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10" />
             </div>
-            <span className="relative bg-[#161a24] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+            <span className="relative bg-[#0e121a] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">
               Or continue with email
             </span>
           </div>
@@ -240,7 +245,7 @@ export function AuthPage() {
             {/* First & Last Name (in Sign Up Mode) */}
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="relative rounded-xl border border-white/10 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
                   <label className="block text-[10px] font-medium text-slate-400">First name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -255,7 +260,7 @@ export function AuthPage() {
                   </div>
                 </div>
 
-                <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+                <div className="relative rounded-xl border border-white/10 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
                   <label className="block text-[10px] font-medium text-slate-400">Last name</label>
                   <div className="flex items-center justify-between mt-0.5">
                     <input
@@ -273,7 +278,7 @@ export function AuthPage() {
             )}
 
             {/* Email Field */}
-            <div className="relative rounded-xl border border-white/10 bg-[#212736] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
+            <div className="relative rounded-xl border border-white/10 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200 focus-within:border-[#0084ff] focus-within:ring-2 focus-within:ring-[#0084ff]/20">
               <label className="block text-[10px] font-medium text-slate-400">Email</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -289,7 +294,7 @@ export function AuthPage() {
             </div>
 
             {/* Password Field */}
-            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#212736] px-3.5 py-2.5 transition-all duration-200">
+            <div className="relative rounded-xl border border-[#0084ff] ring-2 ring-[#0084ff]/20 bg-[#161a24] px-3.5 py-2.5 transition-all duration-200">
               <label className="block text-[10px] font-medium text-[#0084ff]">Password</label>
               <div className="flex items-center justify-between mt-0.5">
                 <input
@@ -304,7 +309,7 @@ export function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer"
+                  className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
                 >
                   {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </button>
@@ -329,31 +334,19 @@ export function AuthPage() {
               </button>
             </div>
           </form>
+
+          {/* Security note */}
+          <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+            <Shield className="h-3 w-3 text-emerald-400" />
+            <span>End-to-end encrypted repository credentials.</span>
+          </div>
         </div>
+      </main>
 
-        {/* Footer Security Note */}
-        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 pt-4 border-t border-white/5">
-          <Shield className="h-3.5 w-3.5 text-emerald-400" />
-          <span>End-to-end encrypted repository credentials.</span>
-        </div>
-      </div>
-
-      {/* Right Full-Height Atmospheric Image Panel (Using SAME background image as landing!) */}
-      <div
-        className="hidden lg:flex lg:w-[48%] min-h-screen relative bg-cover bg-center flex-col justify-between p-12 overflow-hidden"
-        style={{ backgroundImage: `url('/landing-bg.jpg')` }}
-      >
-        {/* Soft atmospheric gradient overlay blending with left side */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#161a24] via-black/40 to-black/60" />
-
-        {/* Top spacer */}
-        <div className="relative z-10" />
-
-        {/* Bottom Right Monogram Watermark */}
-        <div className="relative z-10 self-end text-white/90 font-black tracking-tighter text-3xl select-none drop-shadow-md">
-          <span>.BUGGERS</span>
-        </div>
-      </div>
+      {/* Footer */}
+      <footer className="relative z-10 w-full max-w-4xl text-center text-xs text-slate-500 py-2">
+        <span>&copy; 2026 Buggers, Inc. All rights reserved.</span>
+      </footer>
     </div>
   );
 }

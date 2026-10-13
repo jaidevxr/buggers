@@ -40,7 +40,7 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
+    <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20">
       {/* Floating Pill Header — Clean, focused, only useful options, official BugMark logo */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4">
         <div className="flex items-center gap-6 sm:gap-8 rounded-full bg-black/75 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 text-xs font-medium text-slate-200 transition-all duration-300">
@@ -71,17 +71,17 @@ export function Landing() {
         </div>
       </header>
 
-      {/* Main Full-Bleed Atmospheric Night Studio Hero Section */}
+      {/* Main Full-Bleed Atmospheric Night Studio Hero Section (4K Uncompressed Background) */}
       <section
         id="hero"
-        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-between pt-32 pb-10 px-4 sm:px-6"
-        style={{ backgroundImage: `url('/landing-bg.jpg')` }}
+        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-center items-center px-4 sm:px-6 py-24"
+        style={{ backgroundImage: `url('/landing-bg.png')` }}
       >
         {/* Soft atmospheric night vignette overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
 
-        {/* Natural Ambient Lamp Breathing Animation (Centered near the warm desk lamp) */}
-        <div className="pointer-events-none absolute left-[40%] bottom-[30%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
+        {/* Natural Ambient Lamp Breathing Animation (Positioned near the warm desk lamp) */}
+        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
 
         {/* Subtle, Organic Lakeside Light Twinkling (Distant cottage reflections on the water) */}
         <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1" />
@@ -94,33 +94,24 @@ export function Landing() {
           style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
         />
 
-        {/* Top Spacer */}
-        <div className="relative z-10" />
-
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-slate-200 shadow-lg border border-white/10 animate-fade-in transition-transform duration-300 hover:scale-[1.02]">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span>AI Code Review 2026</span>
-          </div>
-
-          {/* Heading */}
-          <h1 className="mt-7 font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
-            Review with ease.
+          {/* Main Heading: Buggers */}
+          <h1 className="font-display text-6xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+            Buggers
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-5 max-w-xl mx-auto text-sm sm:text-base text-slate-300 font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+          <p className="mt-6 max-w-xl mx-auto text-base sm:text-lg text-slate-300 font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
             Review smarter with AI that understands your repository. <br />
             So you can take a breath.
           </p>
 
-          {/* Action Buttons with smooth micro-interactions */}
-          <div className="mt-9 flex items-center justify-center gap-4">
+          {/* Action Buttons with silky smooth micro-interactions */}
+          <div className="mt-10 flex items-center justify-center gap-4">
             <Link
               to="/auth"
-              className="rounded-full bg-white text-black px-7 py-3 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-all duration-200 active:scale-[0.985] flex items-center gap-2 hover:-translate-y-0.5"
+              className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-all duration-300 active:scale-[0.985] flex items-center gap-2 hover:-translate-y-0.5"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />
@@ -128,23 +119,12 @@ export function Landing() {
 
             <Link
               to="/how-it-works"
-              className="rounded-full bg-black/40 backdrop-blur-md px-6 py-3 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-all duration-200 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
+              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-all duration-300 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               <span>See How it Works</span>
             </Link>
           </div>
-        </div>
-
-        {/* Bottom Navigation Indicator */}
-        <div className="relative z-10 mx-auto pt-10">
-          <Link
-            to="/how-it-works"
-            className="inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md px-5 py-2 text-[11px] font-mono tracking-widest text-slate-300 border border-white/10 shadow-lg hover:bg-black/75 hover:text-white transition-all duration-200 hover:-translate-y-0.5"
-          >
-            <span>HOW IT WORKS</span>
-            <span>↓</span>
-          </Link>
         </div>
       </section>
 
