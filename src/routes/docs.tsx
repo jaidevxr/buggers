@@ -4,19 +4,15 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  CheckCircle2,
   ChevronRight,
   Code2,
   Copy,
   Cpu,
-  FileCode2,
+  FileCode,
   FolderGit2,
   GitBranch,
   GitPullRequest,
-  KeyRound,
-  Lock,
   Search,
-  ShieldCheck,
   Sparkles,
   Terminal,
   Zap,
@@ -30,13 +26,13 @@ export const Route = createFileRoute("/docs")({
       {
         name: "description",
         content:
-          "Comprehensive guide to Buggers: GitHub App setup, AST deterministic triage, risk scoring algorithms, configuration files, and API reference.",
+          "Documentation for Buggers: GitHub App setup, AST triage pipeline, risk scoring, and repository configuration.",
       },
       { property: "og:title", content: "Documentation — Buggers" },
       {
         property: "og:description",
         content:
-          "AI-assisted code review and bug triage documentation, integration tutorials, and reference manual.",
+          "AI-assisted code review and bug triage documentation, integration guide, and repository configuration reference.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -49,18 +45,16 @@ type DocSection = {
   id: string;
   title: string;
   category: string;
-  badge?: string;
 };
 
 const DOC_SECTIONS: DocSection[] = [
-  { id: "quickstart", title: "Quickstart Guide", category: "Getting Started", badge: "2 min" },
+  { id: "quickstart", title: "Quickstart Guide", category: "Getting Started" },
   { id: "github-setup", title: "GitHub App & Permissions", category: "Getting Started" },
   { id: "triage-pipeline", title: "How Triage Works", category: "Core Concepts" },
-  { id: "risk-scoring", title: "Risk Scoring (P95 Rate)", category: "Core Concepts" },
-  { id: "configuration", title: "Repository Config (.buggers.yml)", category: "Customization" },
-  { id: "security-privacy", title: "Security & Zero Retention", category: "Compliance", badge: "SOC2" },
+  { id: "risk-scoring", title: "Risk Scoring (0–100)", category: "Core Concepts" },
+  { id: "configuration", title: "Repository Config (.buggers.yml)", category: "Configuration" },
   { id: "ci-cd-actions", title: "GitHub Actions Integration", category: "CI / CD" },
-  { id: "api-reference", title: "REST & Webhook API", category: "Reference" },
+  { id: "api-reference", title: "Webhook Payloads", category: "Reference" },
 ];
 
 export function DocsPage() {
@@ -116,376 +110,399 @@ export function DocsPage() {
       </header>
 
       {/* Main Container */}
-      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Docs Breadcrumbs and Header */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        {/* Docs Header */}
         <div className="mb-8 pb-6 border-b border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono text-amber-400 mb-2">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>OFFICIAL DOCUMENTATION · BUGGERS v3.4</span>
+              <span>BUGGERS DOCUMENTATION</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Developer Documentation
+              Documentation
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-slate-400 max-w-2xl">
-              Learn how to connect your GitHub repositories, automate AI regression triage, and configure custom review thresholds.
+            <p className="mt-2 text-sm text-slate-400 max-w-2xl">
+              Learn how Buggers connects to your repositories, analyzes pull request diffs, and triages bugs.
             </p>
           </div>
 
-          {/* Quick Search */}
+          {/* Search */}
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search guides, flags, API..."
+              placeholder="Filter topics..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/30 transition-colors"
             />
           </div>
         </div>
 
-        {/* Two-Column Docs Layout */}
+        {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Sidebar Navigation */}
-          <aside className="lg:col-span-3 sticky top-28 space-y-6">
-            <div className="rounded-2xl bg-black/60 border border-white/10 p-3 backdrop-blur-md">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">
-                Navigation
+          {/* Left Sidebar */}
+          <aside className="lg:col-span-4 sticky top-28 space-y-4">
+            <div className="rounded-2xl bg-[#11141e] border border-white/10 p-3 shadow-lg">
+              <div className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">
+                Topics
               </div>
               <nav className="space-y-1">
                 {filteredSections.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left cursor-pointer ${
                       activeSection === item.id
-                        ? "bg-white/10 text-white border border-white/15 shadow-sm"
+                        ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     <span className="truncate">{item.title}</span>
-                    {item.badge && (
-                      <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        {item.badge}
-                      </span>
-                    )}
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      {item.category}
+                    </span>
                   </button>
                 ))}
               </nav>
             </div>
-
-            {/* Support Callout */}
-            <div className="rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 p-4 text-xs space-y-3">
-              <div className="flex items-center gap-2 font-semibold text-white">
-                <Lock className="h-4 w-4 text-emerald-400" />
-                <span>Enterprise Ready</span>
-              </div>
-              <p className="text-slate-400 leading-relaxed text-[11px]">
-                Need dedicated VPC deployment, SOC2 compliance reports, or custom LLM fine-tuning?
-              </p>
-              <Link
-                to="/auth"
-                className="inline-flex items-center gap-1.5 text-amber-400 hover:text-amber-300 font-medium text-[11px]"
-              >
-                <span>Talk to engineering</span>
-                <ChevronRight className="h-3 w-3" />
-              </Link>
-            </div>
           </aside>
 
-          {/* Right Main Content Area */}
-          <main className="lg:col-span-9 space-y-12">
-            {/* 1. Quickstart Guide */}
-            {(activeSection === "quickstart" || !searchQuery) && (
-              <section id="quickstart" className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                    <Zap className="h-5 w-5 text-amber-400" />
-                    <span>2-Minute Quickstart</span>
-                  </h2>
-                  <span className="text-xs font-mono text-slate-400">Step 1 of 3</span>
+          {/* Right Main Content */}
+          <main className="lg:col-span-8 space-y-8">
+            {/* Quickstart */}
+            {activeSection === "quickstart" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <Zap className="h-4 w-4" />
+                  <span>GETTING STARTED</span>
                 </div>
-
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Buggers connects directly to your GitHub organization via GitHub App webhooks. When a pull request opens or synchronizes, our deterministic engine inspects your git diff against your historical fault lines.
+                <h2 className="text-2xl font-bold text-white">Quickstart Guide</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Buggers connects directly to your GitHub account to analyze pull requests as they are opened.
                 </p>
 
-                {/* 3 Step Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 space-y-2">
-                    <div className="h-6 w-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono text-xs font-bold border border-amber-500/30">
+                <div className="space-y-3 font-sans">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       1
+                    </span>
+                    <div>
+                      <div className="text-xs font-semibold text-white">Authenticate with GitHub</div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Sign in through the Auth page with GitHub OAuth or demo access.
+                      </p>
                     </div>
-                    <div className="font-semibold text-white text-sm">Sign in with GitHub</div>
-                    <p className="text-xs text-slate-400">
-                      Authenticate with your GitHub account using read-only repository metadata scopes.
-                    </p>
                   </div>
 
-                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 space-y-2">
-                    <div className="h-6 w-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono text-xs font-bold border border-amber-500/30">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       2
+                    </span>
+                    <div>
+                      <div className="text-xs font-semibold text-white">Select Your Repositories</div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        In the Repositories tab, choose which repositories you want Buggers to monitor.
+                      </p>
                     </div>
-                    <div className="font-semibold text-white text-sm">Select Repositories</div>
-                    <p className="text-xs text-slate-400">
-                      Toggle the repositories you wish Buggers to monitor. Buggers installs a webhook listener.
-                    </p>
                   </div>
 
-                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 space-y-2">
-                    <div className="h-6 w-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono text-xs font-bold border border-amber-500/30">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-start gap-3">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-mono font-bold text-amber-300">
                       3
+                    </span>
+                    <div>
+                      <div className="text-xs font-semibold text-white">Review Triage Results</div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Whenever a PR is opened or updated, check runs publish risk scores and inline remediations.
+                      </p>
                     </div>
-                    <div className="font-semibold text-white text-sm">Open Any Pull Request</div>
-                    <p className="text-xs text-slate-400">
-                      Receive instant inline triage, regression risk scores, and ready-to-commit fix diffs.
-                    </p>
                   </div>
                 </div>
 
-                {/* Example CLI snippet */}
-                <div className="rounded-2xl bg-black/80 border border-white/10 overflow-hidden">
-                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                      <Terminal className="h-3.5 w-3.5" />
-                      <span>Optional: Buggers CLI local triage</span>
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Local Analysis Command</span>
                     </div>
                     <button
-                      onClick={() =>
-                        copyToClipboard("npx @buggers/cli triage --pr 184", "cli-quickstart")
-                      }
-                      className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+                      onClick={() => copyToClipboard("npx @buggers/cli analyze", "quickstart-cli")}
+                      className="hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
                     >
-                      {copiedSnippet === "cli-quickstart" ? (
+                      {copiedSnippet === "quickstart-cli" ? (
                         <Check className="h-3.5 w-3.5 text-emerald-400" />
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
                       )}
-                      <span>{copiedSnippet === "cli-quickstart" ? "Copied" : "Copy"}</span>
+                      <span>{copiedSnippet === "quickstart-cli" ? "Copied" : "Copy"}</span>
                     </button>
                   </div>
-                  <pre className="p-4 text-xs font-mono text-amber-200/90 overflow-x-auto leading-relaxed">
-                    <code>
-                      {"# Run triage locally on your current working branch\n"}
-                      {"npx @buggers/cli analyze --target origin/main\n\n"}
-                      {"# Result: 0 regressions found · P95 confidence: 99.4%"}
-                    </code>
+                  <pre className="p-4 text-amber-200/90 leading-relaxed">
+                    <code>npx @buggers/cli analyze --target origin/main</code>
                   </pre>
                 </div>
-              </section>
+              </div>
             )}
 
-            {/* 2. GitHub App & Permissions */}
-            {(activeSection === "github-setup" || !searchQuery) && (
-              <section id="github-setup" className="space-y-6 pt-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                    <FolderGit2 className="h-5 w-5 text-amber-400" />
-                    <span>GitHub App & Permissions</span>
-                  </h2>
-                  <span className="text-xs font-mono text-slate-400">Security</span>
+            {/* GitHub Setup */}
+            {activeSection === "github-setup" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <FolderGit2 className="h-4 w-4" />
+                  <span>PERMISSIONS</span>
                 </div>
-
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Buggers strictly abides by the principle of least privilege. We require only the minimum scopes necessary to analyze pull request diffs and publish check runs.
+                <h2 className="text-2xl font-bold text-white">GitHub App & Permissions</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Buggers requests only the minimal scopes required to analyze code diffs and post check runs:
                 </p>
 
-                {/* Scopes Table */}
-                <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/40">
-                  <table className="w-full text-left text-xs">
+                <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/40 text-xs">
+                  <table className="w-full text-left">
                     <thead className="bg-white/5 border-b border-white/10 text-slate-300 font-semibold">
                       <tr>
-                        <th className="py-3 px-4">Permission</th>
-                        <th className="py-3 px-4">Access Level</th>
-                        <th className="py-3 px-4">Why It's Needed</th>
+                        <th className="py-2.5 px-4">Scope</th>
+                        <th className="py-2.5 px-4">Level</th>
+                        <th className="py-2.5 px-4">Purpose</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10 text-slate-400 font-mono text-[11px]">
                       <tr>
-                        <td className="py-3 px-4 text-white font-medium">Pull requests</td>
+                        <td className="py-3 px-4 text-white">Pull requests</td>
                         <td className="py-3 px-4 text-amber-400">Read & write</td>
                         <td className="py-3 px-4 font-sans text-slate-300">
-                          To read the unified diff and publish inline review comments with suggested remediations.
+                          To read unified diffs and publish inline fix suggestions.
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-white font-medium">Checks / Commit status</td>
+                        <td className="py-3 px-4 text-white">Checks</td>
                         <td className="py-3 px-4 text-amber-400">Read & write</td>
                         <td className="py-3 px-4 font-sans text-slate-300">
-                          To post status checks (e.g. "Buggers: Risk Score 82 — High Risk") directly on GitHub PRs.
+                          To post status checks with overall P95 risk scores.
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-white font-medium">Contents</td>
+                        <td className="py-3 px-4 text-white">Contents</td>
                         <td className="py-3 px-4 text-emerald-400">Read-only</td>
                         <td className="py-3 px-4 font-sans text-slate-300">
-                          To read changed files in the commit tree for AST verification.
+                          To inspect changed file AST nodes.
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-              </section>
+              </div>
             )}
 
-            {/* 3. Triage Pipeline */}
-            {(activeSection === "triage-pipeline" || !searchQuery) && (
-              <section id="triage-pipeline" className="space-y-6 pt-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                    <Cpu className="h-5 w-5 text-amber-400" />
-                    <span>How Triage Works</span>
-                  </h2>
-                  <span className="text-xs font-mono text-slate-400">Architecture</span>
+            {/* How Triage Works */}
+            {activeSection === "triage-pipeline" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <Cpu className="h-4 w-4" />
+                  <span>ARCHITECTURE</span>
                 </div>
-
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Unlike traditional linters that spam pull requests with stylistic nitpicks, Buggers runs a multi-stage triage pipeline designed to uncover actual runtime bugs:
+                <h2 className="text-2xl font-bold text-white">How Triage Works</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Our pipeline evaluates code changes in four deterministic stages:
                 </p>
 
-                <div className="space-y-3">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4">
-                    <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded">
-                      01
+                <div className="space-y-3 font-sans text-xs">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                    <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
+                      Stage 1 · Webhook Diff Parsing
                     </span>
-                    <div className="space-y-1">
-                      <div className="text-sm font-semibold text-white">AST Diff Decomposition</div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        The raw patch is parsed into an abstract syntax tree. Formatting, comments, and whitespace changes are filtered out, isolating pure logical mutations.
-                      </p>
-                    </div>
+                    <p className="text-slate-300 leading-relaxed">
+                      Decomposes unified patches into syntax nodes, stripping out purely cosmetic changes.
+                    </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4">
-                    <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded">
-                      02
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                    <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
+                      Stage 2 · Churn Cross-Reference
                     </span>
-                    <div className="space-y-1">
-                      <div className="text-sm font-semibold text-white">Historical Churn Cross-Reference</div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Buggers correlates modified functions with your repository's historical git commit churn and rollback logs to identify error-prone hot zones.
-                      </p>
-                    </div>
+                    <p className="text-slate-300 leading-relaxed">
+                      Correlates changed functions with past commit history and rollbacks in that specific module.
+                    </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4">
-                    <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded">
-                      03
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                    <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
+                      Stage 3 · Risk Scoring
                     </span>
-                    <div className="space-y-1">
-                      <div className="text-sm font-semibold text-white">Multi-Model AI Hypothesis Testing</div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Each mutation is evaluated against known concurrency, financial, race condition, and boundary edge cases. Remediation code is generated only when confidence exceeds 90%.
-                      </p>
-                    </div>
+                    <p className="text-slate-300 leading-relaxed">
+                      Scores regression probability from 0 to 100 based on test coverage delta and complexity.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                    <span className="font-mono text-amber-400 text-[10px] uppercase font-bold">
+                      Stage 4 · Grounded Remediation
+                    </span>
+                    <p className="text-slate-300 leading-relaxed">
+                      Generates fix suggestions citing exact diff line numbers without phantom citations.
+                    </p>
                   </div>
                 </div>
-              </section>
+              </div>
             )}
 
-            {/* 4. Configuration File (.buggers.yml) */}
-            {(activeSection === "configuration" || !searchQuery) && (
-              <section id="configuration" className="space-y-6 pt-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                    <FileCode2 className="h-5 w-5 text-amber-400" />
-                    <span>Repository Configuration (.buggers.yml)</span>
-                  </h2>
-                  <span className="text-xs font-mono text-slate-400">Customization</span>
+            {/* Risk Scoring */}
+            {activeSection === "risk-scoring" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <Sparkles className="h-4 w-4" />
+                  <span>SCORING</span>
                 </div>
-
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Place a <code className="text-amber-300 font-mono text-xs bg-white/10 px-1.5 py-0.5 rounded">.buggers.yml</code> in the root of your repository to configure risk thresholds, ignored directories, and custom notification rules:
+                <h2 className="text-2xl font-bold text-white">Risk Scoring (0–100)</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Every pull request receives a normalized 0–100 risk score based on three categorical bands:
                 </p>
 
-                {/* YML Snippet */}
-                <div className="rounded-2xl bg-black/80 border border-white/10 overflow-hidden">
-                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                      <span>.buggers.yml</span>
-                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                  <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 space-y-1">
+                    <span className="text-rose-400 font-bold">Critical / High (75–100)</span>
+                    <p className="font-sans text-[11px] text-slate-300">
+                      Unwrapped database transactions, silent partial overwrites, or broken auth checks.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1">
+                    <span className="text-amber-400 font-bold">Medium (40–74)</span>
+                    <p className="font-sans text-[11px] text-slate-300">
+                      Untested boundary inputs, missing error fallback branches, or signature shifts.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-1">
+                    <span className="text-emerald-400 font-bold">Low (0–39)</span>
+                    <p className="font-sans text-[11px] text-slate-300">
+                      Documentation updates, localized utility changes with comprehensive test coverage.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Repository Config */}
+            {activeSection === "configuration" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <FileCode className="h-4 w-4" />
+                  <span>CONFIGURATION</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Repository Config (.buggers.yml)</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Place a <code className="text-amber-300 bg-white/5 px-1.5 py-0.5 rounded font-mono">.buggers.yml</code> in your repository root to configure thresholds:
+                </p>
+
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
+                    <span>.buggers.yml</span>
                     <button
                       onClick={() =>
                         copyToClipboard(
-                          `version: 1\nrisk:\n  threshold: 75\n  fail_on_critical: true\n\nignore:\n  paths:\n    - "docs/**"\n    - "**/*.spec.ts"\n    - "vendor/**"\n\nreviews:\n  inline_comments: true\n  summary_table: true`,
-                          "yml-snippet"
+                          `version: 1\nrisk:\n  threshold: 75\n  fail_on_critical: true\nignore:\n  paths:\n    - "docs/**"\n    - "**/*.spec.ts"`,
+                          "yml-copy"
                         )
                       }
-                      className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+                      className="hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
                     >
-                      {copiedSnippet === "yml-snippet" ? (
+                      {copiedSnippet === "yml-copy" ? (
                         <Check className="h-3.5 w-3.5 text-emerald-400" />
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
                       )}
-                      <span>{copiedSnippet === "yml-snippet" ? "Copied" : "Copy"}</span>
+                      <span>{copiedSnippet === "yml-copy" ? "Copied" : "Copy"}</span>
                     </button>
                   </div>
-                  <pre className="p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed">
-                    <code>
+                  <pre className="p-4 text-slate-300 leading-relaxed">
 {`version: 1
-
 risk:
-  threshold: 75           # Flag PRs with risk score >= 75 as HIGH
-  fail_on_critical: true  # Block merge on critical financial or race conditions
-
+  threshold: 75           # Score >= 75 flags as High
+  fail_on_critical: true  # Block merge on critical findings
 ignore:
   paths:
     - "docs/**"
-    - "**/*.spec.ts"
-    - "vendor/**"
-
-reviews:
-  inline_comments: true   # Post verified remediations directly on lines
-  summary_table: true     # Post triage matrix in PR overview comment`}
-                    </code>
+    - "**/*.spec.ts"`}
                   </pre>
                 </div>
-              </section>
+              </div>
             )}
 
-            {/* 5. Security & Zero Data Retention */}
-            {(activeSection === "security-privacy" || !searchQuery) && (
-              <section id="security-privacy" className="space-y-6 pt-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                    <span>Security & Zero Retention Policy</span>
-                  </h2>
-                  <span className="text-xs font-mono text-emerald-400">SOC2 Verified</span>
+            {/* GitHub Actions */}
+            {activeSection === "ci-cd-actions" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <GitBranch className="h-4 w-4" />
+                  <span>CI / CD</span>
                 </div>
+                <h2 className="text-2xl font-bold text-white">GitHub Actions Integration</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  You can also invoke Buggers as a step inside your existing GitHub Actions workflow:
+                </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                    <div className="font-semibold text-white text-sm flex items-center gap-2">
-                      <Lock className="h-4 w-4 text-emerald-400" />
-                      <span>Zero Code Retention</span>
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Your source code is never written to disk or used to train public machine learning models. Analysis happens ephemerally in isolated secure enclaves and is flushed immediately upon completion.
-                    </p>
+                <div className="rounded-2xl bg-black border border-white/10 overflow-hidden font-mono text-xs">
+                  <div className="px-4 py-2.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-slate-400 text-[11px]">
+                    <span>.github/workflows/buggers.yml</span>
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          `name: Buggers Triage\non:\n  pull_request:\n    types: [opened, synchronize]\njobs:\n  triage:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npx @buggers/cli analyze`,
+                          "actions-copy"
+                        )
+                      }
+                      className="hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      {copiedSnippet === "actions-copy" ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      <span>{copiedSnippet === "actions-copy" ? "Copied" : "Copy"}</span>
+                    </button>
                   </div>
-
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                    <div className="font-semibold text-white text-sm flex items-center gap-2">
-                      <KeyRound className="h-4 w-4 text-emerald-400" />
-                      <span>End-to-End Encryption</span>
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      All communication between GitHub, Buggers edge workers, and inference nodes is encrypted in transit using TLS 1.3 with automated certificate rotation.
-                    </p>
-                  </div>
+                  <pre className="p-4 text-slate-300 leading-relaxed">
+{`name: Buggers Triage
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx @buggers/cli analyze`}
+                  </pre>
                 </div>
-              </section>
+              </div>
+            )}
+
+            {/* Webhook Payloads */}
+            {activeSection === "api-reference" && (
+              <div className="rounded-3xl border border-white/10 bg-[#11141e] p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs">
+                  <Code2 className="h-4 w-4" />
+                  <span>WEBHOOKS</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Webhook Payloads</h2>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Buggers receives GitHub webhook payloads signed with HMAC-SHA256 headers:
+                </p>
+
+                <div className="rounded-2xl bg-black border border-white/10 p-4 font-mono text-xs text-slate-300 space-y-2">
+                  <div className="text-[11px] text-slate-500">Headers:</div>
+                  <div className="text-amber-300">X-GitHub-Event: pull_request</div>
+                  <div className="text-amber-300">X-Hub-Signature-256: sha256=...</div>
+                </div>
+              </div>
             )}
           </main>
         </div>
       </div>
 
-      {/* Minimal Footer */}
+      {/* Footer */}
       <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 text-xs text-slate-500">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />
             <span>Buggers</span>
