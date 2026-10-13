@@ -219,7 +219,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-soft);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .surface-card-interactive {
@@ -227,23 +227,41 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-soft);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, box-shadow;
   }
 
   .surface-card-interactive:hover {
-    border-color: color-mix(in oklch, var(--color-border) 60%, var(--color-primary) 40%);
+    border-color: color-mix(in oklch, var(--color-border) 50%, var(--color-primary) 50%);
     box-shadow: var(--shadow-lift);
+    transform: translateY(-2px);
+  }
+
+  .surface-card-interactive:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-soft);
+    transition-duration: 0.1s;
   }
 
   .dotted-grid {
     background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background-size: 24px 24px;
+  }
+
+  .github-grid {
+    background-image: linear-gradient(to right, color-mix(in oklch, var(--color-border) 40%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--color-border) 40%, transparent) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .glow-mesh {
+    background: radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--color-primary) 18%, transparent) 0%, transparent 70%);
   }
 
   .page-enter,
   .page-view {
-    animation: pageFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    will-change: opacity;
+    animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: opacity, transform;
   }
 
   .skeleton-shimmer {
@@ -264,6 +282,31 @@
   }
 }
 
+/* Micro-interaction defaults for smooth, non-abrupt tactile feel */
+button,
+[role="button"] {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:active:not(:disabled),
+[role="button"]:active:not([aria-disabled="true"]) {
+  transform: scale(0.985);
+  transition-duration: 0.08s;
+}
+
+input,
+textarea,
+select {
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+a {
+  transition: color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
@@ -275,10 +318,12 @@
 
 @keyframes pageFadeIn {
   from {
-    opacity: 0.35;
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
