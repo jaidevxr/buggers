@@ -190,7 +190,7 @@ export function DocsPage() {
                     <div>
                       <div className="text-xs font-semibold text-white">Authenticate with GitHub</div>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Sign in through the Auth page with GitHub OAuth or demo access.
+                        Sign in through the Auth page with GitHub OAuth, Google, or your email.
                       </p>
                     </div>
                   </div>
