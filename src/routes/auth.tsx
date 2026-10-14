@@ -32,7 +32,7 @@ export const Route = createFileRoute("/auth")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp" },
+      { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
     ],
   }),
   component: AuthPage,
