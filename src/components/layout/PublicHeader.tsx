@@ -5,8 +5,8 @@ export function PublicHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4 pointer-events-auto">
-      <div className="public-header-pill flex items-center gap-6 sm:gap-8 rounded-full bg-black/80 backdrop-blur-md px-6 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.65)] border border-white/10 text-xs font-medium text-slate-200">
+    <header className="public-header-island fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4 pointer-events-auto">
+      <div className="public-header-pill flex items-center gap-6 sm:gap-8 rounded-full bg-[#08090a]/85 backdrop-blur-md px-6 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.7)] border border-white/[0.08] text-xs font-medium text-slate-200">
         {/* Buggers Logo — Only icon allowed in header/island */}
         <Link
           to="/"

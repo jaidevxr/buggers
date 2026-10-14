@@ -191,8 +191,9 @@ export function LinearProductSections() {
         </div>
 
         {/* Spacious Elevated Product Preview Canvas (No clunky card styling) */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-4 sm:p-8 lg:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-4 sm:p-8 lg:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left PR List Column */}
             <div className="lg:col-span-5 space-y-3 font-mono text-xs">
@@ -617,7 +618,7 @@ export function LinearProductSections() {
         {/* Editorial Split Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
           <div className="lg:col-span-7">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-semibold mb-2 block">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
               SPECIFICATION 03 / MATHEMATICAL RISK MODEL 1.1.0
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -639,8 +640,9 @@ export function LinearProductSections() {
         </div>
 
         {/* Spacious Elevated Risk Simulator & Scatter Plot Grid */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-0">
             
             {/* Left: 8-Signal Interactive Simulator */}
             <div className="lg:col-span-6 space-y-6">
@@ -956,7 +958,7 @@ export function LinearProductSections() {
         {/* Editorial Split Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
           <div className="lg:col-span-7">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold mb-2 block">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
               SPECIFICATION 04 / DECLARATIVE MERGE GATES (.buggers.yml)
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -978,8 +980,9 @@ export function LinearProductSections() {
         </div>
 
         {/* Spacious Policy Preview Canvas */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left: Policy Controller */}
             <div className="lg:col-span-6 space-y-5 text-xs font-mono">

@@ -147,9 +147,9 @@ export function AuthPage() {
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
         {/* Symmetrical Centered Form Card */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
-          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-5 transition-all duration-300 animate-in fade-in zoom-in-[0.98]">
+          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0e1015]/90 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.6)] space-y-5 transition-all duration-200">
             <div className="text-center space-y-1">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#8a8f98] uppercase">
                 START FOR FREE
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
@@ -159,7 +159,7 @@ export function AuthPage() {
                   <>Create new account<span className="text-zinc-500">.</span></>
                 )}
               </h1>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-[#8a8f98]">
                 {mode === "signin" ? "Need an account? " : "Already a member? "}
                 <button
                   type="button"
@@ -177,7 +177,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("github")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#14161e] hover:bg-[#1a1d26] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "github" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -191,7 +191,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-black/40 hover:bg-black/60 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#14161e] hover:bg-[#1a1d26] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "google" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -204,8 +204,8 @@ export function AuthPage() {
 
             {/* Symmetrical Divider */}
             <div className="relative flex items-center justify-center my-3">
-              <div className="w-full border-t border-white/10" />
-              <span className="absolute bg-[#0a0d14] px-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="w-full border-t border-white/[0.08]" />
+              <span className="absolute bg-[#0e1015] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
                 Or continue with email
               </span>
             </div>
@@ -214,8 +214,8 @@ export function AuthPage() {
             <form className="space-y-3.5" onSubmit={handleSubmit}>
               {mode === "signup" && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/5">
-                    <label className="block text-[10px] font-medium text-slate-400">First name</label>
+                  <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                    <label className="block text-[10px] font-medium text-[#8a8f98]">First name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
                         type="text"
@@ -223,14 +223,14 @@ export function AuthPage() {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="Virat"
-                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                       />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                      <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/5">
-                    <label className="block text-[10px] font-medium text-slate-400">Last name</label>
+                  <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                    <label className="block text-[10px] font-medium text-[#8a8f98]">Last name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
                         type="text"
@@ -238,16 +238,16 @@ export function AuthPage() {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="Kohli"
-                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                       />
-                      <User className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                      <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/5">
-                <label className="block text-[10px] font-medium text-slate-400">Email</label>
+              <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                <label className="block text-[10px] font-medium text-[#8a8f98]">Email</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
                     type="email"
@@ -255,14 +255,14 @@ export function AuthPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="virat.kohli@company.com"
-                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                   />
-                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1 opacity-70" />
+                  <Mail className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-[#121620]/90 px-4 py-2.5 transition-all duration-200 focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/5">
-                <label className="block text-[10px] font-medium text-slate-400">Password</label>
+              <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                <label className="block text-[10px] font-medium text-[#8a8f98]">Password</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -271,12 +271,12 @@ export function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none font-mono"
+                    className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-200"
+                    className="text-zinc-500 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-150"
                   >
                     {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                   </button>

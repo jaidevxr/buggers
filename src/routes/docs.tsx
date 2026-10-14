@@ -145,9 +145,9 @@ export function DocsPage() {
         {/* ============================================================== */}
         <header id="hero" className="mb-14 space-y-4">
           <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 tracking-wider uppercase">
-            <span className="text-amber-400 font-semibold">BUGGERS</span>
-            <span>/</span>
-            <span>SYSTEM ARCHITECTURE &amp; TECHNICAL SPECIFICATIONS</span>
+            <span className="text-white font-semibold">BUGGERS</span>
+            <span className="text-neutral-600">/</span>
+            <span className="text-neutral-400">SYSTEM ARCHITECTURE &amp; TECHNICAL SPECIFICATIONS</span>
           </div>
           
           <h1 className="text-4xl sm:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -223,7 +223,7 @@ export function DocsPage() {
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-rose-400 font-semibold mb-2 block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
                 SPECIFICATION 05 / IN-PROCESS SCANNER TESTBED
               </span>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -245,8 +245,11 @@ export function DocsPage() {
           </div>
 
           {/* Interactive In-Process Scanner Testbed */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)]">
-            <LiveScannerPlayground />
+          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+            <div className="relative z-0">
+              <LiveScannerPlayground />
+            </div>
           </div>
         </section>
 
@@ -257,7 +260,7 @@ export function DocsPage() {
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-blue-400 font-semibold mb-2 block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
                 SPECIFICATION 06 / WORKER RUNTIME &amp; HEARTBEAT LEASES
               </span>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -279,8 +282,11 @@ export function DocsPage() {
           </div>
 
           {/* Interactive 9-Stage Pipeline Visualizer */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)]">
-            <PipelineStageVisualizer />
+          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+            <div className="relative z-0">
+              <PipelineStageVisualizer />
+            </div>
           </div>
         </section>
 
@@ -291,7 +297,7 @@ export function DocsPage() {
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-purple-400 font-semibold mb-2 block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
                 SPECIFICATION 07 / DUAL-AUTH ISOLATION &amp; NITRO ROUTES
               </span>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -313,10 +319,12 @@ export function DocsPage() {
           </div>
 
           {/* Dual-Auth Architecture Blueprint */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-8">
+          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-8 relative overflow-hidden">
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+            <div className="relative z-0 space-y-8">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
               <span className="text-white font-semibold uppercase">Dual-Auth Boundary Isolation</span>
-              <span className="text-amber-400">Zero Secret Leakage</span>
+              <span className="text-neutral-400">Zero Secret Leakage</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
@@ -418,6 +426,7 @@ export function DocsPage() {
                 </table>
               </div>
             </div>
+            </div>
           </div>
         </section>
 
@@ -428,7 +437,7 @@ export function DocsPage() {
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold mb-2 block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-2 block">
                 SPECIFICATION 08 / VERIFIED DEPLOYMENT RUNBOOK
               </span>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">

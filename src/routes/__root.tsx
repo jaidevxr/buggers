@@ -162,16 +162,18 @@ function RootComponent() {
 
   // Smooth scroll reset on route change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    if (window.scrollY > 0) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
   }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col selection:bg-white/20 relative">
+        <div className="min-h-screen w-full bg-[#08090a] text-slate-100 flex flex-col selection:bg-white/20 relative">
           {!isAuthRoute && <AtmosphericBackdrop />}
           {!isAuthRoute && <PublicHeader />}
-          <div className="flex-1 w-full flex flex-col relative z-10 page-transition-container">
+          <div className="flex-1 w-full flex flex-col relative z-10">
             <Outlet />
           </div>
         </div>

@@ -200,9 +200,9 @@
 
   html {
     color-scheme: dark;
-    background-color: #07090e;
+    background-color: #08090a;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
   }
 
   /* Sleek modern dark scrollbar — completely eliminates white browser scrollbar flashes */
@@ -216,12 +216,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.14);
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.28);
   }
 
   ::-webkit-scrollbar-corner {
@@ -229,7 +229,7 @@
   }
 
   body {
-    background-color: #07090e;
+    background-color: #08090a;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -241,12 +241,44 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
+  }
+}
+
+/* Linear-Grade View Transitions — Silent, Deliberate, Zero-Jerk Crossfades */
+::view-transition-old(root) {
+  animation: 160ms cubic-bezier(0.16, 1, 0.3, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 180ms cubic-bezier(0.16, 1, 0.3, 1) both fade-in;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Exclude the floating header island from full-page transition captures to prevent header flickering */
+.public-header-island {
+  view-transition-name: public-header;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
