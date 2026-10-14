@@ -108,13 +108,33 @@ export function Landing() {
               <span>See How it Works</span>
             </Link>
           </div>
+
+          {/* Scroll Cue Animation so user knows interactive test bed and showcase is below */}
+          <div className="mt-14 sm:mt-16 flex justify-center">
+            <a
+              href="#showcase"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("showcase")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="group inline-flex flex-col items-center gap-2.5 cursor-pointer select-none transition-transform duration-200 hover:-translate-y-0.5"
+              aria-label="Scroll to interactive review engine showcase"
+            >
+              <div className="w-5 h-8 rounded-full border border-white/20 p-1 flex justify-center bg-black/40 backdrop-blur-sm group-hover:border-white/40 transition-colors shadow-sm">
+                <div className="w-1 h-2 rounded-full bg-white/70 animate-scroll-pill" />
+              </div>
+              <span className="text-[10px] font-mono tracking-widest uppercase text-neutral-400 group-hover:text-white transition-colors">
+                Explore engine
+              </span>
+            </a>
+          </div>
         </div>
       </section>
 
       {/* ======================================================== */}
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (Linear-Style 2-Column Split) */}
       {/* ======================================================== */}
-      <section className="relative z-10 bg-[#08090a] pt-12 sm:pt-20 pb-24 sm:pb-36">
+      <section id="showcase" className="relative z-10 bg-[#08090a] pt-12 sm:pt-20 pb-24 sm:pb-36 scroll-mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Live Animated Code Detection & Remediation Simulator (Linear Style) */}

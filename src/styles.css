@@ -691,3 +691,23 @@ a {
   will-change: opacity, transform;
 }
 
+@keyframes scrollPill {
+  0% {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+}
+
+.animate-scroll-pill {
+  animation: scrollPill 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+
