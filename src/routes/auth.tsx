@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -16,6 +16,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/auth")({
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Buggers – Sign in & Sign up" },

@@ -55,6 +55,7 @@ export function AtmosphericBackdrop() {
   return (
     <div
       aria-hidden="true"
+      style={{ viewTransitionName: "none" }}
       className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-500 ease-out overflow-hidden ${
         isAtmospheric && isLoaded ? "opacity-100" : "opacity-0"
       }`}
