@@ -444,6 +444,49 @@ a {
   }
 }
 
+@keyframes softLampBreathe {
+  0%, 100% {
+    opacity: 0.16;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.24;
+    transform: scale(1.02);
+  }
+  55% {
+    opacity: 0.14;
+    transform: scale(0.99);
+  }
+  75% {
+    opacity: 0.22;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes softTwinkle {
+  0%, 100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.animate-lamp-breathe {
+  animation: softLampBreathe 6s ease-in-out infinite;
+}
+
+.animate-soft-twinkle-1 {
+  animation: softTwinkle 4s ease-in-out infinite;
+}
+
+.animate-soft-twinkle-2 {
+  animation: softTwinkle 5.5s ease-in-out 1.2s infinite;
+}
+
+.animate-soft-twinkle-3 {
+  animation: softTwinkle 3.5s ease-in-out 2.4s infinite;
+}
 
 /* ==========================================================================
    Coordinated, Hardware-Accelerated Linear View Transition System
@@ -539,5 +582,27 @@ a {
 .animate-graph-point {
   animation: graphScatterReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+@keyframes scanlineSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(350%);
+    opacity: 0;
+  }
+}
+
+.animate-scanline {
+  animation: scanlineSweep 7s ease-in-out infinite;
+}
+
 
 

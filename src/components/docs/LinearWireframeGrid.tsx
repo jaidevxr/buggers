@@ -15,14 +15,14 @@ export function LinearWireframeGrid() {
         </h2>
       </div>
 
-      {/* 3-Column Isometric Wireframe Grid with Hairline Dividers */}
-      <div className="grid grid-cols-1 md:grid-cols-3 border border-white/[0.08] divide-y md:divide-y-0 md:divide-x divide-white/[0.08] rounded-2xl overflow-hidden bg-[#0a0b0e]">
+      {/* 3-Column Isometric Wireframe Grid with Hairline Dividers (Linear Open Hairline) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 border-y border-white/[0.08] divide-y md:divide-y-0 md:divide-x divide-white/[0.08] bg-[#08090a]">
         
         {/* FIG 0.1: Layered Isometric Prisms (Deterministic First) */}
         <div
           onMouseEnter={() => setActiveFig(1)}
           onMouseLeave={() => setActiveFig(null)}
-          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-gradient-to-b from-[#0c0d11] to-[#090a0d] group transition-all duration-300 hover:bg-[#0e0f14]"
+          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-transparent group transition-all duration-300 hover:bg-white/[0.02]"
         >
           {/* Wireframe Canvas */}
           <div className="h-52 w-full flex items-center justify-center relative">
@@ -94,7 +94,7 @@ export function LinearWireframeGrid() {
         <div
           onMouseEnter={() => setActiveFig(2)}
           onMouseLeave={() => setActiveFig(null)}
-          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-gradient-to-b from-[#0c0d11] to-[#090a0d] group transition-all duration-300 hover:bg-[#0e0f14]"
+          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-transparent group transition-all duration-300 hover:bg-white/[0.02]"
         >
           {/* Wireframe Canvas */}
           <div className="h-52 w-full flex items-center justify-center relative">
@@ -143,7 +143,7 @@ export function LinearWireframeGrid() {
         <div
           onMouseEnter={() => setActiveFig(3)}
           onMouseLeave={() => setActiveFig(null)}
-          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-gradient-to-b from-[#0c0d11] to-[#090a0d] group transition-all duration-300 hover:bg-[#0e0f14]"
+          className="p-8 sm:p-10 flex flex-col justify-between space-y-8 bg-transparent group transition-all duration-300 hover:bg-white/[0.02]"
         >
           {/* Wireframe Canvas */}
           <div className="h-52 w-full flex items-center justify-center relative">

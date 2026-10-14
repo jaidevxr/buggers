@@ -57,13 +57,13 @@ export function Landing() {
 
   return (
     <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Main Hero Section */}
+      {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Rendered over persistent AtmosphericBackdrop) */}
       <section
         id="hero"
-        className="relative w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 pt-32 sm:pt-40 pb-16 overflow-hidden"
+        className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
       >
         {/* Subtle feathered fade at bottom edge into #08090a background */}
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">

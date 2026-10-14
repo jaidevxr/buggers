@@ -91,15 +91,15 @@ export function PipelineStageVisualizer() {
   const current = STAGES.find((s) => s.id === selectedStage) ?? STAGES[0]!;
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-blue-400">
-            <Activity className="h-4 w-4" />
-            <span>EXECUTION RUNTIME SPECIFICATION</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+            <Activity className="h-4 w-4 text-emerald-400" />
+            <span className="tracking-wider">EXECUTION RUNTIME SPECIFICATION</span>
           </div>
-          <h3 className="text-xl font-medium text-white mt-1">
+          <h3 className="text-xl sm:text-2xl font-medium text-white mt-1">
             9-Stage Deterministic Analysis Pipeline
           </h3>
           <p className="text-xs text-neutral-400 mt-0.5">
@@ -111,8 +111,8 @@ export function PipelineStageVisualizer() {
         </span>
       </div>
 
-      {/* Stage Flow Stepper Indicator */}
-      <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5 p-2 rounded-xl bg-[#07080a] border border-white/[0.08]">
+      {/* Stage Flow Stepper Indicator (Linear open tab bar) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-white/[0.06]">
         {STAGES.map((stage, idx) => {
           const isSelected = stage.id === selectedStage;
           return (
@@ -120,14 +120,14 @@ export function PipelineStageVisualizer() {
               key={stage.id}
               type="button"
               onClick={() => setSelectedStage(stage.id)}
-              className={`p-2.5 rounded-lg text-center transition-all cursor-pointer ${
+              className={`px-3 py-2 rounded text-left transition-all shrink-0 cursor-pointer ${
                 isSelected
-                  ? "bg-white text-black font-semibold shadow-lg"
-                  : "bg-white/[0.02] text-neutral-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.03]"
               }`}
             >
-              <div className="text-[10px] font-mono leading-none">{idx + 1}</div>
-              <div className="text-[10px] truncate font-sans mt-1">
+              <div className="text-[10px] font-mono leading-none opacity-70">{idx + 1}</div>
+              <div className="text-xs truncate font-mono mt-1">
                 {stage.id.replace("_", " ")}
               </div>
             </button>
@@ -135,12 +135,12 @@ export function PipelineStageVisualizer() {
         })}
       </div>
 
-      {/* Selected Stage Detail Window */}
-      <div className="p-6 rounded-xl bg-[#0c0d10] border border-white/[0.08] space-y-5">
+      {/* Selected Stage Detail Window (Linear Open Hairline) */}
+      <div className="border-y border-white/[0.08] py-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <span className="text-base font-semibold text-white">{current.name}</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">
+            <span className="text-lg font-medium text-white">{current.name}</span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.06] text-neutral-300 border border-white/10 uppercase">
               {current.phase}
             </span>
           </div>
@@ -154,15 +154,15 @@ export function PipelineStageVisualizer() {
           {current.description}
         </p>
 
-        <div>
-          <span className="text-[10px] font-mono uppercase font-semibold tracking-wider text-neutral-400 block mb-2">
+        <div className="space-y-3 pt-2">
+          <span className="text-[10px] font-mono uppercase font-semibold tracking-wider text-neutral-400 block">
             Persisted Outputs &amp; Telemetry
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] border-y border-white/[0.06] py-3">
             {current.keyOutputs.map((out, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-2 p-3 rounded-lg bg-black/40 border border-white/[0.04] text-xs text-neutral-300 font-sans"
+                className="flex items-start gap-2.5 py-2 sm:px-4 first:sm:pl-0 last:sm:pr-0 text-xs text-neutral-300 font-sans"
               >
                 <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
                 <span>{out}</span>

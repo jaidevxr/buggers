@@ -272,15 +272,15 @@ export function LiveScannerPlayground() {
             <span className="text-[10px] font-mono text-neutral-500">In-Process Regex</span>
           </div>
 
-          <div className="rounded-xl border border-white/[0.08] bg-[#0c0d10] divide-y divide-white/[0.04] text-xs font-mono">
+          <div className="border-y border-white/[0.08] divide-y divide-white/[0.04] text-xs font-mono">
             {SECRET_RULES.map((rule) => (
-              <div key={rule.id} className="p-3.5 space-y-1.5 hover:bg-white/[0.02] transition-colors">
+              <div key={rule.id} className="py-3 px-1 space-y-1.5 hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-semibold">{rule.name}</span>
+                  <span className="text-white font-medium">{rule.name}</span>
                   <button
                     type="button"
                     onClick={() => copyRegexToClipboard(rule.pattern.source, rule.id)}
-                    className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 font-sans"
+                    className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 font-sans cursor-pointer"
                     title="Copy regex pattern"
                   >
                     {copiedRegex === rule.id ? (
@@ -293,7 +293,7 @@ export function LiveScannerPlayground() {
                     )}
                   </button>
                 </div>
-                <div className="text-[11px] text-amber-300/80 bg-black/40 px-2 py-1 rounded truncate border border-white/[0.02]">
+                <div className="text-[11px] text-amber-300/80 bg-white/[0.02] px-2 py-1 rounded truncate border border-white/[0.04]">
                   {rule.pattern.source}
                 </div>
                 <p className="text-[11px] text-neutral-400 font-sans leading-normal">
@@ -314,13 +314,13 @@ export function LiveScannerPlayground() {
             <span className="text-[10px] font-mono text-neutral-500">Zero Token Inference</span>
           </div>
 
-          <div className="rounded-xl border border-white/[0.08] bg-[#0c0d10] divide-y divide-white/[0.04] text-xs font-mono">
+          <div className="border-y border-white/[0.08] divide-y divide-white/[0.04] text-xs font-mono">
             {SAST_RULES.map((rule) => (
-              <div key={rule.id} className="p-3.5 space-y-1.5 hover:bg-white/[0.02] transition-colors">
+              <div key={rule.id} className="py-3 px-1 space-y-1.5 hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-semibold">{rule.name}</span>
+                  <span className="text-white font-medium">{rule.name}</span>
                   <span
-                    className={`text-[9px] uppercase px-1.5 py-0.2 rounded font-mono ${
+                    className={`text-[9px] uppercase px-1.5 py-0.5 rounded font-mono ${
                       rule.severity === "critical"
                         ? "text-rose-400 bg-rose-500/10 border border-rose-500/20"
                         : "text-amber-400 bg-amber-500/10 border border-amber-500/20"
@@ -329,7 +329,7 @@ export function LiveScannerPlayground() {
                     {rule.severity}
                   </span>
                 </div>
-                <div className="text-[11px] text-rose-300/80 bg-black/40 px-2 py-1 rounded truncate border border-white/[0.02]">
+                <div className="text-[11px] text-rose-300/80 bg-white/[0.02] px-2 py-1 rounded truncate border border-white/[0.04]">
                   {rule.pattern.source}
                 </div>
                 <p className="text-[11px] text-neutral-400 font-sans leading-normal">

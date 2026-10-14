@@ -350,104 +350,105 @@ export function DocsPage() {
             </div>
           </div>
 
-          {/* Dual-Auth Architecture Blueprint */}
-          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-8 relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
-            <div className="relative z-0 space-y-8">
+          {/* Dual-Auth Architecture Blueprint: Pure Linear Open Hairline Architecture */}
+          <div className="w-full border-y border-white/[0.08] py-8 space-y-10">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
-              <span className="text-white font-semibold uppercase">Dual-Auth Boundary Isolation</span>
+              <span className="text-white font-semibold uppercase tracking-wider">Dual-Auth Boundary Isolation</span>
               <span className="text-neutral-400">Zero Secret Leakage</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
-              <div className="p-6 rounded-xl border border-white/[0.06] bg-[#07080a] space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.08] py-2 text-xs font-mono">
+              <div className="py-4 md:px-6 first:md:pl-0 space-y-2.5">
                 <div className="text-amber-400 font-semibold text-sm">1. Browser Client</div>
-                <p className="text-neutral-400 leading-relaxed font-sans">
+                <p className="text-neutral-400 leading-relaxed font-sans text-xs">
                   Maintains Supabase JWT session in local storage. Never touches GitHub OAuth tokens or database service role keys directly.
                 </p>
-                <div className="pt-2 text-[10px] text-neutral-500">
+                <div className="pt-2 text-[10px] text-neutral-500 font-mono">
                   Headers: Bearer &lt;SUPABASE_JWT&gt;
                 </div>
               </div>
 
-              <div className="p-6 rounded-xl border border-white/[0.06] bg-[#07080a] space-y-3">
+              <div className="py-4 md:px-6 space-y-2.5">
                 <div className="text-emerald-400 font-semibold text-sm">2. Nitro SSR &amp; RPC</div>
-                <p className="text-neutral-400 leading-relaxed font-sans">
+                <p className="text-neutral-400 leading-relaxed font-sans text-xs">
                   Verifies caller JWT on every RPC function. Decrypts AES-256-GCM tokens on demand in memory, never logging or leaking them.
                 </p>
-                <div className="pt-2 text-[10px] text-neutral-500">
+                <div className="pt-2 text-[10px] text-neutral-500 font-mono">
                   Key: APP_USER_CONNECTION_KEY_SECRET (AES-256)
                 </div>
               </div>
 
-              <div className="p-6 rounded-xl border border-white/[0.06] bg-[#07080a] space-y-3">
-                <div className="text-blue-400 font-semibold text-sm">3. PostgreSQL &amp; RLS</div>
-                <p className="text-neutral-400 leading-relaxed font-sans">
+              <div className="py-4 md:px-6 last:md:pr-0 space-y-2.5">
+                <div className="text-neutral-200 font-semibold text-sm">3. PostgreSQL &amp; RLS</div>
+                <p className="text-neutral-400 leading-relaxed font-sans text-xs">
                   Strict Row-Level Security ensures users can only read their own repositories, pull requests, analyses, and findings.
                 </p>
-                <div className="pt-2 text-[10px] text-neutral-500">
+                <div className="pt-2 text-[10px] text-neutral-500 font-mono">
                   Policy: auth.uid() = user_id
                 </div>
               </div>
             </div>
 
-            {/* REST Endpoints Table */}
-            <div id="api" className="space-y-4 pt-4 border-t border-white/[0.06] scroll-mt-28">
-              <h3 className="text-base font-medium text-white flex items-center gap-2">
-                <Server className="h-4 w-4 text-cyan-400" />
-                <span>Nitro REST Webhooks &amp; Internal Endpoints</span>
-              </h3>
+            {/* REST Endpoints Table: Open Linear Table */}
+            <div id="api" className="space-y-4 pt-6 border-t border-white/[0.06] scroll-mt-28">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-medium text-white flex items-center gap-2">
+                  <Server className="h-4 w-4 text-neutral-300" />
+                  <span>Nitro REST Webhooks &amp; Internal Endpoints</span>
+                </h3>
+                <span className="text-[11px] font-mono text-neutral-500">HTTP / JSON</span>
+              </div>
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#07080a] overflow-x-auto text-xs">
+              <div className="overflow-x-auto text-xs border-y border-white/[0.08]">
                 <table className="w-full text-left">
                   <thead className="border-b border-white/[0.08] bg-white/[0.02] text-neutral-400 text-[11px] font-mono">
                     <tr>
-                      <th className="py-3 px-5">Endpoint</th>
-                      <th className="py-3 px-5">Method</th>
-                      <th className="py-3 px-5">Authentication</th>
-                      <th className="py-3 px-5">Action</th>
+                      <th className="py-3 px-4 font-medium">Endpoint</th>
+                      <th className="py-3 px-4 font-medium">Method</th>
+                      <th className="py-3 px-4 font-medium">Authentication</th>
+                      <th className="py-3 px-4 font-medium text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[0.04] text-neutral-300 font-mono text-[11px]">
-                    <tr>
-                      <td className="py-3 px-5 text-white">/api/webhooks/github</td>
-                      <td className="py-3 px-5 text-amber-400">POST</td>
-                      <td className="py-3 px-5 text-neutral-400">HMAC SHA-256 (X-Hub-Signature-256)</td>
-                      <td className="py-3 px-5">
+                    <tr className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3 px-4 text-white">/api/webhooks/github</td>
+                      <td className="py-3 px-4 text-amber-400 font-semibold">POST</td>
+                      <td className="py-3 px-4 text-neutral-400">HMAC SHA-256 (X-Hub-Signature-256)</td>
+                      <td className="py-3 px-4 text-right">
                         <button
                           type="button"
                           onClick={() => handleCopyCurl('curl -X POST https://buggers.vercel.app/api/webhooks/github -H "X-Hub-Signature-256: sha256=..." -d \'{"action":"opened"}\'', "webhook")}
-                          className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 font-sans cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "webhook" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                           <span>Copy cURL</span>
                         </button>
                       </td>
                     </tr>
-                    <tr>
-                      <td className="py-3 px-5 text-white">/api/cron/worker</td>
-                      <td className="py-3 px-5 text-emerald-400">GET</td>
-                      <td className="py-3 px-5 text-neutral-400">Bearer Token (CRON_SECRET)</td>
-                      <td className="py-3 px-5">
+                    <tr className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3 px-4 text-white">/api/cron/worker</td>
+                      <td className="py-3 px-4 text-emerald-400 font-semibold">GET</td>
+                      <td className="py-3 px-4 text-neutral-400">Bearer Token (CRON_SECRET)</td>
+                      <td className="py-3 px-4 text-right">
                         <button
                           type="button"
                           onClick={() => handleCopyCurl('curl -X GET https://buggers.vercel.app/api/cron/worker -H "Authorization: Bearer YOUR_CRON_SECRET"', "cron")}
-                          className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 font-sans cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "cron" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                           <span>Copy cURL</span>
                         </button>
                       </td>
                     </tr>
-                    <tr>
-                      <td className="py-3 px-5 text-white">/api/health</td>
-                      <td className="py-3 px-5 text-blue-400">GET</td>
-                      <td className="py-3 px-5 text-neutral-400">Public</td>
-                      <td className="py-3 px-5">
+                    <tr className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3 px-4 text-white">/api/health</td>
+                      <td className="py-3 px-4 text-neutral-300 font-semibold">GET</td>
+                      <td className="py-3 px-4 text-neutral-400">Public</td>
+                      <td className="py-3 px-4 text-right">
                         <button
                           type="button"
                           onClick={() => handleCopyCurl("curl -X GET https://buggers.vercel.app/api/health", "health")}
-                          className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 font-sans cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "health" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                           <span>Copy cURL</span>
@@ -457,7 +458,6 @@ export function DocsPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
             </div>
           </div>
         </section>
@@ -493,15 +493,24 @@ export function DocsPage() {
                 <p>
                   Open your Supabase SQL editor and execute the complete schema definition located in <code className="text-white font-mono bg-white/10 px-1 py-0.5 rounded">supabase-setup.sql</code> at the root of the repository. This provisions the 8 core tables:
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px] text-amber-300">
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">profiles</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">user_connections</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">repositories</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">pull_requests</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">pr_analyses</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">findings</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">finding_comments</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04]">diff_caches</div>
+                <div className="flex flex-wrap gap-2 font-mono text-[11px] pt-1.5">
+                  {[
+                    "profiles",
+                    "user_connections",
+                    "repositories",
+                    "pull_requests",
+                    "pr_analyses",
+                    "findings",
+                    "finding_comments",
+                    "diff_caches",
+                  ].map((tbl) => (
+                    <span
+                      key={tbl}
+                      className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:text-white hover:border-white/20 transition-colors"
+                    >
+                      {tbl}
+                    </span>
+                  ))}
                 </div>
               </div>
             </AccordionItem>
@@ -511,10 +520,10 @@ export function DocsPage() {
                 <p>
                   Register a new GitHub OAuth App under your organization settings:
                 </p>
-                <ul className="list-disc pl-5 space-y-1 text-neutral-400">
-                  <li>Homepage URL: <code className="text-white font-mono bg-white/10 px-1 py-0.5 rounded">https://&lt;your-domain&gt;</code></li>
-                  <li>Authorization callback URL: <code className="text-white font-mono bg-white/10 px-1 py-0.5 rounded">https://&lt;your-domain&gt;/dashboard</code></li>
-                  <li>Required Scopes: <code className="text-white font-mono bg-white/10 px-1 py-0.5 rounded">read:user repo</code></li>
+                <ul className="list-disc pl-5 space-y-1.5 text-neutral-400 font-mono text-[11px]">
+                  <li>Homepage URL: <code className="text-white bg-white/[0.06] px-1.5 py-0.5 rounded border border-white/10">https://&lt;your-domain&gt;</code></li>
+                  <li>Authorization callback URL: <code className="text-white bg-white/[0.06] px-1.5 py-0.5 rounded border border-white/10">https://&lt;your-domain&gt;/dashboard</code></li>
+                  <li>Required Scopes: <code className="text-white bg-white/[0.06] px-1.5 py-0.5 rounded border border-white/10">read:user repo</code></li>
                 </ul>
               </div>
             </AccordionItem>
@@ -537,15 +546,25 @@ export function DocsPage() {
                 <p>
                   Configure all 14 production environment variables in your Vercel project settings:
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px]">
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">SUPABASE_URL</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">SUPABASE_SERVICE_ROLE_KEY</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">GITHUB_CLIENT_ID</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">GITHUB_CLIENT_SECRET</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">APP_USER_CONNECTION_KEY_SECRET</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">GITHUB_WEBHOOK_SECRET</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">CRON_SECRET</div>
-                  <div className="p-2 rounded bg-black/40 border border-white/[0.04] text-neutral-300">AI_PROVIDER (claude | openai | gemini)</div>
+                <div className="border-t border-b border-white/[0.08] divide-y divide-white/[0.04] font-mono text-[11px] mt-2">
+                  {[
+                    "SUPABASE_URL",
+                    "SUPABASE_SERVICE_ROLE_KEY",
+                    "GITHUB_CLIENT_ID",
+                    "GITHUB_CLIENT_SECRET",
+                    "APP_USER_CONNECTION_KEY_SECRET",
+                    "GITHUB_WEBHOOK_SECRET",
+                    "CRON_SECRET",
+                    "AI_PROVIDER (claude | openai | gemini)",
+                  ].map((env) => (
+                    <div
+                      key={env}
+                      className="py-2.5 px-2 text-neutral-300 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                    >
+                      <span className="text-white">{env}</span>
+                      <span className="text-[10px] text-neutral-500 font-sans">Required</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </AccordionItem>

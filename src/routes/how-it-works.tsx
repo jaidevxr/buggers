@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   ArrowRight,
   BrainCircuit,
@@ -7,6 +8,12 @@ import {
   ShieldAlert,
   Sparkles,
   Zap,
+  Activity,
+  Terminal,
+  Cpu,
+  Layers,
+  GitPullRequest,
+  Check,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 
@@ -32,215 +39,315 @@ export const Route = createFileRoute("/how-it-works")({
   component: HowItWorksPage,
 });
 
+interface PipelineStep {
+  step: string;
+  title: string;
+  shortDesc: string;
+  badge: string;
+  badgeColor: string;
+  codeFile: string;
+  payloadTitle: string;
+  lines: Array<{ prefix: string; text: string; highlight?: boolean }>;
+  detailHeader: string;
+  detailBody: string;
+}
+
+const PIPELINE_STEPS: PipelineStep[] = [
+  {
+    step: "STEP 01",
+    title: "Instant Webhook Ingest",
+    shortDesc: "HMAC SHA-256 verified event routing from GitHub App in <180ms.",
+    badge: "180ms · HMAC Validated",
+    badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    codeFile: "api/webhooks/github.ts",
+    payloadTitle: "Payload Verification & Token Decryption",
+    lines: [
+      { prefix: "01", text: "POST /api/webhooks/github HTTP/1.1" },
+      { prefix: "02", text: "X-Hub-Signature-256: sha256=9b72a... (HMAC Verified)", highlight: true },
+      { prefix: "03", text: 'X-GitHub-Event: pull_request {"action": "opened", "number": 184}' },
+      { prefix: "04", text: "AES-256-GCM Decrypt: APP_USER_CONNECTION_KEY_SECRET -> GitHub App Octokit" },
+      { prefix: "05", text: "Locking Postgres PR analysis lease: status=processing, ttl=300s" },
+    ],
+    detailHeader: "Zero-Latency Event Handling",
+    detailBody: "Webhooks are verified against GitHub HMAC signatures before hitting background queues. Repository credentials are encrypted at rest using AES-256-GCM and decrypted exclusively in-memory.",
+  },
+  {
+    step: "STEP 02",
+    title: "Historical Churn Context",
+    shortDesc: "Correlates modified files with 90-day defect commits and hotspot frequency.",
+    badge: "Hotspot Engine · 14 Regressions",
+    badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    codeFile: "src/engine/churn-analyzer.ts",
+    payloadTitle: "Module Volatility & Revert Analysis",
+    lines: [
+      { prefix: "12", text: "Analyzing Git commit graph: src/services/paymentValidator.ts" },
+      { prefix: "13", text: "-> Total commits in 90d: 38 | Past defect reverts: 14", highlight: true },
+      { prefix: "14", text: "-> Author entropy: 3.42 bits (4 active contributors)" },
+      { prefix: "15", text: "-> Hotspot status: HIGH_VOLATILITY (Top 2% of repository)" },
+      { prefix: "16", text: "Churn factor weight: 0.35 * normalized_defect_ratio" },
+    ],
+    detailHeader: "Context-Aware Risk Prediction",
+    detailBody: "Unlike standard linters that treat every file equally, Buggers extracts commit histories, identifying volatile hotspots that historically caused production rollbacks.",
+  },
+  {
+    step: "STEP 03",
+    title: "Multi-Signal Risk Scoring",
+    shortDesc: "Calculates deterministic score (0-100) using Risk Model 1.1.0 specifications.",
+    badge: "Risk Score 82/100 · HIGH",
+    badgeColor: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+    codeFile: "src/engine/risk-model.ts",
+    payloadTitle: "Deterministic Risk Model 1.1.0 Calculation",
+    lines: [
+      { prefix: "31", text: "Coverage Delta: -8.4% (Tests deleted in test/payment.test.ts)" },
+      { prefix: "32", text: "Complexity Delta: +14 Cyclomatic (nested condition blocks)", highlight: true },
+      { prefix: "33", text: "SAST Vulnerability: 1 High (CWE-208 Timing Attack / Inverted Guard)" },
+      { prefix: "34", text: "Formula: S = clamp(25*del_cov + 15*del_cpx + 30*churn + 30*sast)" },
+      { prefix: "35", text: "Result: Risk Score 82/100 -> Severity Level: HIGH", highlight: true },
+    ],
+    detailHeader: "Mathematical Risk Precision",
+    detailBody: "Deterministic scoring produces consistent, reproducible quality gates. Pull requests exceeding the team's risk threshold automatically receive targeted inspection.",
+  },
+  {
+    step: "STEP 04",
+    title: "AST-Grounded Remediation",
+    shortDesc: "Verifies line numbers against git diff hunks before posting GitHub comments.",
+    badge: "Zero Hallucination Verified",
+    badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    codeFile: "src/engine/remediation.ts",
+    payloadTitle: "AST Citation Verification & GitHub Check Run",
+    lines: [
+      { prefix: "48", text: "Candidate finding: Inverted boolean guard in payment capture" },
+      { prefix: "49", text: "Diff Verification: Verified hunk lines 42-44 exist in PR diff", highlight: true },
+      { prefix: "50", text: "AST AST-SAST-004 Walker: Match confirmed on AST Node Identifier" },
+      { prefix: "51", text: "GitHub Check Run: Completed with ACTION_REQUIRED advisory" },
+      { prefix: "52", text: "Inline PR Comment posted: Suggested fix formatted as git patch", highlight: true },
+    ],
+    detailHeader: "Strict Anti-Hallucination Pipeline",
+    detailBody: "AI comments are strictly validated: if an AI suggestion references a line number that was not modified in the diff, the finding is discarded. Zero false alarms.",
+  },
+];
+
 export function HowItWorksPage() {
+  const [activeStepIdx, setActiveStepIdx] = useState(0);
+  const activeStep = PIPELINE_STEPS[activeStepIdx]!;
+
   return (
-    <div className="min-h-screen w-full bg-[#08090a] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#08090a] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Main Content Hero */}
-      <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
+      <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1240px] mx-auto flex-1 w-full space-y-20">
+        
         {/* Title Header with Linear editorial spacing */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/[0.08] px-4 py-1 text-xs font-mono text-[#8a8f98]">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/70 animate-pulse" />
-            <span className="uppercase text-[10px] tracking-widest">Deterministic Release Intelligence</span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/[0.08] px-3.5 py-1 text-xs font-mono text-[#8a8f98]">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="uppercase text-[10px] tracking-widest text-neutral-300">Deterministic Release Intelligence</span>
           </div>
 
-          <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.1]">
+          <h1 className="font-display text-4xl sm:text-6xl font-medium tracking-tight text-white leading-[1.08]">
             How Buggers Protects Your Release Pipeline
           </h1>
 
-          <p className="text-base sm:text-lg text-[#8a8f98] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-[#8a8f98] leading-relaxed max-w-2xl mx-auto font-normal">
             From the second a pull request is opened to automated remediation comments, here is how Buggers reads code diffs and repository history together.
           </p>
         </div>
 
-        {/* 4-Step Architecture Grid in Linear FIG Minimal Style */}
-        <div className="mt-16 border border-white/[0.08] rounded-2xl overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0c0d10]/60 backdrop-blur-sm">
-          <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
-            <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
-              STEP 01
-            </span>
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-zinc-400" />
-              <h3 className="text-sm font-semibold text-white">Instant Webhook</h3>
-            </div>
-            <p className="text-xs text-[#8a8f98] leading-relaxed">
-              Every PR opening, commit push, or synchronize event triggers analysis in &lt;1s via secure HMAC-verified webhooks.
-            </p>
-          </div>
+        {/* 4-Step Interactive Linear Pipeline Selector */}
+        <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 py-3">
+          {PIPELINE_STEPS.map((s, idx) => {
+            const isCurrent = activeStepIdx === idx;
+            return (
+              <button
+                key={s.step}
+                type="button"
+                onClick={() => setActiveStepIdx(idx)}
+                className={`p-6 sm:p-7 text-left space-y-3 transition-all duration-200 cursor-pointer ${
+                  isCurrent
+                    ? "bg-white/[0.04] text-white"
+                    : "text-[#8a8f98] hover:text-white hover:bg-white/[0.02]"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`font-mono text-[10px] tracking-widest uppercase font-semibold ${
+                      isCurrent ? "text-white" : "text-neutral-500"
+                    }`}
+                  >
+                    {s.step}
+                  </span>
+                  {isCurrent && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  )}
+                </div>
 
-          <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
-            <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
-              STEP 02
-            </span>
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="h-4 w-4 text-zinc-400" />
-              <h3 className="text-sm font-semibold text-white">Churn Analysis</h3>
-            </div>
-            <p className="text-xs text-[#8a8f98] leading-relaxed">
-              Buggers evaluates historical churn, past defect records, and code ownership patterns to gauge volatility.
-            </p>
-          </div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-white">{s.title}</h3>
+                </div>
 
-          <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
-            <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
-              STEP 03
-            </span>
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="h-4 w-4 text-zinc-400" />
-              <h3 className="text-sm font-semibold text-white">Risk Scoring</h3>
-            </div>
-            <p className="text-xs text-[#8a8f98] leading-relaxed">
-              Deterministic 0-100 scoring based on test coverage delta, cyclomatic complexity, and regression indicators.
-            </p>
-          </div>
-
-          <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
-            <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
-              STEP 04
-            </span>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-zinc-400" />
-              <h3 className="text-sm font-semibold text-white">Grounded Triage</h3>
-            </div>
-            <p className="text-xs text-[#8a8f98] leading-relaxed">
-              AI suggestions cite real diff line numbers only. Phantom line citations and hallucinations are discarded.
-            </p>
-          </div>
+                <p className="text-xs text-[#8a8f98] leading-relaxed font-normal">
+                  {s.shortDesc}
+                </p>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Live Scenario Preview: PR #184 with Linear Feathered Bottom Edges */}
-        <div className="mt-16 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-sm text-zinc-300 font-semibold">PR #184: payment-service</span>
-                <span className="rounded-full bg-rose-950/40 border border-rose-900/40 px-3 py-0.5 text-xs font-semibold text-rose-300/80 font-mono">
-                  HIGH · 82 Risk
+        {/* Interactive Dynamic Stage Inspector Preview (Linear feathered edge) */}
+        <section className="relative rounded-2xl border border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden">
+          {/* Subtle top edge lighting flare */}
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+
+          {/* Header Bar */}
+          <div className="border-b border-white/[0.08] px-6 sm:px-8 py-4 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs text-neutral-400 font-semibold">{activeStep.step}</span>
+              <span className="text-neutral-600">/</span>
+              <span className="font-mono text-sm text-white font-medium">{activeStep.title}</span>
+            </div>
+
+            <div className="flex items-center gap-3 font-mono text-xs">
+              <span className={`px-2.5 py-0.5 rounded border text-[11px] font-semibold ${activeStep.badgeColor}`}>
+                {activeStep.badge}
+              </span>
+              <span className="text-neutral-500 hidden sm:inline-block">PR #184: payment-service</span>
+            </div>
+          </div>
+
+          {/* Interactive Inspection Workspace */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[420px]">
+            {/* Left Column: Live Terminal / Execution Log */}
+            <div className="lg:col-span-7 p-6 sm:p-8 font-mono text-xs leading-relaxed space-y-4 bg-[#07080a] border-b lg:border-b-0 lg:border-r border-white/[0.08]">
+              <div className="flex items-center justify-between text-[11px] text-neutral-500 border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <Terminal className="h-3.5 w-3.5 text-neutral-400" />
+                  <span className="text-neutral-300">{activeStep.codeFile}</span>
+                </div>
+                <span>Nitro Serverless Execution</span>
+              </div>
+
+              <div className="space-y-1.5 py-2">
+                {activeStep.lines.map((l, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-start gap-3 py-1 px-2 rounded ${
+                      l.highlight ? "bg-white/[0.06] text-white font-semibold" : "text-neutral-400"
+                    }`}
+                  >
+                    <span className="text-neutral-600 select-none text-[10px] w-6 shrink-0">{l.prefix}</span>
+                    <span className="whitespace-pre-wrap">{l.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Verified Status Tag */}
+              <div className="pt-4 border-t border-white/[0.06] flex items-center gap-2 text-emerald-400 text-xs font-mono">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Deterministic pipeline assertion satisfied (0 ms jitter)</span>
+              </div>
+            </div>
+
+            {/* Right Column: Architectural Detail & Deep Dive */}
+            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-[#090a0d] flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold block">
+                    STAGE SPECIFICATION
+                  </span>
+                  <h3 className="text-xl font-medium text-white tracking-tight">
+                    {activeStep.detailHeader}
+                  </h3>
+                </div>
+
+                <p className="text-xs sm:text-sm text-[#8a8f98] leading-relaxed font-normal">
+                  {activeStep.detailBody}
+                </p>
+
+                <div className="space-y-2 pt-2 border-t border-white/[0.06] text-xs font-mono text-neutral-400">
+                  <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
+                    <span>Execution Isolation</span>
+                    <span className="text-white">Edge V8 Isolates</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
+                    <span>Data Privacy</span>
+                    <span className="text-white">Zero Token Retention</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span>Re-entrancy Guard</span>
+                    <span className="text-emerald-400 font-semibold">Active · SHA-256 Lock</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setActiveStepIdx((prev) => (prev + 1) % PIPELINE_STEPS.length)}
+                  className="text-xs font-mono text-white hover:text-neutral-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Advance Pipeline Stage</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+                <span className="text-[11px] font-mono text-neutral-500">
+                  Step {activeStepIdx + 1} of {PIPELINE_STEPS.length}
                 </span>
               </div>
-              <h2 className="mt-1 text-lg font-bold text-white">Fix payment validation</h2>
-              <p className="mt-0.5 font-mono text-xs text-[#8a8f98]">mira-k · 3 files · +204 −74</p>
-            </div>
-
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-900/40 bg-emerald-950/40 px-3 py-1 text-xs font-mono text-emerald-300/80">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Analysis Complete
-            </span>
-          </div>
-
-          {/* Finding items */}
-          <div className="mt-6 space-y-2.5">
-            <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/40 p-3.5">
-              <span className="rounded-md bg-rose-950/60 px-2.5 py-0.5 font-mono text-xs font-semibold text-rose-300/90 uppercase border border-rose-900/50">
-                Critical
-              </span>
-              <span className="text-sm font-medium text-slate-200">
-                Partial capture amount silently overwritten
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/40 p-3.5">
-              <span className="rounded-md bg-amber-950/60 px-2.5 py-0.5 font-mono text-xs font-semibold text-amber-300/90 uppercase border border-amber-900/50">
-                High
-              </span>
-              <span className="text-sm font-medium text-slate-200">
-                Refund no longer wrapped in a transaction
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/40 p-3.5">
-              <span className="rounded-md bg-slate-900 px-2.5 py-0.5 font-mono text-xs font-semibold text-slate-300/90 uppercase border border-slate-800">
-                Medium
-              </span>
-              <span className="text-sm font-medium text-slate-200">
-                Empty card number treated as valid
-              </span>
-            </div>
-          </div>
-
-          {/* Code Diff Display */}
-          <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.08] bg-black font-mono text-xs">
-            <div className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[#8a8f98] text-[11px] flex items-center justify-between">
-              <span>src/services/paymentValidator.ts</span>
-              <span>Lines 42–44</span>
-            </div>
-            <div className="p-3 space-y-1">
-              <div className="rounded bg-rose-950/30 px-3 py-1.5 text-rose-300/80 border-l-2 border-rose-900/60">
-                − if amount &lt;= order.total:
-              </div>
-              <div className="rounded bg-emerald-950/30 px-3 py-1.5 text-emerald-300/80 border-l-2 border-emerald-900/60">
-                + if amount != order.total:
-              </div>
-              <div className="rounded bg-emerald-950/30 px-3 py-1.5 text-emerald-300/80 border-l-2 border-emerald-900/60">
-                + &nbsp; amount = order.total
-              </div>
-            </div>
-          </div>
-
-          {/* AI Remediation Box */}
-          <div className="mt-6 rounded-xl border border-white/[0.08] bg-[#121316]/90 p-5 text-xs text-slate-300 leading-relaxed">
-            <div className="flex items-center gap-2 font-semibold text-slate-200 text-sm">
-              <Sparkles className="h-4 w-4 text-zinc-400" />
-              <span>AI Remediation Advisory</span>
-            </div>
-            <p className="mt-2 text-[#8a8f98]">
-              Logic inversion detected: Comparing with <code className="font-mono text-zinc-300">!=</code> causes partial refund amounts to overwrite the order total. Wrap operations in a database transaction to prevent financial state race conditions.
-            </p>
-            <div className="mt-3 flex items-center gap-2 text-[#8a8f98] font-mono text-[11px]">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/80" />
-              <span>Grounding verified against modified diff hunks.</span>
             </div>
           </div>
 
           {/* Linear bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
-        </div>
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+        </section>
 
-        {/* Bottom CTA Banner */}
-        <div className="mt-16 text-center rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#121316]/60 via-[#0c0d10]/80 to-[#08090a] p-10 shadow-xl space-y-4">
-          <h2 className="font-display text-2xl sm:text-3xl font-semibold text-white tracking-tight">
-            Ready to review pull requests with ease?
-          </h2>
-          <p className="text-xs sm:text-sm text-[#8a8f98] max-w-md mx-auto leading-relaxed">
-            Connect your repository once. Buggers runs automatically on your next pull request.
-          </p>
-          <div className="pt-2 flex justify-center">
+        {/* Bottom CTA Banner (Clean Linear Hairline) */}
+        <section className="border-t border-white/[0.08] pt-16 pb-8 text-center space-y-6">
+          <div className="max-w-xl mx-auto space-y-3">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white leading-tight">
+              Ready to review pull requests with ease?
+            </h2>
+            <p className="text-xs sm:text-sm text-[#8a8f98] leading-relaxed font-normal">
+              Connect your repository once. Buggers runs automatically on your next pull request with deterministic release intelligence.
+            </p>
+          </div>
+
+          <div className="flex justify-center items-center gap-4">
             <Link
               to="/auth"
               preload="intent"
               viewTransition={true}
-              className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 shadow-md active:scale-[0.985] flex items-center gap-2"
+              className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-all duration-150 active:scale-[0.985] flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <span>Get Started with GitHub</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
+            <Link
+              to="/docs"
+              className="rounded-full border border-white/[0.12] bg-white/[0.02] text-neutral-300 hover:text-white hover:border-white/25 px-6 py-2.5 text-xs sm:text-sm font-medium transition-all duration-150 cursor-pointer"
+            >
+              Explore Full Specs
+            </Link>
           </div>
-        </div>
+        </section>
       </main>
 
-      {/* Footer - Pinned to bottom */}
-      <footer className="border-t border-white/[0.08] bg-[#08090a] py-10 px-4 sm:px-6 text-xs text-[#8a8f98] mt-auto">
+      {/* Footer - Linear Matte Black */}
+      <footer className="border-t border-white/[0.08] bg-[#08090a] py-8 px-4 sm:px-6 text-xs text-[#8a8f98] mt-auto">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 text-zinc-300 font-medium">
+          <div className="flex items-center gap-2.5 text-neutral-300 font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />
             <span>Buggers</span>
-            <span className="text-zinc-600 text-[11px]">&copy; 2026 Buggers, Inc. All rights reserved.</span>
+            <span className="text-neutral-600 text-[11px]">&copy; 2026 Buggers, Inc. All rights reserved.</span>
           </div>
 
           <div className="flex items-center gap-6 text-[#8a8f98]">
-            <Link to="/" className="hover:text-white transition-colors duration-150">
-              Home
-            </Link>
-            <Link to="/docs" className="hover:text-white transition-colors duration-150">
-              Docs
-            </Link>
-            <Link to="/auth" className="hover:text-white transition-colors duration-150">
-              Sign In
-            </Link>
-            <span className="text-zinc-500 font-mono text-[11px]">All Systems Normal</span>
+            <Link to="/" className="hover:text-white transition-colors duration-150">Home</Link>
+            <Link to="/about" className="hover:text-white transition-colors duration-150">About</Link>
+            <Link to="/docs" className="hover:text-white transition-colors duration-150">Docs</Link>
+            <Link to="/auth" className="hover:text-white transition-colors duration-150">Sign In</Link>
+            <span className="text-neutral-500 font-mono text-[11px]">All Systems Normal</span>
           </div>
         </div>
       </footer>
     </div>
   );
 }
+

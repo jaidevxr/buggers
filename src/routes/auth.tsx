@@ -30,6 +30,9 @@ export const Route = createFileRoute("/auth")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [
+      { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp" },
+    ],
   }),
   component: AuthPage,
 });
