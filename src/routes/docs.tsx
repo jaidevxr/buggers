@@ -459,10 +459,8 @@ export function DocsPage() {
             </div>
           </div>
 
-          {/* Interactive In-Process Scanner Testbed (Linear Open Hairline with Seamless Dissolve) */}
-          <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
+          {/* Interactive In-Process Scanner Testbed (Linear Dark Grey styling) */}
+          <div className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300">
             <div className="relative z-0">
               <LiveScannerPlayground />
             </div>
@@ -497,10 +495,8 @@ export function DocsPage() {
             </div>
           </div>
 
-          {/* Interactive 9-Stage Pipeline Visualizer (Linear Open Hairline with Seamless Dissolve) */}
-          <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
+          {/* Interactive 9-Stage Pipeline Visualizer (Linear Dark Grey styling) */}
+          <div className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300">
             <div className="relative z-0">
               <PipelineStageVisualizer />
             </div>
