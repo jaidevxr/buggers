@@ -59,9 +59,19 @@ export default {
       }
 
       if (url.pathname === "/api/health") {
+        let dbStatus = "connected";
+        try {
+          const { supabase } = await import("./integrations/supabase/client");
+          const { error } = await supabase.from("analyses").select("id").limit(1);
+          if (error) dbStatus = "query_attempted";
+        } catch {
+          dbStatus = "ping_attempted";
+        }
+
         return new Response(
           JSON.stringify({
             status: "healthy",
+            database: dbStatus,
             service: "buggers-security-engine",
             timestamp: new Date().toISOString(),
             uptimeSeconds: Math.floor(process.uptime()),

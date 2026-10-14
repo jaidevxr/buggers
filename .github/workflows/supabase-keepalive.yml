@@ -1,0 +1,23 @@
+name: Supabase Database Keep-Alive
+
+on:
+  schedule:
+    # Runs at 05:00 UTC every 3 days (well within Supabase's 7-day inactivity limit)
+    - cron: '0 5 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  keepalive:
+    name: Ping Database & Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send keep-alive request
+        run: |
+          echo "Pinging Buggers production health endpoint to keep Supabase active..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://buggers.vercel.app/api/health)
+          echo "HTTP response: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+            echo "Success: Supabase activity registered. Inactivity timer reset."
+          else
+            echo "Warning: Response code was $STATUS, but HTTP request reached server."
+          fi
