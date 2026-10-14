@@ -159,7 +159,7 @@ export function LinearProductSections() {
     return () => observer.disconnect();
   }, []);
 
-  // Multi-line typewriter & sequential detection simulation engine
+  // Multi-line ultra-smooth typewriter & sequential detection simulation engine
   useEffect(() => {
     if (!isInView || isPaused) return;
 
@@ -170,33 +170,36 @@ export function LinearProductSections() {
     const lines = activePR.lines;
     let lineI = 0;
     let charI = 0;
-    let scanTimer: ReturnType<typeof setTimeout> | null = null;
-    let remTimer: ReturnType<typeof setTimeout> | null = null;
-    let loopTimer: ReturnType<typeof setTimeout> | null = null;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+    let isCancelled = false;
 
-    const interval = setInterval(() => {
+    const tick = () => {
+      if (isCancelled) return;
+
       if (lineI >= lines.length) {
-        clearInterval(interval);
         setActiveLineIdx(lines.length);
         setSimPhase("scanning");
 
         // 750ms AST scanning phase
-        scanTimer = setTimeout(() => {
+        timerId = setTimeout(() => {
+          if (isCancelled) return;
           setSimPhase("detected");
 
-          // Auto-apply remediation after detection
-          remTimer = setTimeout(() => {
+          // 2200ms detection phase before patch
+          timerId = setTimeout(() => {
+            if (isCancelled) return;
             setSimPhase("remediated");
 
-            // Loop to next PR scenario after 4.5s so animation is perpetually active
-            loopTimer = setTimeout(() => {
+            // Loop to next PR scenario after 4.5s
+            timerId = setTimeout(() => {
+              if (isCancelled) return;
               setSelectedPrId((prev) => {
                 const idx = PR_SCENARIOS.findIndex((p) => p.id === prev);
                 const nextIdx = (idx + 1) % PR_SCENARIOS.length;
                 return PR_SCENARIOS[nextIdx]!.id;
               });
             }, 4500);
-          }, 2400);
+          }, 2200);
         }, 750);
 
         return;
@@ -205,22 +208,47 @@ export function LinearProductSections() {
       const curLine = lines[lineI];
       if (!curLine) return;
 
-      charI += 2; // fluid, snappy 2-character cadence
-      if (charI >= curLine.text.length) {
-        charI = 0;
-        lineI++;
-        setActiveLineIdx(lineI);
-        setActiveCharIdx(0);
+      // Handle leading indentation swiftly
+      if (charI < curLine.text.length && curLine.text.slice(charI).startsWith("  ")) {
+        charI += 2;
       } else {
-        setActiveCharIdx(charI);
+        charI += 1;
       }
-    }, 16);
+
+      if (charI >= curLine.text.length) {
+        // Line completed: render full line, then pause naturally for 140ms before next line
+        setActiveCharIdx(curLine.text.length);
+        timerId = setTimeout(() => {
+          if (isCancelled) return;
+          lineI++;
+          charI = 0;
+          setActiveLineIdx(lineI);
+          setActiveCharIdx(0);
+          timerId = setTimeout(tick, 35);
+        }, 140);
+        return;
+      }
+
+      setActiveCharIdx(charI);
+
+      // Organic typing cadence: ultra-smooth flow
+      const nextChar = curLine.text[charI];
+      let delay = 18;
+      if (nextChar === " " || nextChar === "{" || nextChar === "}" || nextChar === ";") {
+        delay = 34;
+      } else if (nextChar === ",") {
+        delay = 42;
+      }
+
+      timerId = setTimeout(tick, delay);
+    };
+
+    // Initial micro-delay of 80ms before typing begins
+    timerId = setTimeout(tick, 80);
 
     return () => {
-      clearInterval(interval);
-      if (scanTimer) clearTimeout(scanTimer);
-      if (remTimer) clearTimeout(remTimer);
-      if (loopTimer) clearTimeout(loopTimer);
+      isCancelled = true;
+      if (timerId) clearTimeout(timerId);
     };
   }, [isInView, selectedPrId, isPaused, activePR.lines, replayKey]);
 
@@ -512,9 +540,9 @@ export function LinearProductSections() {
                 {activePR.lines.map((line, idx) => {
                   if (simPhase === "typing" && idx > activeLineIdx) {
                     return (
-                      <div key={idx} className="flex items-center text-neutral-700/30 py-0.5">
-                        <span className="w-7 text-neutral-700 select-none shrink-0">{line.num}</span>
-                        <span className="opacity-0">.</span>
+                      <div key={idx} className="flex items-center text-neutral-700/30 py-0.5 min-h-[1.5rem]">
+                        <span className="w-7 text-neutral-700/50 select-none shrink-0 font-mono">{line.num}</span>
+                        <span className="opacity-0 select-none">-</span>
                       </div>
                     );
                   }
@@ -530,7 +558,7 @@ export function LinearProductSections() {
                       return (
                         <div key={idx} className="space-y-1 my-1">
                           {/* Strikethrough original vulnerable code */}
-                          <div className="flex items-center justify-between px-2.5 py-1 rounded bg-rose-500/[0.05] text-rose-400/40 line-through text-[11px] sm:text-xs">
+                          <div className="flex items-center justify-between px-2.5 py-1 rounded bg-rose-500/[0.05] text-rose-400/40 line-through text-[11px] sm:text-xs min-h-[1.5rem]">
                             <div className="flex items-center gap-1.5 min-w-0">
                               <span className="w-4 text-rose-500/60 select-none font-semibold shrink-0">-</span>
                               <span className="w-6 text-neutral-600 select-none shrink-0">{line.num}</span>
@@ -540,7 +568,7 @@ export function LinearProductSections() {
                           </div>
 
                           {/* Green Remediated Fix Line */}
-                          <div className="flex items-center justify-between px-2.5 py-1.5 rounded bg-emerald-500/[0.14] text-emerald-300 border-l-2 border-emerald-400 text-[11px] sm:text-xs font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)] animate-in fade-in duration-300">
+                          <div className="flex items-center justify-between px-2.5 py-1.5 rounded bg-emerald-500/[0.14] text-emerald-300 border-l-2 border-emerald-400 text-[11px] sm:text-xs font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)] animate-in fade-in duration-300 min-h-[1.5rem]">
                             <div className="flex items-center gap-1.5 min-w-0">
                               <span className="w-4 text-emerald-400 select-none font-bold shrink-0">+</span>
                               <span className="w-6 text-emerald-500/70 select-none shrink-0">{line.num}</span>
@@ -559,7 +587,7 @@ export function LinearProductSections() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-center justify-between px-2.5 py-1.5 rounded bg-rose-500/15 text-rose-200 border-l-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.25)] text-[11px] sm:text-xs font-medium my-1 animate-in fade-in duration-200"
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded bg-rose-500/15 text-rose-200 border-l-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.25)] text-[11px] sm:text-xs font-medium my-1 animate-in fade-in duration-200 min-h-[1.5rem]"
                         >
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="w-4 text-rose-400 select-none font-bold shrink-0">!</span>
@@ -579,22 +607,22 @@ export function LinearProductSections() {
                   return (
                     <div
                       key={idx}
-                      className={`flex items-center px-2 py-0.5 rounded text-[11px] sm:text-xs transition-colors ${
-                        isCurrentTypingLine ? "bg-white/[0.04]" : ""
+                      className={`flex items-center px-2 py-0.5 rounded text-[11px] sm:text-xs transition-colors min-h-[1.5rem] ${
+                        isCurrentTypingLine ? "bg-white/[0.03]" : ""
                       }`}
                     >
                       <span className="w-7 text-neutral-600 select-none shrink-0 font-mono">{line.num}</span>
                       <span
-                        className={
+                        className={`whitespace-pre ${
                           line.isVulnerable && (simPhase === "typing" || simPhase === "scanning")
                             ? "text-amber-200/90"
                             : "text-neutral-300"
-                        }
+                        }`}
                       >
-                        {displayText}
+                        {displayText || (isCurrentTypingLine ? "" : "\u00A0")}
                       </span>
                       {isCurrentTypingLine && (
-                        <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-1 animate-pulse shrink-0" />
+                        <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-0.5 rounded-[1px] animate-pulse shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                       )}
                     </div>
                   );

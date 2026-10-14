@@ -274,7 +274,7 @@ export function AboutPage() {
         {/* Linear Layered Interactive PR Triage & Simulation Showcase */}
         {/* Motion Design · Scanning Laser · Live AST & Churn Simulations */}
         {/* ============================================================== */}
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#090a0d] overflow-hidden">
           {/* Subtle Linear top lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none z-20" />
 
