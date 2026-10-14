@@ -192,8 +192,9 @@ export function Landing() {
 
           {/* Feature 2: Churn & P95 Risk Engine (Linear Open Hairline) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Churn & Volatility Visual Card with Linear Dark Grey finish */}
-            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-8 space-y-5 shadow-[0_24px_64px_rgba(0,0,0,0.5)] transition-all duration-300">
+            {/* Churn & Volatility Visual Card with Linear Hairline and Edge Dissolve */}
+            <div className="lg:col-span-7 order-2 lg:order-1 relative border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-8 space-y-5 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="h-4 w-4 text-white" />
@@ -238,6 +239,9 @@ export function Landing() {
                 <span className="text-[#8a8f98]">Risk Score Evaluation:</span>
                 <span className="font-bold text-amber-400">82 / 100 (HIGH REGRESSION RISK)</span>
               </div>
+
+              {/* Linear bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
             </div>
 
             {/* Text on Right */}
@@ -287,8 +291,9 @@ export function Landing() {
               </div>
             </div>
 
-            {/* Config & Check Run Card with Linear Dark Grey finish */}
-            <div className="lg:col-span-7 relative rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-8 space-y-4 shadow-[0_24px_64px_rgba(0,0,0,0.5)] transition-all duration-300">
+            {/* Config & Check Run Card with Linear Feathered Edges */}
+            <div className="lg:col-span-7 relative border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-8 space-y-4 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
                   <FileCode className="h-4 w-4 text-white" />
@@ -297,7 +302,7 @@ export function Landing() {
                 <span className="font-mono text-[11px] text-[#8a8f98]">Repository Root Config</span>
               </div>
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#18191e] p-4 font-mono text-xs text-neutral-300 overflow-x-auto relative shadow-inner">
+              <div className="border border-white/[0.06] bg-[#050505] p-4 font-mono text-xs text-neutral-300 overflow-x-auto relative z-0">
                 <pre className="text-[11px] leading-relaxed">
 {`version: 1
 risk:
@@ -312,7 +317,7 @@ ignore:
               </div>
 
               {/* GitHub Check Run Status Simulation */}
-              <div className="border-l-2 border-l-rose-400 bg-rose-500/[0.06] rounded-r-lg p-3.5 flex items-center justify-between relative z-0 font-mono text-xs">
+              <div className="border-l-2 border-l-rose-400 bg-rose-500/[0.04] p-3.5 flex items-center justify-between relative z-0 font-mono text-xs">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs border border-rose-500/40">
                     ✕
@@ -326,11 +331,14 @@ ignore:
                   Required Check
                 </span>
               </div>
+
+              {/* Linear bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
             </div>
           </div>
 
           {/* Section 4: Linear FIG Minimal Wireframe Grid (Open Hairline) */}
-          <div className="rounded-2xl border border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#141518] shadow-[0_24px_64px_rgba(0,0,0,0.5)] overflow-hidden">
+          <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0a0a0a]">
             <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
               <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
                 FIG 0.1

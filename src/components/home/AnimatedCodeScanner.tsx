@@ -210,8 +210,12 @@ export function AnimatedCodeScanner() {
   return (
     <div
       ref={containerRef}
-      className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300"
+      className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom"
     >
+      {/* Background black radial fade to blend in */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
+
       <div className="relative z-0 space-y-6">
         {/* Top Control Bar: Scenario Pills + Playback Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
@@ -267,9 +271,9 @@ export function AnimatedCodeScanner() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left: Animated Code Editor with Laser Sweep & In-Place Hunk Replacement */}
-          <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#18191e] shadow-inner relative overflow-hidden font-mono text-xs transition-all duration-300">
+          <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] relative overflow-hidden font-mono text-xs">
             {/* Window Title Bar */}
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-2.5 bg-[#1e2026] text-[11px] text-neutral-400">
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5 bg-white/[0.02] text-[11px] text-neutral-400">
               <div className="flex items-center gap-2">
                 <Terminal className="h-3.5 w-3.5 text-neutral-500" />
                 <span className="text-white font-medium">{activeScenario.file}</span>
@@ -324,17 +328,17 @@ export function AnimatedCodeScanner() {
                     // Applied Diff State: Deleted line red, Added line green
                     return (
                       <div key={idx} className="space-y-1 my-1">
-                        <div className="flex items-center bg-[#281519] text-[#fca5a5] px-2.5 py-1 rounded border-l-2 border-rose-500 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-[1.5rem]">
-                          <span className="w-10 shrink-0 select-none text-rose-400/80 text-right pr-3 text-[11px]">
+                        <div className="flex items-center bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded border-l-2 border-rose-500/60 transition-all duration-500 min-h-[1.5rem]">
+                          <span className="w-10 shrink-0 select-none text-rose-400/70 text-right pr-3 text-[11px]">
                             {activeScenario.removedLine.lineNum}
                           </span>
                           <span className="whitespace-pre">{activeScenario.removedLine.text}</span>
                         </div>
-                        <div className="flex items-center bg-[#11241a] text-[#86efac] px-2.5 py-1 rounded border-l-2 border-emerald-400 font-semibold transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-[1.5rem]">
-                          <span className="w-10 shrink-0 select-none text-emerald-400/80 text-right pr-3 text-[11px]">
+                        <div className="flex items-center bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border-l-2 border-emerald-500/60 transition-all duration-500 min-h-[1.5rem]">
+                          <span className="w-10 shrink-0 select-none text-emerald-400/70 text-right pr-3 text-[11px]">
                             {activeScenario.addedLine.lineNum}
                           </span>
-                          <span className="whitespace-pre">{activeScenario.addedLine.text}</span>
+                          <span className="whitespace-pre font-semibold">{activeScenario.addedLine.text}</span>
                         </div>
                       </div>
                     );
@@ -345,16 +349,16 @@ export function AnimatedCodeScanner() {
                     return (
                       <div
                         key={idx}
-                        className="my-1 py-1.5 px-2.5 rounded bg-[#281519] border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.12)] flex flex-col gap-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-[1.5rem]"
+                        className="my-1 py-1 px-2 rounded bg-rose-500/15 border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] flex flex-col gap-1 transition-all duration-500 min-h-[1.5rem]"
                       >
-                        <div className="flex items-center justify-between text-[#fca5a5]">
+                        <div className="flex items-center justify-between text-rose-300">
                           <div className="flex items-center">
                             <span className="w-8 shrink-0 select-none text-rose-400 text-right pr-3 text-[11px]">
                               {line.lineNum}
                             </span>
                             <span className="whitespace-pre font-semibold">{line.text}</span>
                           </div>
-                          <span className="text-[10px] font-mono uppercase font-bold text-rose-400 bg-rose-500/20 px-1.5 py-0.5 rounded border border-rose-500/30">
+                          <span className="text-[10px] font-sans uppercase font-bold text-rose-400 bg-rose-500/20 px-1.5 py-0.5 rounded">
                             {activeScenario.cwe}
                           </span>
                         </div>
@@ -365,7 +369,7 @@ export function AnimatedCodeScanner() {
                   // Default Unscanned State
                   return (
                     <div key={idx} className="flex items-center text-neutral-300 min-h-[1.5rem]">
-                      <span className="w-8 shrink-0 select-none text-neutral-500 text-right pr-3 text-[11px]">
+                      <span className="w-8 shrink-0 select-none text-neutral-600 text-right pr-3 text-[11px]">
                         {line.lineNum}
                       </span>
                       <span className="whitespace-pre">{line.text}</span>
@@ -392,7 +396,7 @@ export function AnimatedCodeScanner() {
           </div>
 
           {/* Right: Real-Time Dynamic Telemetry & Risk Scoring Panel */}
-          <div className="lg:col-span-5 space-y-4 bg-[#18191e] border border-white/[0.08] rounded-xl p-5 shadow-inner transition-all duration-300">
+          <div className="lg:col-span-5 space-y-4">
             {/* Header Telemetry Pill */}
             <div className="flex items-center justify-between text-xs font-mono border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">

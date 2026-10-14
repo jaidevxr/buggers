@@ -250,16 +250,16 @@ export function HowItWorksPage() {
           })}
         </div>
 
-        {/* Interactive Dynamic Stage Inspector Preview (Linear Dark Grey styling) */}
+        {/* Interactive Dynamic Stage Inspector Preview (Linear Open Hairline with Feathered Edge) */}
         <section
           ref={containerRef}
-          className="relative rounded-2xl border border-white/[0.08] bg-[#141518] shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] overflow-hidden transition-all duration-300"
+          className="relative border-y border-white/[0.08] bg-[#0a0a0a] overflow-hidden linear-preview-fade-bottom"
         >
           {/* Subtle top edge lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
           {/* Header Bar */}
-          <div className="border-b border-white/[0.08] px-6 sm:px-8 py-4 bg-[#18191d] flex flex-wrap items-center justify-between gap-4">
+          <div className="border-b border-white/[0.08] px-6 sm:px-8 py-4 bg-[#080808] flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs text-neutral-400 font-semibold">{activeStep.step}</span>
               <span className="text-neutral-600">/</span>
@@ -300,7 +300,7 @@ export function HowItWorksPage() {
           {/* Interactive Inspection Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[420px]">
             {/* Left Column: Live Terminal / Execution Log */}
-            <div className="lg:col-span-7 p-6 sm:p-8 font-mono text-xs leading-relaxed space-y-4 bg-[#16171c] border-b lg:border-b-0 lg:border-r border-white/[0.08] relative overflow-hidden">
+            <div className="lg:col-span-7 p-6 sm:p-8 font-mono text-xs leading-relaxed space-y-4 bg-[#050505] border-b lg:border-b-0 lg:border-r border-white/[0.08] relative overflow-hidden">
               {/* Laser Scanning Beam moving smoothly across active step log */}
               <div
                 className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.8)] z-30 animate-scanline"
@@ -338,7 +338,7 @@ export function HowItWorksPage() {
             </div>
 
             {/* Right Column: Architectural Detail & Deep Dive */}
-            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-[#141518] flex flex-col justify-between">
+            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-[#0a0a0a] flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold block">
@@ -384,6 +384,9 @@ export function HowItWorksPage() {
               </div>
             </div>
           </div>
+
+          {/* Linear bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
         </section>
 
         {/* Bottom CTA Banner (Clean Linear Hairline) */}

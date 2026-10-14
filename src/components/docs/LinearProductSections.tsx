@@ -358,8 +358,13 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Product Preview Canvas (Linear Dark Grey styling) */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300">
+        {/* Spacious Elevated Product Preview Canvas (Linear Open Hairline with Seamless Dissolve) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+          
+          {/* Black fade gradient at bottom only (no side cutoff) */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent z-20" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left PR List Column - Animated Triage Queue */}
@@ -833,8 +838,9 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Multi-Provider AI Architecture (Linear Dark Grey Grid) */}
-        <div className="rounded-2xl border border-white/[0.08] divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#141518] shadow-[0_24px_64px_rgba(0,0,0,0.5)] overflow-hidden">
+        {/* Multi-Provider AI Architecture (Linear Open Hairline 4-Column Grid with Edge Blending) */}
+        <div className="border-y border-white/[0.08] divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0a0a0a] relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
 
           {/* Card 1: Buggers In-Process */}
           <div
@@ -1042,8 +1048,10 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Risk Simulator & Dynamic Scatter/Velocity Graph (Linear Dark Grey styling) */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300">
+        {/* Spacious Elevated Risk Simulator & Dynamic Scatter/Velocity Graph (Linear Open Hairline with Feathered Edge) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-0">
             
             {/* Left: 8-Signal Interactive Simulator */}
@@ -1457,8 +1465,10 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Policy Preview Canvas (Linear Dark Grey styling) */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-[#141518] p-6 sm:p-10 relative overflow-hidden shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] transition-all duration-300">
+        {/* Spacious Policy Preview Canvas (Linear Open Hairline with Seamless Dissolve) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left: Policy Controller - Linear Hairline List */}

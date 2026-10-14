@@ -274,12 +274,15 @@ export function AboutPage() {
         {/* Linear Layered Interactive PR Triage & Simulation Showcase */}
         {/* Motion Design · Scanning Laser · Live AST & Churn Simulations */}
         {/* ============================================================== */}
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#141518] shadow-[0_32px_96px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.03)] overflow-hidden transition-all duration-300">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#050505] overflow-hidden">
           {/* Subtle Linear top lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none z-20" />
 
+          {/* Expansive black fade gradient from below to seamlessly dissolve into the canvas */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 sm:h-64 bg-gradient-to-t from-[#000000] via-[#000000]/90 via-[#000000]/40 to-transparent z-20" />
+
           {/* Authentic macOS Window Header Bar */}
-          <div className="px-4 sm:px-6 py-2.5 bg-[#18191d] border-b border-white/[0.08] flex items-center justify-between select-none relative z-10">
+          <div className="px-4 sm:px-6 py-2.5 bg-[#0a0a0a] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
             {/* macOS 3 Traffic Light Window Dots */}
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Close" />
@@ -307,7 +310,7 @@ export function AboutPage() {
           </div>
 
           {/* Interactive Top Tab Navigation & Simulation Controls */}
-          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#15161a] flex flex-wrap items-center justify-between gap-4 relative z-10">
+          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#080808] flex flex-wrap items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
               <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 mr-2 hidden sm:inline-block">
                 Triage Views
@@ -322,10 +325,10 @@ export function AboutPage() {
                       setActiveTab(tab.id);
                       setIsSimulating(true);
                     }}
-                    className={`px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-150 cursor-pointer ${
                       isActive
-                        ? "bg-[#252730] text-white font-medium border border-white/20 shadow-xs"
-                        : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
+                        ? "bg-white/[0.08] text-white font-medium border border-white/15 shadow-sm"
+                        : "text-[#8a8f98] hover:text-white hover:bg-white/[0.03]"
                     }`}
                   >
                     {tab.label}
@@ -395,7 +398,7 @@ export function AboutPage() {
           {/* Layered Workspace Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
             {/* Left Layer: Triage Queue & Hotspot Activity */}
-            <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/[0.08] p-5 sm:p-6 space-y-6 bg-[#111215]">
+            <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/[0.06] p-5 sm:p-6 space-y-6 bg-[#030305]">
               <div className="flex items-center justify-between text-xs font-mono text-neutral-400 border-b border-white/[0.06] pb-3">
                 <span className="uppercase text-[10px] tracking-wider font-semibold text-neutral-300">
                   Triage Queue (4 Active)
@@ -413,10 +416,10 @@ export function AboutPage() {
                   </div>
                   <div
                     onClick={() => setActiveTab("churn")}
-                    className={`p-3 rounded-lg border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "churn"
-                        ? "border-rose-500/40 bg-rose-950/25 shadow-xs"
-                        : "border-white/[0.06] bg-[#16171c] hover:border-white/20 hover:bg-[#1c1d24]"
+                        ? "border-rose-500/40 bg-rose-950/20 shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -442,10 +445,10 @@ export function AboutPage() {
                   </div>
                   <div
                     onClick={() => setActiveTab("diffs")}
-                    className={`p-3 rounded-lg border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "diffs"
-                        ? "border-amber-400/40 bg-amber-950/25 shadow-xs"
-                        : "border-white/[0.06] bg-[#16171c] hover:border-white/20 hover:bg-[#1c1d24]"
+                        ? "border-amber-400/40 bg-amber-950/20 shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -464,10 +467,10 @@ export function AboutPage() {
 
                   <div
                     onClick={() => setActiveTab("guided")}
-                    className={`p-3 rounded-lg border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "guided"
-                        ? "border-neutral-400/40 bg-white/[0.06] shadow-xs"
-                        : "border-white/[0.06] bg-[#16171c] hover:border-white/20 hover:bg-[#1c1d24]"
+                        ? "border-neutral-400/40 bg-white/[0.04] shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -488,10 +491,10 @@ export function AboutPage() {
                   </div>
                   <div
                     onClick={() => setActiveTab("ast")}
-                    className={`p-3 rounded-lg border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "ast"
-                        ? "border-emerald-500/40 bg-emerald-950/25 shadow-xs"
-                        : "border-white/[0.06] bg-[#16171c] hover:border-white/20 hover:bg-[#1c1d24]"
+                        ? "border-emerald-500/30 bg-emerald-500/[0.04]"
+                        : "border-white/[0.06] bg-[#0c0d10] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -507,7 +510,7 @@ export function AboutPage() {
             </div>
 
             {/* Right Layer: Interactive Code Diff, AST Simulation & Live Churn Engine */}
-            <div className="lg:col-span-8 p-5 sm:p-8 flex flex-col justify-between bg-[#141518] relative overflow-hidden">
+            <div className="lg:col-span-8 p-5 sm:p-8 flex flex-col justify-between bg-[#000000] relative overflow-hidden">
               {/* Dynamic Scanning Laser Beam */}
               {simStage === "SCANNING" && (
                 <div
@@ -517,6 +520,9 @@ export function AboutPage() {
                   <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
                 </div>
               )}
+
+              {/* Black fade gradient from below only (no side cutoff) */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#000000] to-transparent z-20" />
 
               <div className="space-y-5 relative z-10">
                 {/* PR Header Bar */}
@@ -551,7 +557,9 @@ export function AboutPage() {
                 {/* Special View: TAB 3 "Repository Churn +" (Animated Heatmap & Volatility Curve) */}
                 {/* ============================================================== */}
                 {activeTab === "churn" ? (
-                  <div className="rounded-xl border border-white/[0.08] bg-[#18191e] p-5 space-y-4 font-mono text-xs relative overflow-hidden shadow-inner">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0a0a] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                    {/* Bottom fade gradient only (no side cutoff) */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10" />
 
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
@@ -688,7 +696,9 @@ export function AboutPage() {
                   /* ============================================================== */
                   /* Special View: TAB 5 "Git automations +" (GitHub Action Status & 1-Click Patch) */
                   /* ============================================================== */
-                  <div className="rounded-xl border border-white/[0.08] bg-[#18191e] p-5 space-y-4 font-mono text-xs relative overflow-hidden shadow-inner">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                    {/* Bottom fade gradient only (no side cutoff) */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0a0b0e] to-transparent z-10" />
 
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
@@ -742,16 +752,19 @@ export function AboutPage() {
                   /* Standard Views: TAB 1 ("Diffs +") & TAB 2 ("Guided reviews +") */
                   /* Floating Code Diff Window with Line-by-Line Transitions */
                   /* ============================================================== */
-                  <div className="rounded-xl border border-white/[0.08] bg-[#18191e] overflow-hidden font-mono text-xs leading-relaxed relative shadow-inner">
+                  <div className="rounded-lg border border-white/[0.06] bg-[#020204] overflow-hidden font-mono text-xs leading-relaxed relative">
                     {/* Laser Scanning Beam across code diff during scan */}
                     {simStage === "SCANNING" && (
                       <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.8)] z-30 animate-scanline" />
                     )}
 
-                    <div className="bg-[#1e2026] border-b border-white/[0.08] px-4 py-2.5 flex items-center justify-between text-[11px] text-neutral-400 relative z-10">
+                    {/* Bottom fade gradient only (no side cutoff) */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#020204] to-transparent z-20" />
+
+                    <div className="bg-[#050608] border-b border-white/[0.04] px-4 py-2 flex items-center justify-between text-[11px] text-neutral-500 relative z-10">
                       <div className="flex items-center gap-2">
                         <span className={`h-2 w-2 rounded-full ${patchApplied ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
-                        <span className="text-neutral-200 font-medium">{current.file}</span>
+                        <span className="text-neutral-300 font-medium">{current.file}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-neutral-400 font-mono">
@@ -760,7 +773,7 @@ export function AboutPage() {
                       </div>
                     </div>
 
-                    <div className="p-3 sm:p-4 space-y-0.5 divide-y divide-white/[0.02] overflow-x-auto relative bg-[#18191e]">
+                    <div className="p-3 sm:p-4 space-y-0.5 divide-y divide-white/[0.02] overflow-x-auto relative">
                       {current.diffLines.map((line, idx) => {
                         const isDel = line.type === "delete";
                         const isAdd = line.type === "add";
@@ -769,15 +782,15 @@ export function AboutPage() {
                           return (
                             <div
                               key={current.id + idx}
-                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ${
                                 patchApplied
-                                  ? "bg-rose-950/15 text-rose-400/40 line-through"
-                                  : "bg-[#281519] text-[#fca5a5] border-l-2 border-rose-500"
+                                  ? "bg-rose-950/10 text-rose-400/40 line-through"
+                                  : "bg-rose-950/25 text-rose-300 border-l-2 border-rose-500/70"
                               }`}
-                              style={{ transitionDelay: `${idx * 20}ms` }}
+                              style={{ transitionDelay: `${idx * 25}ms` }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-10 shrink-0 select-none text-[10px] text-neutral-500 flex justify-between pr-2 border-r border-white/[0.08]">
+                                <div className="w-10 shrink-0 select-none text-[10px] text-neutral-600 flex justify-between pr-2 border-r border-white/[0.06]">
                                   <span>{line.numOld || " "}</span>
                                   <span>{line.numNew || " "}</span>
                                 </div>
@@ -796,15 +809,15 @@ export function AboutPage() {
                           return (
                             <div
                               key={current.id + idx}
-                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ${
                                 patchApplied
-                                  ? "bg-[#11241a] text-[#86efac] font-semibold border-l-2 border-emerald-400 pl-2.5"
-                                  : "bg-emerald-950/20 text-emerald-300/80"
+                                  ? "bg-emerald-950/30 text-emerald-300 font-semibold border-l-2 border-emerald-400 pl-2.5"
+                                  : "bg-emerald-950/10 text-emerald-300/80"
                               }`}
-                              style={{ transitionDelay: `${idx * 20}ms` }}
+                              style={{ transitionDelay: `${idx * 25}ms` }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-10 shrink-0 select-none text-[10px] text-emerald-500/70 flex justify-between pr-2 border-r border-white/[0.08]">
+                                <div className="w-10 shrink-0 select-none text-[10px] text-emerald-500/60 flex justify-between pr-2 border-r border-white/[0.06]">
                                   <span>{line.numOld || " "}</span>
                                   <span>{line.numNew || " "}</span>
                                 </div>
@@ -823,10 +836,10 @@ export function AboutPage() {
                         return (
                           <div
                             key={current.id + idx}
-                            className="flex items-center gap-4 py-1 px-2.5 rounded text-neutral-300 hover:bg-white/[0.02] transition-colors duration-150"
-                            style={{ transitionDelay: `${idx * 20}ms` }}
+                            className="flex items-center gap-4 py-1 px-2.5 rounded text-neutral-400"
+                            style={{ transitionDelay: `${idx * 25}ms` }}
                           >
-                            <div className="w-10 shrink-0 select-none text-[10px] text-neutral-500 flex justify-between pr-2 border-r border-white/[0.08]">
+                            <div className="w-10 shrink-0 select-none text-[10px] text-neutral-600 flex justify-between pr-2 border-r border-white/[0.06]">
                               <span>{line.numOld || " "}</span>
                               <span>{line.numNew || " "}</span>
                             </div>
@@ -839,7 +852,7 @@ export function AboutPage() {
                 )}
 
                 {/* Inline Grounded Finding Advisory with motion transition */}
-                <div className="border border-white/[0.08] rounded-xl p-4 bg-[#18191e] space-y-2 relative overflow-hidden transition-all duration-300">
+                <div className="border border-white/[0.06] rounded-lg p-4 bg-[#040406] space-y-2 relative overflow-hidden">
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-mono font-semibold text-white">
