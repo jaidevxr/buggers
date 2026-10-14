@@ -193,20 +193,34 @@ export function LinearProductSections() {
         {/* Spacious Elevated Product Preview Canvas (Linear Open Hairline with Seamless Dissolve) */}
         <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+          
+          {/* Black fade gradients at all 4 borders to seamlessly dissolve into the canvas (Linear Edge Feathering) */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
-            {/* Left PR List Column - Linear Open Hairline List */}
+            {/* Left PR List Column - Animated Triage Queue */}
             <div className="lg:col-span-5 space-y-3 font-mono text-xs">
               <div className="text-[11px] text-neutral-500 font-semibold px-2 py-1 flex items-center justify-between border-b border-white/[0.06] pb-2">
-                <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-white/70" />
+                <span className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
                   <span>In Review (3 active PRs)</span>
                 </span>
-                <span>Select to inspect</span>
+                <span className="text-[10px] text-neutral-400">AST Triage Active</span>
               </div>
 
-              <div className="border-y border-white/[0.08] divide-y divide-white/[0.06]">
+              {/* Live Scanner Activity Bar */}
+              <div className="h-0.5 w-full bg-white/[0.04] overflow-hidden rounded-full">
+                <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-white animate-scanline" />
+              </div>
+
+              <div className="border-y border-white/[0.08] divide-y divide-white/[0.06] rounded-lg overflow-hidden">
                 {PR_SCENARIOS.map((pr) => {
                   const isSelected = pr.id === selectedPrId;
                   const isCommitted = Boolean(committedFixes[pr.id]);
@@ -215,34 +229,41 @@ export function LinearProductSections() {
                       key={pr.id}
                       type="button"
                       onClick={() => setSelectedPrId(pr.id)}
-                      className={`w-full text-left py-3.5 px-3 transition-colors cursor-pointer ${
+                      className={`w-full text-left py-3.5 px-3.5 transition-all duration-200 cursor-pointer ${
                         isSelected
-                          ? "bg-white/[0.06] border-l-2 border-l-white text-white"
+                          ? "bg-white/[0.06] border-l-2 border-l-white text-white translate-x-1"
                           : "text-neutral-400 hover:text-white hover:bg-white/[0.02]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-white">{pr.ticket}</span>
-                          {isCommitted && (
-                            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded font-sans">
-                              Committed
+                          {isCommitted ? (
+                            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-sans flex items-center gap-1">
+                              <Check className="h-2.5 w-2.5" />
+                              <span>Committed</span>
                             </span>
-                          )}
+                          ) : isSelected ? (
+                            <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full font-sans animate-pulse">
+                              Inspecting
+                            </span>
+                          ) : null}
                         </div>
                         <span
-                          className={`text-[10px] font-medium ${
-                            pr.riskTier === "Critical"
+                          className={`text-[10px] font-medium transition-colors duration-200 ${
+                            isCommitted
+                              ? "text-emerald-400"
+                              : pr.riskTier === "Critical"
                               ? "text-rose-400"
                               : pr.riskTier === "High"
                               ? "text-amber-400"
                               : "text-emerald-400"
                           }`}
                         >
-                          Risk: {pr.riskScore}/100 ({pr.riskTier})
+                          {isCommitted ? "Risk: 12/100 (Pass)" : `Risk: ${pr.riskScore}/100 (${pr.riskTier})`}
                         </span>
                       </div>
-                      <div className="text-xs text-neutral-300 mt-1 truncate font-sans">
+                      <div className="text-xs text-neutral-300 mt-1.5 truncate font-sans">
                         {pr.title}
                       </div>
                     </button>
@@ -251,32 +272,49 @@ export function LinearProductSections() {
               </div>
             </div>
 
-            {/* Right IDE Diff Editor Window - Linear Hairline Precision */}
-            <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] p-5 space-y-4 relative z-10">
+            {/* Right IDE Diff Editor Window - Linear Hairline Precision with Dynamic Scanline */}
+            <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] p-5 space-y-4 relative z-10 rounded-xl overflow-hidden shadow-2xl">
+              {/* Dynamic Laser Scanning Line */}
+              <div className="absolute inset-x-0 h-8 bg-gradient-to-b from-transparent via-emerald-400/15 to-transparent pointer-events-none animate-scanline z-20" />
+
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
-                <span className="text-neutral-400">{activePR.file}</span>
+                <span className="text-neutral-300 flex items-center gap-1.5">
+                  <FileCode className="h-3.5 w-3.5 text-neutral-400" />
+                  <span>{activePR.file}</span>
+                </span>
                 <span className="text-neutral-500">PR #{activePR.id} Unified Diff</span>
               </div>
 
-              {/* Code Lines with Syntax Styling */}
-              <div className="font-mono text-xs leading-relaxed space-y-1 select-none">
+              {/* Code Lines with Syntax Styling & Dynamic Transition */}
+              <div key={activePR.id} className="font-mono text-xs leading-relaxed space-y-1 select-none animate-in fade-in duration-200">
                 <div className="text-neutral-600">05  import &#123; createHmac, timingSafeEqual &#125; from 'crypto';</div>
                 <div className="text-neutral-600">06  </div>
                 <div className="text-neutral-500">07  export function verifySessionToken(token: string, session: Session) &#123;</div>
-                <div className="bg-rose-500/10 text-rose-400 px-2 py-1 rounded flex items-center justify-between">
+                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
+                  isFixCommitted
+                    ? "bg-rose-500/[0.04] text-rose-400/40 line-through"
+                    : "bg-rose-500/10 text-rose-400"
+                }`}>
                   <span>{activePR.oldCode}</span>
                   <span className="text-[10px] font-sans text-rose-400/80">{activePR.issueBadge}</span>
                 </div>
-                <div className="bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded flex items-center justify-between">
+                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
+                  isFixCommitted
+                    ? "bg-emerald-500/[0.16] text-emerald-300 border-l-2 border-emerald-400 font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)]"
+                    : "bg-emerald-500/10 text-emerald-400"
+                }`}>
                   <span>{activePR.newCode}</span>
-                  <span className="text-[10px] font-sans text-emerald-400/80">Deterministic Fix</span>
+                  <span className="text-[10px] font-sans text-emerald-400/90 flex items-center gap-1">
+                    {isFixCommitted && <Check className="h-3 w-3 text-emerald-400" />}
+                    <span>{isFixCommitted ? "Patch Applied" : "Deterministic Fix"}</span>
+                  </span>
                 </div>
                 <div className="text-neutral-500">10        return true;</div>
                 <div className="text-neutral-500">11      &#125;</div>
               </div>
 
               {/* Buggers Bot Comment & Action Callout */}
-              <div className="border-l-2 border-l-amber-400 bg-white/[0.02] pl-4 py-3 space-y-2.5">
+              <div className="border-l-2 border-l-amber-400 bg-white/[0.02] pl-4 py-3 space-y-2.5 rounded-r">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-3.5 w-3.5 text-amber-400" />
@@ -297,8 +335,8 @@ export function LinearProductSections() {
                     onClick={() => toggleCommitFix(activePR.id)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
                       isFixCommitted
-                        ? "bg-emerald-500 text-black font-semibold"
-                        : "bg-white text-black hover:bg-neutral-200"
+                        ? "bg-emerald-500 text-black font-semibold shadow-[0_0_16px_rgba(52,211,153,0.3)]"
+                        : "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
                     }`}
                   >
                     {isFixCommitted ? (

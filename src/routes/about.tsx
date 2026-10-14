@@ -199,16 +199,20 @@ export function AboutPage() {
     setSimStage("SCANNING");
   }, [activeTab, current.riskScore]);
 
-  // High-precision simulation loop with stage-based motion transitions
+  // High-precision simulation loop with stage-based motion transitions (settles at 100% without jarring loops)
   useEffect(() => {
     if (!isSimulating) return;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
+        if (prev >= 100) {
+          setIsSimulating(false);
+          return 100;
+        }
         const next = prev + 1.25;
         if (next >= 100) {
-          // Loop or step to next tab
-          return 0;
+          setIsSimulating(false);
+          return 100;
         }
         return next;
       });
@@ -272,10 +276,15 @@ export function AboutPage() {
         {/* ============================================================== */}
         <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden">
           {/* Subtle Linear top lighting flare */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none z-20" />
+
+          {/* Black fade gradients at borders to seamlessly dissolve into the canvas (Linear Edge Feathering) */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
 
           {/* Interactive Top Tab Navigation & Simulation Controls */}
-          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4">
+          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
               <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 mr-2 hidden sm:inline-block">
                 Triage Views
@@ -286,7 +295,10 @@ export function AboutPage() {
                   <button
                     key={tab.id}
                     type="button"
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setIsSimulating(true);
+                    }}
                     className={`px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-150 cursor-pointer ${
                       isActive
                         ? "bg-white/[0.08] text-white font-medium border border-white/15 shadow-sm"
@@ -317,6 +329,7 @@ export function AboutPage() {
                     setPatchApplied(false);
                     setDisplayRisk(current.riskScore);
                     setSimStage("SCANNING");
+                    setIsSimulating(true);
                   }}
                   className="p-1 hover:text-white text-neutral-400 transition-colors cursor-pointer"
                   title="Replay Current Simulation"
