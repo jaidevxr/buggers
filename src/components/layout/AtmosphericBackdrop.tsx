@@ -74,7 +74,7 @@ export function AtmosphericBackdrop() {
       />
 
       {/* Consistent, seamless atmospheric night vignette overlay across / and /auth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 via-60% to-black/75 pointer-events-none" />
 
       {/* Persistent warm ambient desk lamp breathing animation with parallax depth */}
       <div

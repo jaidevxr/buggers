@@ -151,6 +151,15 @@ export function AuthPage() {
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between">
+      {/* Smooth feathered bottom fade anchored closer to bottom into #000000 background */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-28 sm:h-44 pointer-events-none z-0"
+        style={{
+          background:
+            "linear-gradient(to top, #000000 0%, #000000 20%, rgba(0, 0, 0, 0.98) 34%, rgba(0, 0, 0, 0.88) 48%, rgba(0, 0, 0, 0.70) 62%, rgba(0, 0, 0, 0.44) 76%, rgba(0, 0, 0, 0.18) 88%, rgba(0, 0, 0, 0.04) 95%, transparent 100%)",
+        }}
+      />
+
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
         {/* Symmetrical Centered Form Card with Linear Glide Animation */}
