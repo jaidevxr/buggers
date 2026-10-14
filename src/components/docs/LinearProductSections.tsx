@@ -53,7 +53,7 @@ interface PRScenario {
 const PR_SCENARIOS: PRScenario[] = [
   {
     id: 184,
-    ticket: "ENG-2488",
+    ticket: "PR #184",
     title: "Replace session signature check with timing-safe comparison",
     riskTier: "High",
     riskScore: 78,
@@ -75,7 +75,7 @@ const PR_SCENARIOS: PRScenario[] = [
   },
   {
     id: 142,
-    ticket: "ENG-2380",
+    ticket: "PR #142",
     title: "Fix S3 client upload credentials leak in storage.ts",
     riskTier: "Critical",
     riskScore: 92,
@@ -97,7 +97,7 @@ const PR_SCENARIOS: PRScenario[] = [
   },
   {
     id: 139,
-    ticket: "ENG-2039",
+    ticket: "PR #139",
     title: "Sanitize raw SQL interpolation in repository queries",
     riskTier: "Low",
     riskScore: 18,
@@ -1148,11 +1148,11 @@ export function LinearProductSections() {
               </div>
             </div>
 
-            {/* Right: 30-PR Cycle Risk Graph (Dynamic Linear Cluster with All Points Moving) */}
+            {/* Right: 30-PR Release Batch Risk Graph (Dynamic Risk Cluster with All Points Moving) */}
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center justify-between text-xs font-mono">
                 <div>
-                  <span className="text-white font-semibold">Cycle Risk Distribution</span>
+                  <span className="text-white font-semibold">Pull Request Risk Distribution</span>
                   <span className="text-neutral-500 ml-2">(30 Pull Requests)</span>
                 </div>
                 <span className="text-neutral-400 font-medium">Policy Threshold: {gateThreshold}</span>
@@ -1213,12 +1213,12 @@ export function LinearProductSections() {
                   />
                 </svg>
 
-                {/* 3 Sprint Columns Clustering (Linear Cycle Style) with ALL Points Dynamically Reacting */}
+                {/* 3 Release Batch Columns with ALL Points Dynamically Reacting */}
                 <div className="relative w-full h-full z-10 pt-2 pb-6">
                   {(() => {
                     const volatilityDelta = (computedRiskScore - 48);
                     const sprintPoints = [
-                      // Column 1: Sprint 24 (Oct) - Baseline historical
+                      // Column 1: Release v1.8.0 - Baseline historical
                       { id: 1, x: 14, y: 18, isSimulated: false },
                       { id: 2, x: 18, y: 24, isSimulated: false },
                       { id: 3, x: 15, y: 32, isSimulated: false },
@@ -1229,7 +1229,7 @@ export function LinearProductSections() {
                       { id: 8, x: 17, y: 15, isSimulated: false },
                       { id: 9, x: 20, y: 38, isSimulated: false },
 
-                      // Column 2: Sprint 25 (Nov - Current Active Sprint, reacts dynamically to sliders!)
+                      // Column 2: Release v1.9.0 (Active Release, reacts dynamically to sliders!)
                       { id: 10, x: 48, y: Math.max(8, Math.min(92, Math.round(20 + volatilityDelta * 0.45))), isSimulated: false },
                       { id: 11, x: 52, y: Math.max(10, Math.min(94, Math.round(29 + volatilityDelta * 0.55))), isSimulated: false },
                       { id: 12, x: 49, y: Math.max(12, Math.min(95, Math.round(35 + volatilityDelta * 0.65))), isSimulated: false },
@@ -1240,7 +1240,7 @@ export function LinearProductSections() {
                       { id: 17, x: 46, y: Math.max(6, Math.min(88, Math.round(14 + volatilityDelta * 0.4))), isSimulated: false },
                       { id: 18, x: 50, y: Math.max(8, Math.min(90, Math.round(26 + volatilityDelta * 0.5))), isSimulated: false },
 
-                      // Column 3: Sprint 26 (Dec) - Projected pipeline
+                      // Column 3: Release v2.0.0 (Staged Pipeline)
                       { id: 19, x: 80, y: Math.max(10, Math.min(88, Math.round(16 + volatilityDelta * 0.3))), isSimulated: false },
                       { id: 20, x: 84, y: Math.max(12, Math.min(90, Math.round(23 + volatilityDelta * 0.35))), isSimulated: false },
                       { id: 21, x: 81, y: Math.max(14, Math.min(92, Math.round(31 + volatilityDelta * 0.4))), isSimulated: false },
@@ -1282,11 +1282,11 @@ export function LinearProductSections() {
                   })()}
                 </div>
 
-                {/* Sprint Cycle Timeline Labels (Linear Style) */}
+                {/* Release Batch Timeline Labels */}
                 <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2 border-t border-white/[0.04] z-10">
-                  <span className="w-1/3 text-center">Sprint 24 (Oct)</span>
-                  <span className="w-1/3 text-center text-white/90 font-semibold">Sprint 25 (Nov - Active)</span>
-                  <span className="w-1/3 text-center">Sprint 26 (Dec)</span>
+                  <span className="w-1/3 text-center">Release v1.8.0</span>
+                  <span className="w-1/3 text-center text-white/90 font-semibold">Release v1.9.0 (Active)</span>
+                  <span className="w-1/3 text-center">Release v2.0.0 (Staged)</span>
                 </div>
               </div>
             </div>

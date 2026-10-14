@@ -35,7 +35,7 @@ interface CodeScenario {
 const SCENARIOS: CodeScenario[] = [
   {
     id: "timing-attack",
-    ticket: "ENG-2488",
+    ticket: "PR #184",
     title: "Session Timing Leak",
     file: "src/auth/session.ts",
     cwe: "CWE-208",
@@ -65,7 +65,7 @@ const SCENARIOS: CodeScenario[] = [
   },
   {
     id: "secret-leak",
-    ticket: "ENG-2380",
+    ticket: "PR #142",
     title: "AWS Access Key Leak",
     file: "src/server/storage.ts",
     cwe: "CWE-798",
@@ -91,7 +91,7 @@ const SCENARIOS: CodeScenario[] = [
   },
   {
     id: "sql-injection",
-    ticket: "ENG-2039",
+    ticket: "PR #139",
     title: "Raw SQL Interpolation",
     file: "src/routes/repos.ts",
     cwe: "CWE-89",
