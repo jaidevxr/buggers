@@ -218,6 +218,12 @@
     animation-timing-function: ease-out !important;
   }
 
+  /* Completely isolate fixed header from document view transitions */
+  .public-header-island,
+  .public-header-pill {
+    view-transition-name: none !important;
+  }
+
   /* Sleek modern dark scrollbar — completely eliminates white browser scrollbar flashes */
   ::-webkit-scrollbar {
     width: 6px;
@@ -630,5 +636,40 @@ a {
   animation: scanlineSweep 7s ease-in-out infinite;
 }
 
+@keyframes laserDashMove {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
 
+.animate-laser-dash {
+  animation: laserDashMove 2.5s linear infinite;
+}
 
+@keyframes wireframeFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-wireframe-float {
+  animation: wireframeFloat 5s ease-in-out infinite;
+}
+
+@keyframes wireframePulseRing {
+  0% {
+    r: 12;
+    opacity: 0.8;
+  }
+  100% {
+    r: 38;
+    opacity: 0;
+  }
+}
+
+.animate-wireframe-ring {
+  animation: wireframePulseRing 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}

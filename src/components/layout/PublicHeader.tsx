@@ -5,27 +5,35 @@ export function PublicHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="public-header-island fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-fit px-4 pointer-events-auto">
-      <div className="public-header-pill flex items-center gap-6 sm:gap-8 rounded-full bg-[#08090a]/85 backdrop-blur-md px-6 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.7)] border border-white/[0.08] text-xs font-medium text-slate-200">
-        {/* Buggers Logo — Only icon allowed in header/island */}
+    <header
+      className="public-header-island fixed top-5 inset-x-0 z-50 flex justify-center pointer-events-none px-4"
+      style={{ viewTransitionName: "none" }}
+    >
+      <div
+        className="public-header-pill pointer-events-auto flex items-center gap-6 sm:gap-7 rounded-full bg-[#08090a]/90 backdrop-blur-md px-5 sm:px-6 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.7)] border border-white/[0.08] text-xs font-medium text-neutral-300 transition-colors duration-200"
+        style={{ viewTransitionName: "none" }}
+      >
+        {/* Buggers Logo */}
         <Link
           to="/"
           preload="intent"
-          className="flex items-center gap-2.5 font-semibold text-white transition-opacity duration-150 hover:opacity-85 active:scale-95"
+          className="flex items-center gap-2 font-semibold text-white transition-opacity duration-150 hover:opacity-80"
         >
-          <BugMark className="h-5 w-5 text-white fill-white" />
-          <span className="tracking-tight text-sm font-bold text-white">
+          <BugMark className="h-4 w-4 text-white fill-white" />
+          <span className="tracking-tight text-xs sm:text-sm font-semibold text-white">
             Buggers
           </span>
         </Link>
 
-        {/* Navigation items — pure text, zero icon clutter */}
-        <nav className="flex items-center gap-6 text-slate-300 font-medium">
+        {/* Navigation items — stable font-medium widths to eliminate twitch on navigation */}
+        <nav className="flex items-center gap-5 sm:gap-6 font-medium text-xs">
           <Link
             to="/"
             preload="intent"
-            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
-              pathname === "/" ? "text-white font-semibold" : "text-slate-300"
+            className={`transition-colors duration-150 py-1 ${
+              pathname === "/"
+                ? "text-white"
+                : "text-neutral-400 hover:text-neutral-200"
             }`}
           >
             Home
@@ -33,10 +41,10 @@ export function PublicHeader() {
           <Link
             to="/docs"
             preload="intent"
-            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
+            className={`transition-colors duration-150 py-1 ${
               pathname === "/docs"
-                ? "text-white font-semibold"
-                : "text-slate-300"
+                ? "text-white"
+                : "text-neutral-400 hover:text-neutral-200"
             }`}
           >
             Docs
@@ -44,21 +52,21 @@ export function PublicHeader() {
           <Link
             to="/about"
             preload="intent"
-            className={`transition-colors duration-150 hover:text-white active:scale-95 ${
+            className={`transition-colors duration-150 py-1 ${
               pathname === "/about"
-                ? "text-white font-semibold"
-                : "text-slate-300"
+                ? "text-white"
+                : "text-neutral-400 hover:text-neutral-200"
             }`}
           >
             About
           </Link>
         </nav>
 
-        {/* Login / Signup Action Pill */}
+        {/* Login Action Pill — stable dimensions */}
         <Link
           to="/auth"
           preload="intent"
-          className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-all duration-150 shadow-xs active:scale-[0.97] cursor-pointer ${
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer ${
             pathname === "/auth"
               ? "bg-white text-black ring-2 ring-white/30"
               : "bg-white text-black hover:bg-neutral-200"
@@ -70,3 +78,4 @@ export function PublicHeader() {
     </header>
   );
 }
+
