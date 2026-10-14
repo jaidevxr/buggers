@@ -66,7 +66,7 @@ export function PublicHeader() {
         <Link
           to="/auth"
           preload="intent"
-          className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97] cursor-pointer ${
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
             pathname === "/auth"
               ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)] ring-2 ring-white/30"
               : "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_16px_rgba(255,255,255,0.15)]"

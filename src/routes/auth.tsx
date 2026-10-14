@@ -173,7 +173,7 @@ export function AuthPage() {
             <Link
               to="/"
               preload="intent"
-              className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors duration-150 py-1.5 px-3 rounded-full border border-white/[0.08] bg-[#0d0d0d]/80 hover:bg-white/[0.06] backdrop-blur-md cursor-pointer group active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors duration-150 py-1.5 px-3 rounded-full border border-white/[0.08] bg-[#0d0d0d]/80 hover:bg-white/[0.06] backdrop-blur-md cursor-pointer group"
             >
               <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" />
               <span>Back to home</span>

@@ -167,7 +167,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-[#000000] text-neutral-100 flex flex-col selection:bg-white/20 relative">
+        <div className="min-h-[100.1vh] w-full bg-[#000000] text-neutral-100 flex flex-col selection:bg-white/20 relative">
           {!isDashboardRoute && <AtmosphericBackdrop />}
           {!isDashboardRoute && <PublicHeader />}
           <div className="flex-1 w-full flex flex-col relative z-10">

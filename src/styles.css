@@ -212,8 +212,8 @@
   html {
     color-scheme: dark;
     background-color: #000000;
-    overflow-y: scroll;
-    scrollbar-gutter: stable;
+    overflow-y: scroll !important;
+    scrollbar-gutter: stable !important;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
   }
@@ -406,8 +406,9 @@ button,
 
 button:active:not(:disabled),
 [role="button"]:active:not([aria-disabled="true"]) {
-  transform: scale(0.988);
-  transition-duration: 0.12s;
+  transform: none;
+  opacity: 0.92;
+  transition-duration: 0.08s;
 }
 
 input,
@@ -545,22 +546,18 @@ select {
 @keyframes pageFadeIn {
   from {
     opacity: 0;
-    transform: translateY(4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 @keyframes authEntrance {
   from {
     opacity: 0;
-    transform: translateY(5px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

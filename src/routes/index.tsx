@@ -91,7 +91,7 @@ export function Landing() {
             <Link
               to="/auth"
               preload="intent"
-              className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-neutral-200 transition-colors duration-150 active:scale-[0.985] flex items-center gap-2 cursor-pointer"
+              className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-neutral-200 transition-colors duration-150 flex items-center gap-2 cursor-pointer"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function Landing() {
             <Link
               to="/how-it-works"
               preload="intent"
-              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/[0.08] transition-[background-color,color,transform,border-color] duration-150 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
+              className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/[0.08] transition-colors duration-150 flex items-center gap-2"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               <span>See How it Works</span>
@@ -391,7 +391,7 @@ ignore:
               <Link
                 to="/auth"
                 preload="intent"
-                className="w-full sm:w-auto rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold shadow-md hover:bg-neutral-200 transition-colors duration-150 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold shadow-md hover:bg-neutral-200 transition-colors duration-150 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Get Started</span>
                 <ArrowRight className="h-4 w-4" />
@@ -399,7 +399,7 @@ ignore:
               <Link
                 to="/how-it-works"
                 preload="intent"
-                className="w-full sm:w-auto rounded-full bg-white/5 border border-white/[0.08] px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-[background-color,border-color,transform] duration-150 flex items-center justify-center gap-2 active:scale-[0.985]"
+                className="w-full sm:w-auto rounded-full bg-white/5 border border-white/[0.08] px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-colors duration-150 flex items-center justify-center gap-2"
               >
                 <Play className="h-3.5 w-3.5 fill-current" />
                 <span>See How it Works</span>
