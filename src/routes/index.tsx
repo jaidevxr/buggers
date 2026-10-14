@@ -76,7 +76,7 @@ export function Landing() {
           {/* Main Headline */}
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.12] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             Catch critical issues <br />
-            <span className="font-serif italic font-semibold text-[#2d6a4f] tracking-wide px-1">
+            <span className="font-serif italic font-semibold text-amber-400 tracking-wide px-1">
               before
             </span>{" "}
             they reach production

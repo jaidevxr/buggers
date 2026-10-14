@@ -27,6 +27,8 @@ import {
 import { BugMark } from "@/components/brand/BugMark";
 import { CodeBlock, Callout, AccordionItem } from "@/components/docs/DocsComponents";
 import { LinearFeaturePreview } from "@/components/docs/LinearFeaturePreview";
+import { LinearProductSections } from "@/components/docs/LinearProductSections";
+import { LinearWireframeGrid } from "@/components/docs/LinearWireframeGrid";
 import { RiskEngineExplorer } from "@/components/docs/RiskEngineExplorer";
 import { QualityGateSimulator } from "@/components/docs/QualityGateSimulator";
 import { PipelineStageVisualizer } from "@/components/docs/PipelineStageVisualizer";
@@ -56,6 +58,8 @@ export const Route = createFileRoute("/docs")({
 type CategoryFilter =
   | "all"
   | "overview"
+  | "build-review"
+  | "ai"
   | "risk"
   | "gates"
   | "security"
@@ -88,7 +92,7 @@ export function DocsPage() {
             <span>SYSTEM ARCHITECTURE &amp; SPECIFICATIONS</span>
           </div>
           
-          <h1 className="text-4xl sm:text-6xl font-normal tracking-tight text-white leading-[1.08]">
+          <h1 className="text-4xl sm:text-6xl font-medium tracking-tight text-white leading-[1.08]">
             Engineering Documentation
           </h1>
           
@@ -97,7 +101,7 @@ export function DocsPage() {
           </p>
 
           {/* Quick-Jump Horizontal Navigation & Search Bar */}
-          <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
+          <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-6 sticky top-20 bg-[#08090a]/90 backdrop-blur-md z-30">
             {/* Category Filter Pills */}
             <nav className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 text-xs font-medium no-scrollbar">
               <button
@@ -117,6 +121,15 @@ export function DocsPage() {
                 }`}
               >
                 Capabilities
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("build-review")}
+                className={`px-3.5 py-1.5 rounded-full transition-colors whitespace-nowrap ${
+                  activeTab === "build-review" ? "bg-white text-black font-semibold" : "text-neutral-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                Review Bot &amp; Diffs
               </button>
               <button
                 type="button"
@@ -207,27 +220,43 @@ export function DocsPage() {
         </header>
 
         {/* ============================================================== */}
-        {/* Flagship Linear-Inspired 2x2 Interactive Feature Showcase */}
+        {/* 1. Flagship Linear 2x2 Interactive Feature Showcase */}
         {/* ============================================================== */}
         {(shouldShow("overview") || activeTab === "all") && (
-          <section id="capabilities" className="mb-20">
+          <section id="capabilities" className="mb-24">
             <LinearFeaturePreview />
           </section>
         )}
 
         {/* ============================================================== */}
-        {/* Expansive Deep-Dive Technical Sections */}
+        {/* 2. Linear 3-Column Isometric Wireframe Grid */}
         {/* ============================================================== */}
-        <div className="space-y-24">
+        {(shouldShow("architecture") || activeTab === "all") && (
+          <LinearWireframeGrid />
+        )}
 
-          {/* SECTION 1: Deterministic Risk Engine 1.1.0 */}
+        {/* ============================================================== */}
+        {/* 3. Linear Flagship Product Sections (Build, Review, Ship etc.) */}
+        {/* ============================================================== */}
+        {(shouldShow("build-review") || shouldShow("ai") || shouldShow("risk") || shouldShow("gates") || activeTab === "all") && (
+          <div className="my-24">
+            <LinearProductSections />
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 4. Comprehensive Technical Engineering Deep-Dives */}
+        {/* ============================================================== */}
+        <div className="space-y-28 pt-12">
+
+          {/* SECTION: Deterministic Risk Engine 1.1.0 */}
           {(shouldShow("risk") || activeTab === "all") && (
             <section id="risk-engine" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-amber-400 uppercase tracking-wider">
                   SPECIFICATION / MATHEMATICAL MODEL
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   Deterministic Risk Engine (risk-engine-1.1.0)
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -236,7 +265,7 @@ export function DocsPage() {
               </div>
 
               {/* Full-Width Interactive Risk Explorer */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10">
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
                 <RiskEngineExplorer />
               </div>
 
@@ -323,14 +352,14 @@ export function DocsPage() {
             </section>
           )}
 
-          {/* SECTION 2: Merge Quality Gates */}
+          {/* SECTION: Merge Quality Gates */}
           {(shouldShow("gates") || activeTab === "all") && (
             <section id="quality-gates" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider">
                   SPECIFICATION / POLICY ENFORCEMENT
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   Automated Merge Quality Gates (.buggers.yml)
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -339,7 +368,7 @@ export function DocsPage() {
               </div>
 
               {/* Interactive Simulator */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10">
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
                 <QualityGateSimulator />
               </div>
 
@@ -383,14 +412,14 @@ status_checks:
             </section>
           )}
 
-          {/* SECTION 3: 9-Stage Analysis Pipeline */}
+          {/* SECTION: 9-Stage Analysis Pipeline */}
           {(shouldShow("pipeline") || activeTab === "all") && (
             <section id="pipeline" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-blue-400 uppercase tracking-wider">
                   SPECIFICATION / WORKER RUNTIME
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   9-Stage Deterministic Analysis Pipeline
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -399,20 +428,20 @@ status_checks:
               </div>
 
               {/* Interactive Pipeline Visualizer */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10">
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0a0b0e] p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
                 <PipelineStageVisualizer />
               </div>
             </section>
           )}
 
-          {/* SECTION 4: Pre-Execution Security & SAST Scanners */}
+          {/* SECTION: Pre-Execution Security & SAST Scanners */}
           {(shouldShow("security") || activeTab === "all") && (
             <section id="security-scanners" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-rose-400 uppercase tracking-wider">
                   SPECIFICATION / STATIC ANALYSIS
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   Plaintext Secret &amp; OWASP SAST Scanners
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -487,14 +516,14 @@ status_checks:
             </section>
           )}
 
-          {/* SECTION 5: Architecture & Dual-Auth Security */}
+          {/* SECTION: Architecture & Dual-Auth Security */}
           {(shouldShow("architecture") || activeTab === "all") && (
             <section id="architecture" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-purple-400 uppercase tracking-wider">
                   SPECIFICATION / CORE ARCHITECTURE
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   System Architecture &amp; Dual-Auth Model
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -529,14 +558,14 @@ status_checks:
             </section>
           )}
 
-          {/* SECTION 6: REST Endpoints & Server Functions */}
+          {/* SECTION: REST Endpoints & Server Functions */}
           {(shouldShow("api") || activeTab === "all") && (
             <section id="api" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-cyan-400 uppercase tracking-wider">
                   SPECIFICATION / API REFERENCE
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   REST Endpoints &amp; RPC Server Functions
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
@@ -580,14 +609,14 @@ status_checks:
             </section>
           )}
 
-          {/* SECTION 7: Deployment & Operations Runbook */}
+          {/* SECTION: Deployment & Operations Runbook */}
           {(shouldShow("deployment") || activeTab === "all") && (
             <section id="deployment" className="border-t border-white/[0.08] pt-16 space-y-10">
               <div className="space-y-2 max-w-3xl">
                 <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider">
                   OPERATIONS / RUNBOOK
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                   Production Deployment &amp; Troubleshooting
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
