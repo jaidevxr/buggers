@@ -87,6 +87,14 @@ export function AuthPage() {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        navigate({ to: "/dashboard" });
+      }
+    });
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, [navigate]);
 
   async function handleOAuth(provider: "github" | "google") {
