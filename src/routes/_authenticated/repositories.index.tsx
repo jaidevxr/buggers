@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { GitFork, Lock, Star } from "lucide-react";
+import { GitFork, Lock, Star, ExternalLink } from "lucide-react";
 import { getGitHubConnection, listRepositories } from "@/lib/github.functions";
 import { listAnalyses } from "@/lib/analysis.functions";
 import { PageHeader, timeAgo, errMsg } from "@/components/layout/PageHeader";
@@ -10,6 +10,7 @@ import { EmptyState, ErrorState } from "@/components/status/EmptyState";
 import { RiskBadge } from "@/components/status/StatusBadges";
 import { ConnectGitHubCard } from "@/components/github/ConnectGitHubCard";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/repositories/")({
   head: () => ({ meta: [{ title: "Repositories – Buggers" }] }),
@@ -87,7 +88,25 @@ function Repositories() {
         </select>
       </div>
       {filtered.length === 0 ? (
-        <EmptyState title="No repositories available" description="No GitHub repositories match your search." />
+        <div className="space-y-4">
+          <EmptyState title="No repositories available" description="No GitHub repositories match your search or account." />
+          <div className="surface-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 max-w-xl mx-auto border border-border/50">
+            <div className="text-xs space-y-0.5">
+              <div className="font-semibold text-foreground flex items-center gap-1.5">
+                <GitFork className="h-3.5 w-3.5 text-primary" />
+                <span>Want to test Buggers immediately?</span>
+              </div>
+              <div className="text-muted-foreground">Fork our sample vulnerable repository (<code className="text-foreground font-mono">jaidevxr/buggers-test-vulnerable-app</code>) to test live pull request triage.</div>
+            </div>
+            <Button asChild size="sm" variant="outline" className="gap-1.5 shrink-0 text-xs">
+              <a href="https://github.com/jaidevxr/buggers-test-vulnerable-app/fork" target="_blank" rel="noopener noreferrer">
+                <GitFork className="h-3.5 w-3.5" />
+                <span>Fork Sample App</span>
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </a>
+            </Button>
+          </div>
+        </div>
       ) : (
         <>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

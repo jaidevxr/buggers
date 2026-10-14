@@ -8,6 +8,7 @@ import {
   Circle,
   ExternalLink,
   FolderGit2,
+  GitFork,
   GitPullRequest,
   KeyRound,
   Package,
@@ -100,6 +101,30 @@ function Dashboard() {
                 </Step>
                 <Step done={hasAnalyses} label="Run your first analysis" />
               </ol>
+
+              {/* Sample Vulnerable Repository Fork Option */}
+              <div className="mt-4 pt-4 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-muted/30 p-3.5 rounded-lg border border-border/50">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+                    <GitFork className="h-3.5 w-3.5 text-primary" />
+                    <span>Don&apos;t have a repository with pull requests ready?</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Fork our sample app (<code className="text-foreground font-mono text-[11px]">jaidevxr/buggers-test-vulnerable-app</code>) to test live SQL injection, timing attack, and credential leak detections.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="gap-1.5 shrink-0 text-xs">
+                  <a
+                    href="https://github.com/jaidevxr/buggers-test-vulnerable-app/fork"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <GitFork className="h-3.5 w-3.5" />
+                    <span>Fork Sample App</span>
+                    <ExternalLink className="h-3 w-3 opacity-60" />
+                  </a>
+                </Button>
+              </div>
             </div>
           )}
 
