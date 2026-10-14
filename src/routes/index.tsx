@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
+import { AnimatedCodeScanner } from "@/components/home/AnimatedCodeScanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -116,23 +117,25 @@ export function Landing() {
       <section className="relative z-10 bg-[#08090a] pt-12 sm:pt-20 pb-24 sm:pb-36">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
-          {/* Feature 1: Data & Regression Protection (Text on Left, PR #184 Card on Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-5 space-y-4">
-              <span className="text-[10px] font-mono font-semibold tracking-wider text-[#8a8f98] uppercase">
-                CODE REVIEW &amp; REGRESSION PROTECTION
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-semibold text-white tracking-tight leading-[1.15]">
-                Deterministic PR triage with whole-repo context
-              </h2>
-              <p className="text-sm sm:text-base text-[#8a8f98] leading-relaxed">
-                Buggers inspects the raw unified diff against historical fault lines in your repository. Our deterministic engine detects silent state overwrites, unhandled transaction race conditions, and boundary flaws before code merges into production.
-              </p>
-              <div className="pt-2">
+          {/* Feature 1: Live Animated Code Detection & Remediation Simulator (Linear Style) */}
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
+              <div className="lg:col-span-7 space-y-2">
+                <span className="text-[10px] font-mono font-semibold tracking-wider text-[#8a8f98] uppercase block">
+                  CODE REVIEW &amp; REGRESSION PROTECTION
+                </span>
+                <h2 className="text-3xl sm:text-5xl font-medium text-white tracking-tight leading-[1.08]">
+                  Deterministic PR triage with whole-repo context
+                </h2>
+              </div>
+              <div className="lg:col-span-5 space-y-2">
+                <p className="text-sm sm:text-base text-[#8a8f98] leading-relaxed">
+                  Buggers inspects the raw unified diff against historical fault lines. In-process scanners catch side-channel timing flaws, plaintext secrets, and SQL injections in 140ms before synthesising AST-grounded patches.
+                </p>
                 <Link
                   to="/how-it-works"
                   preload="intent"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group cursor-pointer"
                 >
                   <span>Explore triage architecture</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -140,152 +143,62 @@ export function Landing() {
               </div>
             </div>
 
-            {/* PR #184 Realistic Triage Preview with Linear Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
-                <div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs text-zinc-300 font-semibold">
-                      PR #184: payment-service
-                    </span>
-                    <span className="rounded-full bg-rose-950/40 border border-rose-900/40 px-2.5 py-0.5 text-[11px] font-semibold text-rose-300/80 font-mono">
-                      HIGH · 82 Risk
-                    </span>
-                  </div>
-                  <h3 className="mt-1 text-base font-bold text-white">
-                    Fix payment validation
-                  </h3>
-                  <p className="mt-0.5 font-mono text-[11px] text-[#8a8f98]">
-                    mira-k · 3 files · +204 −74
-                  </p>
-                </div>
-
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-900/40 bg-emerald-950/40 px-2.5 py-1 text-xs font-mono text-emerald-300/80">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  Analysis Ready
-                </span>
-              </div>
-
-              {/* Real Findings */}
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-black/40 p-2.5">
-                  <span className="rounded bg-rose-950/60 text-rose-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-rose-900/50">
-                    Critical
-                  </span>
-                  <span className="text-xs font-medium text-slate-200">
-                    Partial capture amount silently overwritten
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-black/40 p-2.5">
-                  <span className="rounded bg-amber-950/60 text-amber-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-amber-900/50">
-                    High
-                  </span>
-                  <span className="text-xs font-medium text-slate-200">
-                    Refund no longer wrapped in a transaction
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-black/40 p-2.5">
-                  <span className="rounded bg-slate-900 text-slate-300/90 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border border-slate-800">
-                    Medium
-                  </span>
-                  <span className="text-xs font-medium text-slate-200">
-                    Empty card number treated as valid
-                  </span>
-                </div>
-              </div>
-
-              {/* Real Diff Code Box */}
-              <div className="mt-4 overflow-hidden rounded-xl border border-white/[0.08] bg-black font-mono text-xs">
-                <div className="border-b border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-[#8a8f98] text-[11px] flex items-center justify-between">
-                  <span>src/services/paymentValidator.ts</span>
-                  <span>Lines 42–44</span>
-                </div>
-                <div className="p-3 space-y-1 text-[11px]">
-                  <div className="rounded bg-rose-950/30 text-rose-300/80 px-2.5 py-1 border-l-2 border-rose-900/60">
-                    − if amount &lt;= order.total:
-                  </div>
-                  <div className="rounded bg-emerald-950/30 text-emerald-300/80 px-2.5 py-1 border-l-2 border-emerald-900/60">
-                    + if amount != order.total:
-                  </div>
-                  <div className="rounded bg-emerald-950/30 text-emerald-300/80 px-2.5 py-1 border-l-2 border-emerald-900/60">
-                    + &nbsp; amount = order.total
-                  </div>
-                </div>
-              </div>
-
-              {/* Verified Remediation Advisory with Feathered Bottom Blend */}
-              <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#121316]/90 p-3.5 text-xs text-slate-300 leading-relaxed">
-                <div className="flex items-center gap-2 font-semibold text-slate-200 text-xs">
-                  <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>AI Remediation Suggestion</span>
-                </div>
-                <p className="mt-1.5 text-[11px] text-[#8a8f98]">
-                  Logic inversion detected: Comparing with <code className="font-mono text-zinc-300">!=</code> causes partial refunds to overwrite total amounts. Wrap operations in a database transaction to prevent race conditions.
-                </p>
-                <div className="mt-2 flex items-center gap-1.5 text-[#8a8f98] font-mono text-[10px]">
-                  <CheckCircle2 className="h-3 w-3 text-emerald-500/80" />
-                  <span>Verified against repository churn history</span>
-                </div>
-              </div>
-
-              {/* Linear bottom fade to seamlessly merge preview into canvas */}
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
-            </div>
+            {/* Live Interactive Code Scanner & Fix Simulator */}
+            <AnimatedCodeScanner />
           </div>
 
-          {/* Feature 2: Churn & P95 Risk Engine (Alternating: Metrics Card on Left, Text on Right) */}
+          {/* Feature 2: Churn & P95 Risk Engine (Linear Open Hairline) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Churn & Volatility Visual Card with Linear Feathered Edges */}
-            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+            {/* Churn & Volatility Visual Card with Linear Hairline and Edge Dissolve */}
+            <div className="lg:col-span-7 order-2 lg:order-1 relative border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-8 space-y-5 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
-                  <BrainCircuit className="h-4 w-4 text-zinc-400" />
+                  <BrainCircuit className="h-4 w-4 text-white" />
                   <span className="text-xs font-semibold text-white">Repository Churn &amp; Volatility Metrics</span>
                 </div>
                 <span className="font-mono text-[11px] text-[#8a8f98]">P95 Confidence: 99.4%</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/[0.08] bg-black/40 p-3.5">
+              <div className="grid grid-cols-2 divide-x divide-white/[0.06] border-y border-white/[0.06] py-3 relative z-0">
+                <div className="pr-4">
                   <div className="text-[10px] font-mono uppercase text-[#8a8f98]">Test Coverage Delta</div>
-                  <div className="mt-1 text-xl font-bold text-rose-300/85 font-mono">−14.2%</div>
-                  <div className="text-[10px] text-zinc-500 mt-0.5">Critical paths left uncovered</div>
+                  <div className="mt-1 text-2xl font-bold text-rose-400 font-mono">−14.2%</div>
+                  <div className="text-[10px] text-neutral-500 mt-0.5">Critical paths left uncovered</div>
                 </div>
 
-                <div className="rounded-xl border border-white/[0.08] bg-black/40 p-3.5">
+                <div className="pl-4">
                   <div className="text-[10px] font-mono uppercase text-[#8a8f98]">Cyclomatic Complexity</div>
-                  <div className="mt-1 text-xl font-bold text-zinc-300 font-mono">+8 Delta</div>
-                  <div className="text-[10px] text-zinc-500 mt-0.5">Nested conditional branches</div>
+                  <div className="mt-1 text-2xl font-bold text-white font-mono">+8 Delta</div>
+                  <div className="text-[10px] text-neutral-500 mt-0.5">Nested conditional branches</div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2 text-xs">
+              <div className="space-y-2 relative z-0 font-mono text-xs">
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-rose-900/80" />
-                    <span className="text-slate-200">paymentValidator.ts</span>
+                    <span className="h-2 w-2 rounded-full bg-rose-400" />
+                    <span className="text-neutral-200">paymentValidator.ts</span>
                   </div>
-                  <span className="font-mono text-[11px] text-[#8a8f98]">Top 5% volatile in repo (12 defect rollbacks)</span>
+                  <span className="text-[11px] text-[#8a8f98]">Top 5% volatile in repo (12 defect rollbacks)</span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2 text-xs">
+                <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-900/80" />
-                    <span className="text-slate-200">stripeGateway.ts</span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="text-neutral-200">stripeGateway.ts</span>
                   </div>
-                  <span className="font-mono text-[11px] text-[#8a8f98]">Clean ownership pattern (98% author overlap)</span>
+                  <span className="text-[11px] text-[#8a8f98]">Clean ownership pattern (98% author overlap)</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3 flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono relative z-0">
                 <span className="text-[#8a8f98]">Risk Score Evaluation:</span>
-                <span className="font-mono font-bold text-zinc-200">82 / 100 (HIGH REGRESSION RISK)</span>
+                <span className="font-bold text-amber-400">82 / 100 (HIGH REGRESSION RISK)</span>
               </div>
 
-              {/* Linear bottom fade to seamlessly merge preview into canvas */}
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+              {/* Linear bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             </div>
 
             {/* Text on Right */}
@@ -302,7 +215,7 @@ export function Landing() {
               <div className="pt-2">
                 <Link
                   to="/docs"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group cursor-pointer"
                 >
                   <span>Explore risk methodology in Docs</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -311,7 +224,7 @@ export function Landing() {
             </div>
           </div>
 
-          {/* Feature 3: CI Quality Gates & Policy (Text on Left, Config Card on Right) */}
+          {/* Feature 3: CI Quality Gates & Policy (Linear Open Hairline) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-4">
               <span className="text-[10px] font-mono font-semibold tracking-wider text-[#8a8f98] uppercase">
@@ -327,7 +240,7 @@ export function Landing() {
                 <Link
                   to="/docs"
                   preload="intent"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white hover:text-zinc-300 transition-colors group cursor-pointer"
                 >
                   <span>View .buggers.yml configuration reference</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -336,16 +249,17 @@ export function Landing() {
             </div>
 
             {/* Config & Check Run Card with Linear Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+            <div className="lg:col-span-7 relative border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-8 space-y-4 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
-                  <FileCode className="h-4 w-4 text-zinc-400" />
+                  <FileCode className="h-4 w-4 text-white" />
                   <span className="text-xs font-semibold text-white">.buggers.yml</span>
                 </div>
                 <span className="font-mono text-[11px] text-[#8a8f98]">Repository Root Config</span>
               </div>
 
-              <div className="rounded-xl bg-black border border-white/[0.08] p-4 font-mono text-xs text-slate-300 overflow-x-auto">
+              <div className="border border-white/[0.06] bg-[#07080a] p-4 font-mono text-xs text-neutral-300 overflow-x-auto relative z-0">
                 <pre className="text-[11px] leading-relaxed">
 {`version: 1
 risk:
@@ -360,9 +274,9 @@ ignore:
               </div>
 
               {/* GitHub Check Run Status Simulation */}
-              <div className="rounded-xl border border-rose-900/30 bg-rose-950/25 p-3.5 flex items-center justify-between transition-all duration-200 hover:border-rose-900/40">
+              <div className="border-l-2 border-l-rose-400 bg-rose-500/[0.04] p-3.5 flex items-center justify-between relative z-0 font-mono text-xs">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-950/60 text-rose-300/80 font-bold text-xs border border-rose-900/40">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs border border-rose-500/40">
                     ✕
                   </span>
                   <div>
@@ -370,18 +284,18 @@ ignore:
                     <div className="text-[11px] text-[#8a8f98]">Risk 82 exceeds threshold 75 · Merge Blocked</div>
                   </div>
                 </div>
-                <span className="font-mono text-[10px] text-rose-300/70 uppercase tracking-wider font-semibold">
+                <span className="text-[10px] text-rose-300 uppercase tracking-wider font-semibold">
                   Required Check
                 </span>
               </div>
 
               {/* Linear bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             </div>
           </div>
 
-          {/* Section 4: Linear FIG Minimal Wireframe Grid */}
-          <div className="border border-white/[0.08] rounded-2xl overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0c0d10]/60 backdrop-blur-sm">
+          {/* Section 4: Linear FIG Minimal Wireframe Grid (Open Hairline) */}
+          <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#090a0d]">
             <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
               <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
                 FIG 0.1
@@ -423,9 +337,9 @@ ignore:
             </div>
           </div>
 
-          {/* Section 5: Bottom CTA */}
-          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#121316]/60 via-[#0c0d10]/80 to-[#08090a] p-8 sm:p-12 text-center space-y-4 shadow-xl">
-            <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
+          {/* Section 5: Bottom CTA (Open Linear Hairline) */}
+          <div className="border-t border-white/[0.08] pt-16 pb-8 text-center space-y-4">
+            <h3 className="text-2xl sm:text-4xl font-medium text-white tracking-tight leading-tight">
               Ready to review pull requests with ease?
             </h3>
             <p className="text-xs sm:text-sm text-[#8a8f98] max-w-md mx-auto leading-relaxed">
