@@ -1,47 +1,157 @@
-# Buggers
+# Buggers — Deterministic Code Review & Pull Request Triage
 
-AI-assisted code review & bug triage for GitHub pull requests.
+> Precision release intelligence for modern engineering teams. Buggers inspects raw unified diffs against historical repository fault lines to detect regressions, boundary flaws, security vulnerabilities, and state race conditions before code merges into production.
 
-Buggers analyzes your real GitHub pull requests for risk, historical signals, and AI-reviewed findings — giving you a confidence score before you merge.
+[![License](https://img.shields.io/badge/License-Private-slate?style=flat-square)](LICENSE)
+[![Runtime](https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square)](https://nodejs.org)
+[![Framework](https://img.shields.io/badge/Framework-TanStack%20Start-blue?style=flat-square)](https://tanstack.com/start)
+[![Engine](https://img.shields.io/badge/Engine-Deterministic%20Triage-amber?style=flat-square)](#core-architecture)
+
+---
+
+## Overview
+
+Modern code review suffers from a fundamental paradox: generic LLMs leave noisy, speculative comments, while human engineers burn out reviewing massive pull requests.
+
+**Buggers** bridges this gap by grounding pull request analysis in **real repository history**:
+- **Deterministic Churn Evaluation:** Correlates changed functions with past rollback commits and defect density.
+- **Zero Phantom Lines:** Remediations only cite verified diff line numbers. Hallucinated file paths are mathematically discarded.
+- **Merge Quality Gates:** Enforce declarative `.buggers.yml` threshold rules via automated GitHub Check Runs.
+
+---
+
+## Core Capabilities
+
+- **AST-Grounded Risk Scoring:** Deterministic 0–100 risk score weighing cyclomatic complexity, test delta, and boundary mutations.
+- **Multi-Provider AI Resilience:** Native fallback chain across OpenAI, Anthropic Claude, and Google Gemini with prompt injection defense.
+- **Direct GitHub Integration:** Secure OAuth handshake with encrypted token storage (`pgcrypto`), fine-grained scoping, and rate-limit-aware retry backoff.
+- **Durable Queue Worker:** Postgres-backed queue with heartbeat/lease mechanism, exponential jitter backoff, and crash recovery.
+- **Real-Time SAST & Secret Scanning:** High-entropy regex and heuristic detection for exposed cloud credentials, JWTs, and API tokens.
+- **Instant Preloaded Navigation:** Butter-smooth client-side routing powered by TanStack Router and a persistent anchored floating island header.
+
+---
 
 ## Quick Start
 
+### 1. Clone & Install
+
 ```sh
-git clone <this-repository-url>
+git clone https://github.com/jaidevxr/buggers.git
 cd buggers
-cp .env.example .env   # fill in your keys
 npm install
-npm run dev            # http://localhost:8080
 ```
 
-See [`docs/SETUP.md`](docs/SETUP.md) for full setup instructions and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the system design.
+### 2. Configure Environment
 
-## Features
-
-- **Risk scoring** — deterministic heuristic engine combining churn, complexity, file history, and test coverage signals.
-- **AI review** — multi-provider support (OpenAI, Anthropic, Google) with prompt injection defense and hallucination filtering.
-- **GitHub integration** — direct OAuth with encrypted token storage and rate-limit-aware API client.
-- **Durable job flow** — Postgres-backed queue with heartbeat/lease, exponential backoff, and crash recovery.
-- **Structured telemetry** — JSON logging with analysis_id, stage, duration_ms, and AI token usage.
-
-## Development
+Copy the example environment file and add your credentials:
 
 ```sh
-npm run dev        # Start dev server
-npm run build      # Production build (Vercel/Nitro)
-npm run typecheck  # TypeScript checks
-npm run test       # Vitest unit tests
-npm run lint       # ESLint
+cp .env.example .env
 ```
+
+Key environment variables:
+```env
+# Supabase Database & Auth
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# GitHub OAuth & Webhooks
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GITHUB_WEBHOOK_SECRET=your-webhook-secret
+
+# AI Providers (At least one required)
+OPENROUTER_API_KEY=your-openrouter-key
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
+```
+
+### 3. Launch Development Server
+
+```sh
+npm run dev
+```
+
+Visit [`http://localhost:8080`](http://localhost:8080) to access the Buggers application.
+
+---
+
+## Project Structure
+
+```
+buggers/
+├── docs/                     # Architectural design & setup documentation
+│   ├── ARCHITECTURE.md       # Triage pipeline, queue worker & database schema
+│   ├── SETUP.md              # Detailed Supabase & GitHub App setup guide
+│   └── SECURITY.md           # Encryption, rate limits & prompt defense
+├── src/
+│   ├── components/           # Reusable UI components & floating public island
+│   │   ├── brand/            # Buggers brand marks & SVG wordmarks
+│   │   ├── layout/           # AppShell, TopBar & PublicHeader
+│   │   └── ui/               # Radix-UI primitive components
+│   ├── integrations/         # Supabase client & database type bindings
+│   ├── lib/                  # Shared utilities, risk engine & server functions
+│   ├── routes/               # TanStack Router type-safe file routes
+│   │   ├── _authenticated/   # Protected workspace pages (Dashboard, Repos, Findings)
+│   │   ├── index.tsx         # Studio landing experience
+│   │   ├── auth.tsx          # Clean OAuth sign-in & sign-up
+│   │   ├── docs.tsx          # Interactive technical documentation
+│   │   ├── how-it-works.tsx  # Pipeline deep-dive & architectural breakdown
+│   │   └── about.tsx         # Engineering mission & core pillars
+│   ├── server/               # Server-only AST scanners, queue worker & AI clients
+│   └── styles.css            # GPU-accelerated motion system & design tokens
+└── .buggers.yml              # Example declarative repository merge gate configuration
+```
+
+---
+
+## Quality Gate Configuration (`.buggers.yml`)
+
+Configure review thresholds directly in your repository root:
+
+```yaml
+version: 1
+
+risk:
+  threshold: 75             # Block pull request merge if score exceeds 75
+  fail_on_critical: true     # Block merge if critical vulnerability is detected
+  block_on_secrets: true     # Enforce hard block on leaked credentials
+
+ignore:
+  paths:
+    - "docs/**"
+    - "**/*.spec.ts"
+    - "dist/**"
+```
+
+---
+
+## Development Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts local development server on port 8080 |
+| `npm run build` | Compiles production assets and Nitro server bundle |
+| `npm run typecheck` | Validates TypeScript types across the entire project |
+| `npm run test` | Executes unit and integration test suite with Vitest |
+| `npm run lint` | Runs ESLint for code quality and convention checks |
+
+---
 
 ## Deployment
 
-Configured for **Vercel** with Nitro. See [`docs/SETUP.md`](docs/SETUP.md) for environment variable configuration.
+Buggers is optimized for production deployment on **Vercel** with Nitro runtime:
 
-## Origins
+```sh
+npm run build
+npx vercel deploy --prebuilt --prod
+```
 
-This project was originally scaffolded with [Lovable](https://lovable.dev). It has since been fully decoupled to run as a standalone application using your own Supabase project, GitHub OAuth App, and AI provider keys.
+Refer to [`docs/SETUP.md`](docs/SETUP.md) for complete production secrets and webhook configuration.
+
+---
 
 ## License
 
-Private — all rights reserved.
+Private — All rights reserved © 2026 Buggers Engineering.
