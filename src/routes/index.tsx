@@ -5,6 +5,7 @@ import {
   BookOpen,
   BrainCircuit,
   CheckCircle2,
+  ChevronDown,
   FileCode,
   FolderGit2,
   GitBranch,
@@ -109,7 +110,7 @@ export function Landing() {
             </Link>
           </div>
 
-          {/* Scroll Cue Animation so user knows interactive test bed and showcase is below */}
+          {/* Authentic Computer Mouse Scroll Indicator */}
           <div className="mt-14 sm:mt-16 flex justify-center">
             <a
               href="#showcase"
@@ -117,15 +118,55 @@ export function Landing() {
                 e.preventDefault();
                 document.getElementById("showcase")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group inline-flex flex-col items-center gap-2.5 cursor-pointer select-none transition-transform duration-200 hover:-translate-y-0.5"
+              className="group inline-flex flex-col items-center gap-2 cursor-pointer select-none transition-all duration-200 hover:-translate-y-1"
               aria-label="Scroll to interactive review engine showcase"
             >
-              <div className="w-5 h-8 rounded-full border border-white/20 p-1 flex justify-center bg-black/40 backdrop-blur-sm group-hover:border-white/40 transition-colors shadow-sm">
-                <div className="w-1 h-2 rounded-full bg-white/70 animate-scroll-pill" />
+              {/* Computer Mouse Icon with Animated Internal Scroll Wheel */}
+              <div className="relative p-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/15 group-hover:border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all duration-200">
+                <svg
+                  className="w-5 h-7 text-neutral-400 group-hover:text-white transition-colors"
+                  viewBox="0 0 20 28"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Mouse chassis contour */}
+                  <rect
+                    x="1.5"
+                    y="1.5"
+                    width="17"
+                    height="25"
+                    rx="8.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  {/* Subtle top click divider */}
+                  <line
+                    x1="10"
+                    y1="1.5"
+                    x2="10"
+                    y2="6"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeOpacity="0.4"
+                  />
+                  {/* Animated internal scroll wheel */}
+                  <line
+                    x1="10"
+                    y1="7.5"
+                    x2="10"
+                    y2="11.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    className="animate-mouse-wheel text-emerald-400 group-hover:text-white"
+                  />
+                </svg>
               </div>
-              <span className="text-[10px] font-mono tracking-widest uppercase text-neutral-400 group-hover:text-white transition-colors">
-                Explore engine
-              </span>
+
+              <div className="flex items-center gap-1 text-[10px] font-mono tracking-widest uppercase text-neutral-400 group-hover:text-neutral-200 transition-colors">
+                <span>Scroll</span>
+                <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:translate-y-0.5 animate-bounce" />
+              </div>
             </a>
           </div>
         </div>

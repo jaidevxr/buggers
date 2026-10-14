@@ -710,4 +710,24 @@ a {
   animation: scrollPill 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
+@keyframes mouseWheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(6px);
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-mouse-wheel {
+  animation: mouseWheel 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+
 
