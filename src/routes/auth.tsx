@@ -298,7 +298,7 @@ export function AuthPage() {
                           required={mode === "signup"}
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
-                          placeholder="Jane"
+                          placeholder="Virat"
                           className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                         />
                         <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
@@ -313,7 +313,7 @@ export function AuthPage() {
                           required={mode === "signup"}
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
-                          placeholder="Doe"
+                          placeholder="Kohli"
                           className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                         />
                         <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
@@ -331,7 +331,7 @@ export function AuthPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="engineer@company.com"
+                    placeholder="virat.kohli@company.com"
                     className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                   />
                   <Mail className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
