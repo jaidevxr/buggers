@@ -253,7 +253,7 @@ export function DocsPage() {
         {/* ============================================================== */}
         {/* Editorial Masthead */}
         {/* ============================================================== */}
-        <header id="hero" className="mb-14 space-y-4">
+        <header id="hero" className="space-y-4">
           <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 tracking-wider uppercase">
             <span className="text-white font-semibold">BUGGERS</span>
             <span className="text-neutral-600">/</span>

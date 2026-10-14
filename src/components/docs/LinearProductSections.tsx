@@ -334,11 +334,8 @@ export function LinearProductSections() {
         <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
           
-          {/* Black fade gradients at all 4 borders to seamlessly dissolve into the canvas (Linear Edge Feathering) */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#08090a] to-transparent z-20" />
+          {/* Black fade gradient at bottom only (no side cutoff) */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
@@ -447,9 +444,8 @@ export function LinearProductSections() {
                 <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none z-20" />
               )}
 
-              {/* Side black gradient fades for seamless edge feathering */}
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#07080a] to-transparent z-20" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#07080a] via-[#07080a]/90 to-transparent z-20" />
+              {/* Black fade gradient at bottom only (no side cutoff) */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#07080a] to-transparent z-20" />
 
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
                 <span className="text-neutral-300 flex items-center gap-1.5 font-medium">

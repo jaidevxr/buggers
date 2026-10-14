@@ -4,9 +4,9 @@ export function LinearWireframeGrid() {
   const [activeFig, setActiveFig] = useState<number | null>(null);
 
   return (
-    <section className="w-full my-20 sm:my-28 border-t border-white/[0.08] pt-20">
+    <section className="w-full pt-8 sm:pt-12 pb-10 sm:pb-14">
       {/* Structured Editorial Headline */}
-      <div className="max-w-3xl mb-14 space-y-4">
+      <div className="max-w-3xl mb-8 space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/[0.08] px-3.5 py-1 text-xs font-mono text-[#8a8f98]">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
           <span className="uppercase text-[10px] tracking-widest text-neutral-300">Core Architecture</span>
