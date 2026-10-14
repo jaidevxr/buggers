@@ -551,9 +551,10 @@ a {
   }
 }
 
-/* Floating Public Header Island: stable elevation & zero layout shift during route transitions */
-.public-header-island {
-  view-transition-name: public-header;
+/* Floating Public Header Island: completely static & zero layout shift during route transitions */
+.public-header-island,
+.public-header-pill {
+  view-transition-name: none !important;
   contain: layout style paint;
 }
 

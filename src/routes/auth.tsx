@@ -10,6 +10,7 @@ import {
   Mail,
   User,
   Shield,
+  CheckCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BugMark } from "@/components/brand/BugMark";
@@ -62,6 +63,7 @@ function GoogleIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export function AuthPage() {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -69,6 +71,12 @@ export function AuthPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busyProvider, setBusyProvider] = useState<"github" | "google" | "email" | null>(null);
+
+  // Silky smooth entrance transition stage
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -145,30 +153,54 @@ export function AuthPage() {
     <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between">
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
-        {/* Symmetrical Centered Form Card */}
+        {/* Symmetrical Centered Form Card with Linear Glide Animation */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
-          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-5 transition-all duration-200">
-            <div className="text-center space-y-1">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-[#8a8f98] uppercase">
-                START FOR FREE
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                {mode === "signin" ? (
-                  <>Welcome back<span className="text-zinc-500">.</span></>
-                ) : (
-                  <>Create new account<span className="text-zinc-500">.</span></>
-                )}
+          <div
+            className={`w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0c0d10]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.03)] space-y-5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              mounted
+                ? "opacity-100 translate-y-0 scale-100"
+                : "opacity-0 translate-y-4 scale-[0.985]"
+            }`}
+          >
+            {/* Header & Mode Segmented Switcher */}
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[10px] font-mono font-medium tracking-wider text-[#8a8f98] uppercase">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span>Instant Workspace Access</span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
+                {mode === "signin" ? "Welcome back" : "Create new account"}
               </h1>
-              <p className="text-xs text-[#8a8f98]">
-                {mode === "signin" ? "Need an account? " : "Already a member? "}
+
+              {/* Linear-Style Segmented Tab Switcher */}
+              <div className="relative flex rounded-xl bg-[#121316] p-1 border border-white/[0.08]">
+                <div
+                  className="absolute top-1 bottom-1 rounded-lg bg-white/[0.08] border border-white/[0.12] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none"
+                  style={{
+                    left: mode === "signin" ? "4px" : "calc(50% + 2px)",
+                    width: "calc(50% - 6px)",
+                  }}
+                />
                 <button
                   type="button"
-                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                  className="text-white font-semibold hover:underline cursor-pointer transition-colors duration-200"
+                  onClick={() => setMode("signin")}
+                  className={`relative z-10 w-1/2 py-1.5 text-xs font-medium transition-colors duration-200 cursor-pointer text-center ${
+                    mode === "signin" ? "text-white font-semibold" : "text-[#8a8f98] hover:text-white"
+                  }`}
                 >
-                  {mode === "signin" ? "Sign Up" : "Log In"}
+                  Sign In
                 </button>
-              </p>
+                <button
+                  type="button"
+                  onClick={() => setMode("signup")}
+                  className={`relative z-10 w-1/2 py-1.5 text-xs font-medium transition-colors duration-200 cursor-pointer text-center ${
+                    mode === "signup" ? "text-white font-semibold" : "text-[#8a8f98] hover:text-white"
+                  }`}
+                >
+                  Create Account
+                </button>
+              </div>
             </div>
 
             {/* Symmetrical Social OAuth Buttons */}
@@ -177,7 +209,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("github")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "github" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -191,7 +223,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "google" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -203,65 +235,69 @@ export function AuthPage() {
             </div>
 
             {/* Symmetrical Divider */}
-            <div className="relative flex items-center justify-center my-3">
+            <div className="relative flex items-center justify-center my-2">
               <div className="w-full border-t border-white/[0.08]" />
               <span className="absolute bg-[#0c0d10] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
                 Or continue with email
               </span>
             </div>
 
-            {/* Form Fields */}
-            <form className="space-y-3.5" onSubmit={handleSubmit}>
-              {mode === "signup" && (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
-                    <label className="block text-[10px] font-medium text-[#8a8f98]">First name</label>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <input
-                        type="text"
-                        required
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="Virat"
-                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
-                    <label className="block text-[10px] font-medium text-[#8a8f98]">Last name</label>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <input
-                        type="text"
-                        required
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Kohli"
-                        className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
-                      />
-                      <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
-                    </div>
+            {/* Form Fields with Fluid Height Accordion for Name Fields */}
+            <form className="space-y-3" onSubmit={handleSubmit}>
+              <div
+                className={`grid grid-cols-2 gap-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
+                  mode === "signup"
+                    ? "max-h-24 opacity-100 scale-100 mb-0"
+                    : "max-h-0 opacity-0 scale-98 pointer-events-none mb-0"
+                }`}
+              >
+                <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-200 hover:border-white/[0.14] focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/[0.06] focus-within:shadow-[0_0_16px_rgba(255,255,255,0.03)]">
+                  <label className="block text-[10px] font-medium text-[#8a8f98]">First name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required={mode === "signup"}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Jane"
+                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
                   </div>
                 </div>
-              )}
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
-                <label className="block text-[10px] font-medium text-[#8a8f98]">Email</label>
+                <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-200 hover:border-white/[0.14] focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/[0.06] focus-within:shadow-[0_0_16px_rgba(255,255,255,0.03)]">
+                  <label className="block text-[10px] font-medium text-[#8a8f98]">Last name</label>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <input
+                      type="text"
+                      required={mode === "signup"}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Doe"
+                      className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
+                    />
+                    <User className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-200 hover:border-white/[0.14] focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/[0.06] focus-within:shadow-[0_0_16px_rgba(255,255,255,0.03)]">
+                <label className="block text-[10px] font-medium text-[#8a8f98]">Email address</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="virat.kohli@company.com"
+                    placeholder="engineer@company.com"
                     className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                   />
                   <Mail className="h-3.5 w-3.5 text-zinc-500 shrink-0 ml-1" />
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-200 hover:border-white/[0.14] focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/[0.06] focus-within:shadow-[0_0_16px_rgba(255,255,255,0.03)]">
                 <label className="block text-[10px] font-medium text-[#8a8f98]">Password</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
@@ -270,13 +306,13 @@ export function AuthPage() {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="••••••••••••"
                     className="w-full bg-transparent text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-zinc-500 hover:text-white shrink-0 ml-1 cursor-pointer transition-colors duration-150"
+                    className="p-1 rounded text-zinc-500 hover:text-white hover:bg-white/[0.06] shrink-0 ml-1 cursor-pointer transition-colors duration-150"
                   >
                     {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                   </button>
@@ -288,31 +324,43 @@ export function AuthPage() {
                 <button
                   type="submit"
                   disabled={Boolean(busyProvider)}
-                  className="w-full rounded-xl bg-white hover:bg-slate-200 text-black py-2.5 text-xs font-semibold shadow-md transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full rounded-xl bg-white hover:bg-neutral-100 text-black py-2.5 text-xs font-semibold shadow-md hover:shadow-[0_0_24px_rgba(255,255,255,0.18)] transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {busyProvider === "email" ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin text-black" />
-                      <span>Processing…</span>
+                      <span>Authenticating…</span>
                     </>
                   ) : (
-                    <span>{mode === "signin" ? "Sign In" : "Create account"}</span>
+                    <span>{mode === "signin" ? "Sign In" : "Create Account"}</span>
                   )}
                 </button>
               </div>
             </form>
+
+            {/* Mode Switcher Secondary Footer Link */}
+            <p className="text-center text-xs text-[#8a8f98] pt-1">
+              {mode === "signin" ? "Need an account? " : "Already have an account? "}
+              <button
+                type="button"
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                className="text-white font-medium hover:underline cursor-pointer transition-colors duration-150"
+              >
+                {mode === "signin" ? "Create one" : "Sign in"}
+              </button>
+            </p>
           </div>
         </main>
 
         {/* Bottom Footer Row */}
-        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-slate-400">
+        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-neutral-400">
           <span className="flex items-center gap-1.5">
-            <Shield className="h-3.5 w-3.5 text-zinc-500" />
-            <span>Encrypted repository credentials</span>
+            <Shield className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Encrypted zero-trust repository credentials</span>
           </span>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-white/50 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
-              <BugMark className="h-3.5 w-3.5 text-white/50 fill-white/50" />
+            <div className="flex items-center gap-2 text-white/60 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+              <BugMark className="h-3.5 w-3.5 text-white/60 fill-white/60" />
               <span className="font-semibold tracking-widest text-[10px]">BUGGERS</span>
             </div>
           </div>
