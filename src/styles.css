@@ -346,6 +346,11 @@
     will-change: opacity;
   }
 
+  .public-page-transition {
+    animation: subtleFadeIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: opacity;
+  }
+
   .skeleton-shimmer {
     background: linear-gradient(
       90deg,
@@ -537,6 +542,15 @@ select {
 }
 
 @keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes subtleFadeIn {
   from {
     opacity: 0;
   }

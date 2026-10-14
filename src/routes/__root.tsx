@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { AtmosphericBackdrop } from "@/components/layout/AtmosphericBackdrop";
+import { cn } from "@/lib/utils";
 
 function NotFoundComponent() {
   return (
@@ -168,9 +169,15 @@ function RootComponent() {
         <div className="min-h-screen w-full bg-[#000000] text-neutral-100 flex flex-col selection:bg-white/20 relative">
           {!isAuthRoute && <AtmosphericBackdrop />}
           {!isAuthRoute && <PublicHeader />}
-          <div className="flex-1 w-full flex flex-col relative z-10">
+          <main
+            key={pathname}
+            className={cn(
+              "flex-1 w-full flex flex-col relative z-10",
+              !isAuthRoute && "public-page-transition",
+            )}
+          >
             <Outlet />
-          </div>
+          </main>
         </div>
         <Toaster richColors position="top-right" />
       </ThemeProvider>

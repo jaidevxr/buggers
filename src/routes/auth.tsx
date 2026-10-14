@@ -181,7 +181,7 @@ export function AuthPage() {
             </Link>
           </div>
 
-          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0d0d0d]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.03)] space-y-5 animate-in fade-in-0 duration-200">
+          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0d0d0d]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.03)] space-y-5">
             {/* Header & Mode Segmented Switcher */}
             <div className="text-center space-y-3">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[10px] font-mono font-medium tracking-wider text-[#8a8f98] uppercase">
@@ -192,7 +192,7 @@ export function AuthPage() {
               {/* Smooth Cross-Fading Title */}
               <div className="relative h-8 sm:h-9 overflow-hidden flex items-center justify-center">
                 <h1
-                  className={`text-2xl sm:text-3xl font-medium tracking-tight text-white transition-all duration-200 ease-out absolute ${
+                  className={`text-2xl sm:text-3xl font-medium tracking-tight text-white transition-all duration-350 ease-out absolute ${
                     mode === "signin"
                       ? "opacity-100 translate-y-0 pointer-events-auto"
                       : "opacity-0 -translate-y-2 pointer-events-none"
@@ -201,7 +201,7 @@ export function AuthPage() {
                   Welcome back
                 </h1>
                 <h1
-                  className={`text-2xl sm:text-3xl font-medium tracking-tight text-white transition-all duration-200 ease-out absolute ${
+                  className={`text-2xl sm:text-3xl font-medium tracking-tight text-white transition-all duration-350 ease-out absolute ${
                     mode === "signup"
                       ? "opacity-100 translate-y-0 pointer-events-auto"
                       : "opacity-0 translate-y-2 pointer-events-none"
