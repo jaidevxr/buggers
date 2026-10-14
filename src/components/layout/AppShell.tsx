@@ -142,7 +142,7 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
         </Button>
 
         {/* Notifications */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
               <Bell className="h-4 w-4" />
@@ -185,7 +185,7 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
         </DropdownMenu>
 
         {/* User Account & Theme Preferences */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
               {connection.data?.avatarUrl ? (

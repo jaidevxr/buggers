@@ -259,6 +259,11 @@
     overflow-x: hidden;
   }
 
+  /* Prevent Radix UI scroll-locking from injecting margin-right or shifting layout */
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
+  }
+
   h1,
   h2,
   h3,
