@@ -203,6 +203,12 @@
     border-color: var(--color-border);
   }
 
+  :root,
+  html,
+  body {
+    view-transition-name: none !important;
+  }
+
   html {
     color-scheme: dark;
     background-color: #000000;
@@ -212,18 +218,14 @@
     scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
   }
 
-  /* Eliminate Chromium snapshot zoom warp / jitter between pages of different heights */
+  /* Completely disable Chromium full-document view transition snapshot groups to eliminate left-side shake */
+  ::view-transition,
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
+    display: none !important;
     animation: none !important;
     transform: none !important;
-  }
-
-  /* Completely isolate fixed header from document view transitions */
-  .public-header-island,
-  .public-header-pill {
-    view-transition-name: none !important;
   }
 
   /* Sleek modern dark scrollbar — completely eliminates white browser scrollbar flashes */
@@ -550,12 +552,10 @@ select {
 
 @keyframes authEntrance {
   0% {
-    opacity: 0.55;
-    transform: translateY(4px);
+    opacity: 0.85;
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -657,30 +657,15 @@ select {
   animation: softTwinkle 3.5s ease-in-out 2.4s infinite;
 }
 
-/* ==========================================================================
-   Coordinated, Zero-Jitter Linear View Transition System
-   Fluid cross-fade with zero layout warping, scaling zoom, or scrollbar jump
-   ========================================================================== */
-
-::view-transition-group(*) {
+/* Completely disable Chromium view transitions to eliminate any snapshot skew, shifting, or left-side shake */
+::view-transition,
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*),
+::view-transition-image-pair(*) {
+  display: none !important;
   animation: none !important;
   transform: none !important;
-}
-
-::view-transition-image-pair(root) {
-  isolation: isolate;
-}
-
-::view-transition-old(root) {
-  animation: 160ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeOut;
-  transform: none !important;
-  mix-blend-mode: normal;
-}
-
-::view-transition-new(root) {
-  animation: 160ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
-  transform: none !important;
-  mix-blend-mode: normal;
 }
 
 @keyframes pageFadeOut {

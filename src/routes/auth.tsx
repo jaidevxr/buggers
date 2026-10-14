@@ -435,20 +435,6 @@ export function AuthPage() {
             </div>
           </div>
         </main>
-
-        {/* Bottom Footer Row — Smooth unified entrance */}
-        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-neutral-400">
-          <span className="flex items-center gap-1.5 transition-colors duration-200">
-            <Shield className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Encrypted zero-trust repository credentials</span>
-          </span>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-white/70 font-mono text-xs select-none bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 backdrop-blur-sm transition-all duration-200 hover:border-white/20">
-              <BugMark className="h-3.5 w-3.5 text-white/70 fill-white/70" />
-              <span className="font-semibold tracking-widest text-[10px]">BUGGERS</span>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

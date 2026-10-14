@@ -75,6 +75,15 @@ export function AtmosphericBackdrop() {
       {/* Consistent, seamless atmospheric night vignette overlay across / and /auth */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/15 via-60% to-black/45 pointer-events-none" />
 
+      {/* Consistent, permanent feathered bottom fade into #000000 across both home and auth */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-28 pointer-events-none z-10"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.75) 20%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.15) 75%, transparent 100%)",
+        }}
+      />
+
       {/* Persistent warm ambient desk lamp breathing animation with parallax depth */}
       <div
         className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe will-change-transform transition-transform duration-200 ease-out"
@@ -91,9 +100,7 @@ export function AtmosphericBackdrop() {
         style={{ transform: `translate3d(0, ${-parallaxOffset}px, 0)` }}
       />
       <div
-        className={`pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3 will-change-transform ${
-          isAuth ? "transition-none" : "transition-transform duration-100 ease-out"
-        }`}
+        className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3 will-change-transform transition-transform duration-200 ease-out"
         style={{ transform: `translate3d(0, ${-parallaxOffset}px, 0)` }}
       />
 
