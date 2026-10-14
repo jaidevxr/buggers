@@ -265,7 +265,7 @@ function Dashboard() {
                         key={a.id}
                         to="/analysis/$id"
                         params={{ id: a.id }}
-                        className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors"
+                        className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-all duration-150 ease-out active:scale-[0.998]"
                       >
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm font-medium">

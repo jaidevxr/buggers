@@ -1,6 +1,5 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -333,8 +332,10 @@
     background: radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--color-primary) 18%, transparent) 0%, transparent 70%);
   }
 
-  .page-enter {
-    animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  .page-enter,
+  .page-view,
+  .page-transition {
+    animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
     will-change: opacity, transform;
   }
 
@@ -342,8 +343,19 @@
     background: linear-gradient(
       90deg,
       var(--color-muted) 0%,
-      color-mix(in oklch, var(--color-muted) 65%, var(--color-card) 35%) 50%,
+      color-mix(in oklch, var(--color-muted) 60%, var(--color-foreground) 10%) 50%,
       var(--color-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  .dark .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.18 0.006 260) 0%,
+      oklch(0.25 0.008 260) 50%,
+      oklch(0.18 0.006 260) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.8s ease-in-out infinite;
@@ -380,10 +392,119 @@ select {
     background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-a {
-  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+/* ==========================================================================
+   Smooth Micro-Interactions: Radix Dropdowns, Popovers, Dialogs, Selects, Tooltips
+   ========================================================================== */
+
+/* Universal open / close animations for floating popups and menus */
+.animate-in,
+[data-state="open"].data-\[state\=open\]\:animate-in,
+[data-state="open"][role="menu"],
+[data-state="open"][data-slot="dropdown-content"],
+[data-state="open"][data-slot="popover-content"],
+[data-state="open"][data-slot="select-content"],
+[data-state="open"][data-slot="tooltip-content"],
+[data-radix-popper-content-wrapper] [data-state="open"] {
+  animation: uiPopIn 160ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  will-change: opacity, transform;
+}
+
+.animate-out,
+[data-state="closed"].data-\[state\=closed\]\:animate-out,
+[data-state="closed"][role="menu"],
+[data-state="closed"][data-slot="dropdown-content"],
+[data-state="closed"][data-slot="popover-content"],
+[data-state="closed"][data-slot="select-content"],
+[data-state="closed"][data-slot="tooltip-content"],
+[data-radix-popper-content-wrapper] [data-state="closed"] {
+  animation: uiPopOut 120ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  will-change: opacity, transform;
+}
+
+/* Dialog & Modal Content centered scale animation */
+[role="dialog"][data-state="open"],
+[data-slot="dialog-content"][data-state="open"] {
+  animation: dialogPopIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+[role="dialog"][data-state="closed"],
+[data-slot="dialog-content"][data-state="closed"] {
+  animation: dialogPopOut 130ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+/* Dialog Overlay backdrop fade */
+[data-slot="dialog-overlay"][data-state="open"],
+.dialog-overlay[data-state="open"],
+[data-radix-dialog-overlay][data-state="open"] {
+  animation: overlayFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+[data-slot="dialog-overlay"][data-state="closed"],
+.dialog-overlay[data-state="closed"],
+[data-radix-dialog-overlay][data-state="closed"] {
+  animation: overlayFadeOut 130ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@keyframes uiPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes uiPopOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(-3px);
+  }
+}
+
+@keyframes dialogPopIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dialogPopOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes shimmer {
@@ -398,7 +519,7 @@ a {
 @keyframes pageFadeIn {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(5px);
   }
   to {
     opacity: 1;
@@ -536,15 +657,6 @@ a {
   }
   to {
     opacity: 0;
-  }
-}
-
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 

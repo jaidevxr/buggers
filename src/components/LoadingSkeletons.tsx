@@ -31,7 +31,7 @@ export function DashboardSkeleton() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="surface-card p-4 space-y-2.5">
             <Skeleton className="h-3.5 w-20" />
