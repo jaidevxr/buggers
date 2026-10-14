@@ -133,7 +133,7 @@ function Dashboard() {
           ) : summary.error ? (
             <ErrorState message={errMsg(summary.error)} onRetry={() => summary.refetch()} />
           ) : (
-            <>
+            <div className="content-fade-in space-y-6">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <StatCard label="Analyses" value={summary.data!.counts.analyses} />
                 <StatCard label="Repos analyzed" value={summary.data!.counts.repositoriesAnalyzed} />
@@ -285,7 +285,7 @@ function Dashboard() {
                   </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
 

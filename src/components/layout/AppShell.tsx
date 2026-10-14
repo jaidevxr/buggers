@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
-  ArrowLeft,
   Bell,
   FolderGit2,
   GitPullRequest,
@@ -122,27 +121,9 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
       <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleMenu} aria-label="Toggle navigation">
         <Menu className="h-5 w-5" />
       </Button>
-      <div className="flex items-center gap-1.5">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (typeof window !== "undefined" && window.history.length > 1) {
-              window.history.back();
-            } else {
-              navigate({ to: "/dashboard" });
-            }
-          }}
-          aria-label="Go back"
-          title="Go back"
-          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-all duration-150 cursor-pointer"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Link to="/dashboard" className="shrink-0 flex items-center">
-          <BuggersWordmark />
-        </Link>
-      </div>
+      <Link to="/dashboard" className="shrink-0 flex items-center">
+        <BuggersWordmark />
+      </Link>
       <div className="ml-auto flex items-center gap-1.5">
         {/* Quick Theme Toggle */}
         <Button

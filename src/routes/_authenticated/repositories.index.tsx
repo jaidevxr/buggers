@@ -63,7 +63,7 @@ function Repositories() {
   if (repos.error) return <ErrorState message={errMsg(repos.error)} onRetry={() => repos.refetch()} />;
 
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader title="Repositories" description={`Signed in to GitHub as ${conn.data.login}`} />
       <div className="mb-4 flex flex-wrap gap-2">
         <Input

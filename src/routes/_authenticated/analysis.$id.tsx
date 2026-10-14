@@ -247,8 +247,10 @@ ${f.suggested_fix ? `#### Remediation Fix\n\`\`\`\n${f.suggested_fix}\n\`\`\`` :
     (a.status === "completed" || a.status === "failed");
 
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader
+        backTo="/pull-requests"
+        backLabel="Pull requests"
         title={`#${a.pr_number} ${a.pr_title ?? ""}`}
         description={`${a.repo_full_name} · ${a.head_branch} → ${a.base_branch} · by ${a.pr_author ?? "unknown"} · ${timeAgo(a.created_at)}`}
         actions={

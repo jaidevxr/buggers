@@ -36,7 +36,7 @@ function Findings() {
   );
 
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader title="Findings" description="Every finding from your real analyses." />
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {["critical", "high", "medium", "low"].map((s) => <StatCard key={s} label={s} value={count(s)} />)}

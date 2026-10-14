@@ -367,8 +367,10 @@ function FindingDetail() {
     ) : null;
 
   return (
-    <div className="max-w-7xl page-view">
+    <div className="max-w-7xl page-view content-fade-in">
       <PageHeader
+        backTo="/findings"
+        backLabel="Findings"
         title={f.title}
         description={`${f.repo_full_name} · PR #${f.pr_number} · ${f.file_path}${f.line_number ? `:${f.line_number}` : ""} · ${timeAgo(f.created_at)}`}
       />

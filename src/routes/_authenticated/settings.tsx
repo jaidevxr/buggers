@@ -273,7 +273,7 @@ function Settings() {
   if (s.isLoading && !form) return <SettingsSkeleton />;
 
   return (
-    <div className="max-w-3xl page-view">
+    <div className="max-w-3xl page-view content-fade-in">
       <PageHeader title="Settings" />
       <div className="space-y-4">
         <Section title="Appearance">

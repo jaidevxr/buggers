@@ -53,7 +53,9 @@ function PullRequests() {
       ) : !selected ? (
         <EmptyState title="No repositories available" description="Your GitHub account has no accessible repositories." />
       ) : (
-        <PullList key={selected} repoFullName={selected} />
+        <div className="content-fade-in">
+          <PullList key={selected} repoFullName={selected} />
+        </div>
       )}
     </div>
   );

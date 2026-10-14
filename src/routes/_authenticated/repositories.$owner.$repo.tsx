@@ -29,8 +29,10 @@ function RepoOverview() {
     );
   const d = q.data!;
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader
+        backTo="/repositories"
+        backLabel="Repositories"
         title={d.repo.fullName}
         description={d.repo.description ?? "No description"}
         actions={

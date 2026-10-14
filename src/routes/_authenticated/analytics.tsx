@@ -48,7 +48,7 @@ function Analytics() {
   const volume = done.map((x) => ({ name: `#${x.pr_number}`, additions: x.additions ?? 0, deletions: x.deletions ?? 0 }));
 
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader title="Analytics" description="Built only from your stored analyses and findings." />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Risk over time" enough={riskOverTime.length >= 2}>

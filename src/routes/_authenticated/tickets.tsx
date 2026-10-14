@@ -31,7 +31,7 @@ function Tickets() {
   if (q.error) return <ErrorState message={errMsg(q.error)} onRetry={() => q.refetch()} />;
   const rows = q.data!.tickets;
   return (
-    <div className="page-view">
+    <div className="page-view content-fade-in">
       <PageHeader title="Tickets" description="Findings turned into actionable work." />
       {rows.length === 0 ? (
         <EmptyState title="No tickets yet" description="Open a finding and choose “Create ticket”." action={<Link to="/findings" className="text-sm underline">Go to findings</Link>} />
