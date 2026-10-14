@@ -334,7 +334,8 @@ export function RiskDistributionChart({
         <XAxis
           dataKey="name"
           stroke="var(--border)"
-          tick={{ fill: "var(--muted-foreground)", fontSize: 11, textTransform: "capitalize" }}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          tickFormatter={(val: string) => (val ? val.charAt(0).toUpperCase() + val.slice(1) : "")}
           tickLine={false}
           axisLine={{ stroke: "var(--border)", strokeOpacity: 0.8 }}
         />
