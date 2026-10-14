@@ -64,8 +64,8 @@ export function Landing() {
         id="hero"
         className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
       >
-        {/* Subtle feathered fade at bottom edge into #08090a background */}
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none" />
+        {/* Expansive feathered fade at bottom edge into #08090a background */}
+        <div className="absolute inset-x-0 bottom-0 h-48 sm:h-72 bg-gradient-to-t from-[#08090a] via-[#08090a]/95 via-[#08090a]/60 to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">

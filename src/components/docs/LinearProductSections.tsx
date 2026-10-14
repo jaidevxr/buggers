@@ -208,15 +208,17 @@ export function LinearProductSections() {
       const curLine = lines[lineI];
       if (!curLine) return;
 
-      // Handle leading indentation swiftly
-      if (charI < curLine.text.length && curLine.text.slice(charI).startsWith("  ")) {
+      // Handle leading indentation and word blocks swiftly
+      if (charI < curLine.text.length && curLine.text.slice(charI).startsWith("    ")) {
+        charI += 4;
+      } else if (charI < curLine.text.length && curLine.text.slice(charI).startsWith("  ")) {
         charI += 2;
       } else {
-        charI += 1;
+        charI += 2;
       }
 
       if (charI >= curLine.text.length) {
-        // Line completed: render full line, then pause naturally for 140ms before next line
+        // Line completed: render full line, then brisk 45ms pause before next line
         setActiveCharIdx(curLine.text.length);
         timerId = setTimeout(() => {
           if (isCancelled) return;
@@ -224,27 +226,25 @@ export function LinearProductSections() {
           charI = 0;
           setActiveLineIdx(lineI);
           setActiveCharIdx(0);
-          timerId = setTimeout(tick, 35);
-        }, 140);
+          timerId = setTimeout(tick, 20);
+        }, 45);
         return;
       }
 
       setActiveCharIdx(charI);
 
-      // Organic typing cadence: ultra-smooth flow
+      // Snappy, swift terminal typing cadence (~8-14ms)
       const nextChar = curLine.text[charI];
-      let delay = 18;
-      if (nextChar === " " || nextChar === "{" || nextChar === "}" || nextChar === ";") {
-        delay = 34;
-      } else if (nextChar === ",") {
-        delay = 42;
+      let delay = 9;
+      if (nextChar === "{" || nextChar === "}" || nextChar === ";") {
+        delay = 14;
       }
 
       timerId = setTimeout(tick, delay);
     };
 
-    // Initial micro-delay of 80ms before typing begins
-    timerId = setTimeout(tick, 80);
+    // Initial brisk micro-delay of 40ms before typing begins
+    timerId = setTimeout(tick, 40);
 
     return () => {
       isCancelled = true;

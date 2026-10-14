@@ -274,15 +274,15 @@ export function AboutPage() {
         {/* Linear Layered Interactive PR Triage & Simulation Showcase */}
         {/* Motion Design · Scanning Laser · Live AST & Churn Simulations */}
         {/* ============================================================== */}
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#090a0d] overflow-hidden">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#040406] overflow-hidden">
           {/* Subtle Linear top lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none z-20" />
 
-          {/* Black fade gradient from below to seamlessly dissolve into the canvas */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#090a0d] to-transparent z-20" />
+          {/* Expansive black fade gradient from below to seamlessly dissolve into the canvas */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 sm:h-64 bg-gradient-to-t from-[#08090a] via-[#08090a]/90 via-[#08090a]/40 to-transparent z-20" />
 
           {/* Authentic macOS Window Header Bar */}
-          <div className="px-4 sm:px-6 py-2.5 bg-[#0b0c10] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
+          <div className="px-4 sm:px-6 py-2.5 bg-[#050608] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
             {/* macOS 3 Traffic Light Window Dots */}
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Close" />
@@ -310,7 +310,7 @@ export function AboutPage() {
           </div>
 
           {/* Interactive Top Tab Navigation & Simulation Controls */}
-          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4 relative z-10">
+          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#040507] flex flex-wrap items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
               <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 mr-2 hidden sm:inline-block">
                 Triage Views
@@ -398,7 +398,7 @@ export function AboutPage() {
           {/* Layered Workspace Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
             {/* Left Layer: Triage Queue & Hotspot Activity */}
-            <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/[0.08] p-5 sm:p-6 space-y-6 bg-[#0a0b0e]">
+            <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/[0.06] p-5 sm:p-6 space-y-6 bg-[#030305]">
               <div className="flex items-center justify-between text-xs font-mono text-neutral-400 border-b border-white/[0.06] pb-3">
                 <span className="uppercase text-[10px] tracking-wider font-semibold text-neutral-300">
                   Triage Queue (4 Active)
@@ -411,15 +411,15 @@ export function AboutPage() {
                 {/* Group 1: High Volatility */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-rose-400 font-semibold">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
                     <span>High Volatility (1)</span>
                   </div>
                   <div
                     onClick={() => setActiveTab("churn")}
                     className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "churn"
-                        ? "border-rose-500/30 bg-rose-500/[0.04]"
-                        : "border-white/[0.06] bg-[#0c0d10] hover:border-white/15"
+                        ? "border-rose-500/40 bg-rose-950/20 shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -447,13 +447,13 @@ export function AboutPage() {
                     onClick={() => setActiveTab("diffs")}
                     className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "diffs"
-                        ? "border-amber-400/30 bg-amber-400/[0.04]"
-                        : "border-white/[0.06] bg-[#0c0d10] hover:border-white/15"
+                        ? "border-amber-400/40 bg-amber-950/20 shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="text-neutral-200 font-medium">PR #184</span>
-                      <span className="text-amber-300 font-semibold">84 Risk</span>
+                      <span className="text-amber-400 font-semibold">84 Risk</span>
                     </div>
                     <p className="text-[11px] text-neutral-400 font-sans mt-1 line-clamp-1">
                       Fix race condition in stripe webhook idempotency
@@ -469,8 +469,8 @@ export function AboutPage() {
                     onClick={() => setActiveTab("guided")}
                     className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       activeTab === "guided"
-                        ? "border-neutral-400/30 bg-white/[0.04]"
-                        : "border-white/[0.06] bg-[#0c0d10] hover:border-white/15"
+                        ? "border-neutral-400/40 bg-white/[0.04] shadow-xs"
+                        : "border-white/[0.04] bg-[#050608] hover:border-white/15"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px]">
@@ -752,18 +752,23 @@ export function AboutPage() {
                   /* Standard Views: TAB 1 ("Diffs +") & TAB 2 ("Guided reviews +") */
                   /* Floating Code Diff Window with Line-by-Line Transitions */
                   /* ============================================================== */
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] overflow-hidden font-mono text-xs leading-relaxed relative">
-                    {/* Bottom fade gradient only (no side cutoff) */}
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0a0b0e] to-transparent z-20" />
+                  <div className="rounded-lg border border-white/[0.06] bg-[#020204] overflow-hidden font-mono text-xs leading-relaxed relative">
+                    {/* Laser Scanning Beam across code diff during scan */}
+                    {simStage === "SCANNING" && (
+                      <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.8)] z-30 animate-scanline" />
+                    )}
 
-                    <div className="bg-white/[0.02] border-b border-white/[0.06] px-4 py-2 flex items-center justify-between text-[11px] text-neutral-500 relative z-10">
+                    {/* Bottom fade gradient only (no side cutoff) */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#020204] to-transparent z-20" />
+
+                    <div className="bg-[#050608] border-b border-white/[0.04] px-4 py-2 flex items-center justify-between text-[11px] text-neutral-500 relative z-10">
                       <div className="flex items-center gap-2">
                         <span className={`h-2 w-2 rounded-full ${patchApplied ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
-                        <span className="text-neutral-300">{current.file}</span>
+                        <span className="text-neutral-300 font-medium">{current.file}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-neutral-400">
-                          {patchApplied ? "Remediated AST Patch" : "Raw Unified Diff"}
+                        <span className="text-[10px] text-neutral-400 font-mono">
+                          {patchApplied ? "Remediated AST Patch" : "Raw Unified Diff (Active Detection)"}
                         </span>
                       </div>
                     </div>
@@ -773,24 +778,66 @@ export function AboutPage() {
                         const isDel = line.type === "delete";
                         const isAdd = line.type === "add";
 
-                        // If user is watching before/after patch
+                        if (isDel) {
+                          return (
+                            <div
+                              key={current.id + idx}
+                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ${
+                                patchApplied
+                                  ? "bg-rose-950/10 text-rose-400/40 line-through"
+                                  : "bg-rose-950/25 text-rose-300 border-l-2 border-rose-500/70"
+                              }`}
+                              style={{ transitionDelay: `${idx * 25}ms` }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 shrink-0 select-none text-[10px] text-neutral-600 flex justify-between pr-2 border-r border-white/[0.06]">
+                                  <span>{line.numOld || " "}</span>
+                                  <span>{line.numNew || " "}</span>
+                                </div>
+                                <code className="text-xs font-mono whitespace-pre">{line.text}</code>
+                              </div>
+                              {!patchApplied && (
+                                <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse shrink-0">
+                                  Flaw Detected
+                                </span>
+                              )}
+                            </div>
+                          );
+                        }
+
+                        if (isAdd) {
+                          return (
+                            <div
+                              key={current.id + idx}
+                              className={`flex items-center justify-between gap-4 py-1.5 px-2.5 rounded transition-all duration-300 ${
+                                patchApplied
+                                  ? "bg-emerald-950/30 text-emerald-300 font-semibold border-l-2 border-emerald-400 pl-2.5"
+                                  : "bg-emerald-950/10 text-emerald-300/80"
+                              }`}
+                              style={{ transitionDelay: `${idx * 25}ms` }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 shrink-0 select-none text-[10px] text-emerald-500/60 flex justify-between pr-2 border-r border-white/[0.06]">
+                                  <span>{line.numOld || " "}</span>
+                                  <span>{line.numNew || " "}</span>
+                                </div>
+                                <code className="text-xs font-mono whitespace-pre">{line.text}</code>
+                              </div>
+                              {patchApplied && (
+                                <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0 flex items-center gap-1">
+                                  <Check className="h-2.5 w-2.5" />
+                                  <span>AST Verified</span>
+                                </span>
+                              )}
+                            </div>
+                          );
+                        }
+
                         return (
                           <div
                             key={current.id + idx}
-                            className={`flex items-start gap-4 py-1 px-2 rounded transition-all duration-300 ${
-                              isDel
-                                ? patchApplied
-                                  ? "bg-rose-500/[0.03] text-rose-400/40 line-through"
-                                  : "bg-rose-500/[0.08] text-rose-300"
-                                : isAdd
-                                ? patchApplied
-                                  ? "bg-emerald-500/[0.12] text-emerald-300 font-semibold border-l-2 border-emerald-400 pl-2.5"
-                                  : "bg-emerald-500/[0.08] text-emerald-300"
-                                : "text-neutral-400"
-                            }`}
-                            style={{
-                              transitionDelay: `${idx * 25}ms`,
-                            }}
+                            className="flex items-center gap-4 py-1 px-2.5 rounded text-neutral-400"
+                            style={{ transitionDelay: `${idx * 25}ms` }}
                           >
                             <div className="w-10 shrink-0 select-none text-[10px] text-neutral-600 flex justify-between pr-2 border-r border-white/[0.06]">
                               <span>{line.numOld || " "}</span>
@@ -805,7 +852,7 @@ export function AboutPage() {
                 )}
 
                 {/* Inline Grounded Finding Advisory with motion transition */}
-                <div className="border border-white/[0.08] rounded-lg p-4 bg-[#0c0d10] space-y-2 relative overflow-hidden">
+                <div className="border border-white/[0.06] rounded-lg p-4 bg-[#040406] space-y-2 relative overflow-hidden">
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-mono font-semibold text-white">

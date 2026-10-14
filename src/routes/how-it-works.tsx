@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ArrowRight,
   BrainCircuit,
@@ -14,6 +14,9 @@ import {
   Layers,
   GitPullRequest,
   Check,
+  Play,
+  Pause,
+  RotateCcw,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 
@@ -128,8 +131,50 @@ const PIPELINE_STEPS: PipelineStep[] = [
 ];
 
 export function HowItWorksPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
   const [activeStepIdx, setActiveStepIdx] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+
   const activeStep = PIPELINE_STEPS[activeStepIdx]!;
+
+  // Trigger when scrolled into view
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true);
+        } else {
+          setIsInView(false);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Smooth continuous step progression
+  useEffect(() => {
+    if (!isPlaying || !isInView) return;
+
+    setProgress(0);
+    const startProgress = setTimeout(() => {
+      setProgress(100);
+    }, 40);
+
+    const stepTimer = setTimeout(() => {
+      setActiveStepIdx((prev) => (prev + 1) % PIPELINE_STEPS.length);
+    }, 3800);
+
+    return () => {
+      clearTimeout(startProgress);
+      clearTimeout(stepTimer);
+    };
+  }, [activeStepIdx, isPlaying, isInView]);
 
   return (
     <div className="min-h-screen w-full bg-[#08090a] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
@@ -153,20 +198,33 @@ export function HowItWorksPage() {
         </div>
 
         {/* 4-Step Interactive Linear Pipeline Selector */}
-        <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 py-3">
+        <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 py-3 relative">
           {PIPELINE_STEPS.map((s, idx) => {
             const isCurrent = activeStepIdx === idx;
             return (
               <button
                 key={s.step}
                 type="button"
-                onClick={() => setActiveStepIdx(idx)}
-                className={`p-6 sm:p-7 text-left space-y-3 transition-all duration-200 cursor-pointer ${
+                onClick={() => {
+                  setActiveStepIdx(idx);
+                  setProgress(0);
+                }}
+                className={`p-6 sm:p-7 text-left space-y-3 transition-all duration-300 cursor-pointer relative overflow-hidden ${
                   isCurrent
                     ? "bg-white/[0.04] text-white"
                     : "text-[#8a8f98] hover:text-white hover:bg-white/[0.02]"
                 }`}
               >
+                {/* Active Step Top Progress Bar */}
+                {isCurrent && (
+                  <div className="absolute top-0 inset-x-0 h-0.5 bg-white/[0.08]">
+                    <div
+                      className="h-full bg-emerald-400 transition-all duration-[3800ms] ease-linear"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <span
                     className={`font-mono text-[10px] tracking-widest uppercase font-semibold ${
@@ -193,12 +251,15 @@ export function HowItWorksPage() {
         </div>
 
         {/* Interactive Dynamic Stage Inspector Preview (Linear Open Hairline with Feathered Edge) */}
-        <section className="relative border-y border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden linear-preview-fade-bottom">
+        <section
+          ref={containerRef}
+          className="relative border-y border-white/[0.08] bg-[#07080b] overflow-hidden linear-preview-fade-bottom"
+        >
           {/* Subtle top edge lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
           {/* Header Bar */}
-          <div className="border-b border-white/[0.08] px-6 sm:px-8 py-4 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4">
+          <div className="border-b border-white/[0.08] px-6 sm:px-8 py-4 bg-[#050608] flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs text-neutral-400 font-semibold">{activeStep.step}</span>
               <span className="text-neutral-600">/</span>
@@ -210,17 +271,45 @@ export function HowItWorksPage() {
                 {activeStep.badge}
               </span>
               <span className="text-neutral-500 hidden sm:inline-block">PR #184: payment-service</span>
+
+              {/* Play / Pause / Replay Controls */}
+              <div className="flex items-center gap-1 border-l border-white/[0.08] pl-3 ml-1">
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                  title={isPlaying ? "Pause automated pipeline playback" : "Resume automated pipeline playback"}
+                >
+                  {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveStepIdx(0);
+                    setProgress(0);
+                  }}
+                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                  title="Restart from Step 1"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Interactive Inspection Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[420px]">
             {/* Left Column: Live Terminal / Execution Log */}
-            <div className="lg:col-span-7 p-6 sm:p-8 font-mono text-xs leading-relaxed space-y-4 bg-[#07080a] border-b lg:border-b-0 lg:border-r border-white/[0.08]">
+            <div className="lg:col-span-7 p-6 sm:p-8 font-mono text-xs leading-relaxed space-y-4 bg-[#040406] border-b lg:border-b-0 lg:border-r border-white/[0.08] relative overflow-hidden">
+              {/* Laser Scanning Beam moving smoothly across active step log */}
+              <div
+                className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.8)] z-30 animate-scanline"
+              />
+
               <div className="flex items-center justify-between text-[11px] text-neutral-500 border-b border-white/[0.06] pb-3">
                 <div className="flex items-center gap-2">
                   <Terminal className="h-3.5 w-3.5 text-neutral-400" />
-                  <span className="text-neutral-300">{activeStep.codeFile}</span>
+                  <span className="text-neutral-300 font-medium">{activeStep.codeFile}</span>
                 </div>
                 <span>Nitro Serverless Execution</span>
               </div>
@@ -228,9 +317,11 @@ export function HowItWorksPage() {
               <div className="space-y-1.5 py-2">
                 {activeStep.lines.map((l, i) => (
                   <div
-                    key={i}
-                    className={`flex items-start gap-3 py-1 px-2 rounded ${
-                      l.highlight ? "bg-white/[0.06] text-white font-semibold" : "text-neutral-400"
+                    key={activeStep.step + i}
+                    className={`flex items-start gap-3 py-1.5 px-2.5 rounded transition-all duration-500 ${
+                      l.highlight
+                        ? "bg-emerald-500/[0.08] text-emerald-300 border-l-2 border-emerald-400 font-semibold"
+                        : "text-neutral-400"
                     }`}
                   >
                     <span className="text-neutral-600 select-none text-[10px] w-6 shrink-0">{l.prefix}</span>
@@ -241,13 +332,13 @@ export function HowItWorksPage() {
 
               {/* Verified Status Tag */}
               <div className="pt-4 border-t border-white/[0.06] flex items-center gap-2 text-emerald-400 text-xs font-mono">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <CheckCircle2 className="h-4 w-4 shrink-0 animate-pulse" />
                 <span>Deterministic pipeline assertion satisfied (0 ms jitter)</span>
               </div>
             </div>
 
             {/* Right Column: Architectural Detail & Deep Dive */}
-            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-[#090a0d] flex flex-col justify-between">
+            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-[#06070a] flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold block">

@@ -8,6 +8,21 @@ export function AtmosphericBackdrop() {
   const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
   const [scrollY, setScrollY] = useState(0);
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Pre-decode original artwork in memory to eliminate partial/striped progressive loading
+  useEffect(() => {
+    if (!isAtmospheric) return;
+    const img = new Image();
+    img.src = "/landing-bg.png";
+    if (img.complete) {
+      setIsLoaded(true);
+    } else {
+      img.onload = () => setIsLoaded(true);
+      img.onerror = () => setIsLoaded(true); // Graceful fallback
+    }
+  }, [isAtmospheric]);
+
   // Natural subtle cursor filament tracking and smooth scroll parallax
   useEffect(() => {
     if (!isAtmospheric) return;
@@ -40,8 +55,8 @@ export function AtmosphericBackdrop() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-300 ease-in-out overflow-hidden ${
-        isAtmospheric ? "opacity-100" : "opacity-0 pointer-events-none"
+      className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-500 ease-out overflow-hidden ${
+        isAtmospheric && isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
       {/* Background artwork with smooth parallax scroll translation at uncompressed 1:1 pixel fidelity */}

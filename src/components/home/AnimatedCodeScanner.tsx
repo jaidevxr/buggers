@@ -117,31 +117,60 @@ const SCENARIOS: CodeScenario[] = [
 ];
 
 export function AnimatedCodeScanner() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
   const [selectedScenarioIdx, setSelectedScenarioIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [stage, setStage] = useState<"SCANNING" | "DETECTED" | "REMEDIATED">("SCANNING");
+  const [progress, setProgress] = useState(0);
   const [cycleKey, setCycleKey] = useState(0);
 
   const activeScenario = SCENARIOS[selectedScenarioIdx]!;
 
-  // Smooth cinematic timeline driven by clean timers (no 60fps React re-render hitching)
+  // Trigger and synchronize simulation when user scrolls into view
   useEffect(() => {
-    if (!isPlaying) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true);
+        } else {
+          setIsInView(false);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
+  // Smooth cinematic timeline driven by clean timers & continuous progress
+  useEffect(() => {
+    if (!isPlaying || !isInView) return;
+
+    setProgress(0);
     setStage("SCANNING");
     let isCancelled = false;
+
+    // Smoothly kick off scanning progress bar to 35%
+    const p1 = setTimeout(() => {
+      if (!isCancelled) setProgress(35);
+    }, 40);
 
     // Phase 1: SCANNING (1800ms)
     const scanTimer = setTimeout(() => {
       if (isCancelled) return;
       setStage("DETECTED");
+      setProgress(70);
 
       // Phase 2: DETECTED (2200ms)
       const detectTimer = setTimeout(() => {
         if (isCancelled) return;
         setStage("REMEDIATED");
+        setProgress(100);
 
-        // Phase 3: REMEDIATED (4000ms), then advance
+        // Phase 3: REMEDIATED (4000ms), then advance to next scenario
         const nextTimer = setTimeout(() => {
           if (isCancelled) return;
           setSelectedScenarioIdx((curr) => (curr + 1) % SCENARIOS.length);
@@ -156,9 +185,10 @@ export function AnimatedCodeScanner() {
 
     return () => {
       isCancelled = true;
+      clearTimeout(p1);
       clearTimeout(scanTimer);
     };
-  }, [selectedScenarioIdx, isPlaying, cycleKey]);
+  }, [selectedScenarioIdx, isPlaying, cycleKey, isInView]);
 
   const handleSelectScenario = (idx: number) => {
     setSelectedScenarioIdx(idx);
@@ -178,7 +208,10 @@ export function AnimatedCodeScanner() {
     : activeScenario.riskScoreInitial;
 
   return (
-    <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+    <div
+      ref={containerRef}
+      className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom"
+    >
       {/* Background black radial fade to blend in */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
       <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
@@ -350,9 +383,14 @@ export function AnimatedCodeScanner() {
             {/* Bottom Progress Bar */}
             <div className="h-0.5 bg-white/[0.04] w-full overflow-hidden">
               <div
-                className={`h-full transition-all duration-700 ease-out ${
-                  isFixed ? "bg-emerald-400 w-full" : isDetected ? "bg-rose-400 w-2/3" : "bg-white/70 w-1/3"
+                className={`h-full transition-all ease-linear ${
+                  isFixed
+                    ? "bg-emerald-400 duration-700"
+                    : isDetected
+                    ? "bg-rose-400 duration-[2200ms]"
+                    : "bg-white/80 duration-[1800ms]"
                 }`}
+                style={{ width: `${progress}%` }}
               />
             </div>
           </div>
