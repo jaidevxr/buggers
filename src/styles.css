@@ -149,46 +149,52 @@
 }
 
 .dark {
-  --background: oklch(0.14 0.005 260);
-  --foreground: oklch(0.96 0 0);
-  --surface: oklch(0.16 0.006 260);
-  --surface-foreground: oklch(0.96 0 0);
-  --surface-strong: oklch(0.20 0.007 260);
-  --card: oklch(0.17 0.006 260);
-  --card-foreground: oklch(0.96 0 0);
-  --popover: oklch(0.18 0.006 260);
-  --popover-foreground: oklch(0.96 0 0);
+  --background: oklch(0.12 0.002 260);
+  --foreground: oklch(0.95 0 0);
+  --surface: oklch(0.135 0.002 260);
+  --surface-foreground: oklch(0.95 0 0);
+  --surface-strong: oklch(0.165 0.003 260);
+  --card: oklch(0.155 0.003 260);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.145 0.003 260);
+  --popover-foreground: oklch(0.95 0 0);
   --primary: oklch(0.65 0.19 255);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.20 0.007 260);
-  --secondary-foreground: oklch(0.96 0 0);
-  --muted: oklch(0.19 0.007 260);
-  --muted-foreground: oklch(0.68 0.01 260);
-  --accent: oklch(0.22 0.008 260);
+  --primary-soft: oklch(0.125 0.025 255);
+  --secondary: oklch(0.16 0.003 260);
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.145 0.003 260);
+  --muted-foreground: oklch(0.64 0.01 260);
+  --accent: oklch(0.165 0.003 260);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.65 0.2 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.24 0.008 260);
-  --input: oklch(0.22 0.008 260);
+  --border: oklch(0.19 0.004 260);
+  --input: oklch(0.155 0.003 260);
   --ring: oklch(0.65 0.19 255);
-  --sidebar: oklch(0.15 0.006 260);
-  --sidebar-foreground: oklch(0.90 0 0);
-  --sidebar-accent: oklch(0.21 0.008 260);
+  --sidebar: oklch(0.13 0.002 260);
+  --sidebar-foreground: oklch(0.88 0 0);
+  --sidebar-accent: oklch(0.165 0.003 260);
   --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.22 0.007 260);
+  --sidebar-border: oklch(0.18 0.003 260);
 
-  --risk-low: oklch(0.7 0.16 145);
-  --risk-low-soft: oklch(0.16 0.03 145);
-  --risk-medium: oklch(0.78 0.15 80);
-  --risk-medium-soft: oklch(0.16 0.03 80);
-  --risk-high: oklch(0.72 0.18 45);
-  --risk-high-soft: oklch(0.16 0.03 45);
-  --risk-critical: oklch(0.68 0.22 25);
-  --risk-critical-soft: oklch(0.16 0.04 25);
+  --risk-low: oklch(0.70 0.16 145);
+  --risk-low-soft: oklch(0.115 0.025 145);
+  --risk-medium: oklch(0.76 0.15 80);
+  --risk-medium-soft: oklch(0.115 0.025 80);
+  --risk-high: oklch(0.70 0.17 45);
+  --risk-high-soft: oklch(0.115 0.025 45);
+  --risk-critical: oklch(0.65 0.22 25);
+  --risk-critical-soft: oklch(0.115 0.03 25);
+  --info: oklch(0.68 0.16 250);
+  --info-soft: oklch(0.115 0.025 250);
 
-  --diff-add: oklch(0.16 0.04 145);
+  --diff-add: oklch(0.115 0.025 145);
+  --diff-add-soft: oklch(0.115 0.025 145);
   --diff-add-foreground: oklch(0.75 0.16 145);
-  --diff-remove: oklch(0.16 0.04 25);
+  --diff-del: oklch(0.115 0.03 25);
+  --diff-del-soft: oklch(0.115 0.03 25);
+  --diff-remove: oklch(0.115 0.03 25);
   --diff-remove-foreground: oklch(0.75 0.18 25);
 }
 
@@ -335,8 +341,8 @@
   .page-enter,
   .page-view,
   .page-transition {
-    animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: opacity, transform;
+    animation: pageFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: opacity;
   }
 
   .skeleton-shimmer {
@@ -353,9 +359,9 @@
   .dark .skeleton-shimmer {
     background: linear-gradient(
       90deg,
-      oklch(0.18 0.006 260) 0%,
-      oklch(0.25 0.008 260) 50%,
-      oklch(0.18 0.006 260) 100%
+      oklch(0.14 0.003 260) 0%,
+      oklch(0.18 0.004 260) 50%,
+      oklch(0.14 0.003 260) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.8s ease-in-out infinite;
@@ -532,11 +538,9 @@ select {
 @keyframes pageFadeIn {
   from {
     opacity: 0;
-    transform: translateY(5px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -659,7 +663,7 @@ select {
 }
 
 ::view-transition-new(root) {
-  animation: 200ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
+  animation: 160ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
   transform: none !important;
   mix-blend-mode: normal;
 }

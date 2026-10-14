@@ -17,6 +17,12 @@ import { BugMark } from "@/components/brand/BugMark";
 
 export const Route = createFileRoute("/auth")({
   beforeLoad: async () => {
+    if (typeof window !== "undefined") {
+      const hasAuth = Object.keys(localStorage).some(
+        (k) => k.startsWith("sb-") && k.endsWith("-auth-token"),
+      );
+      if (!hasAuth) return;
+    }
     const { data } = await supabase.auth.getSession();
     if (data.session) {
       throw redirect({ to: "/dashboard" });
@@ -149,7 +155,7 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between page-enter">
       {/* Smooth, subtle feathered bottom fade into #000000 background */}
       <div
         className="absolute inset-x-0 bottom-0 h-16 sm:h-28 pointer-events-none z-0"
