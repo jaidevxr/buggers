@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Check,
   CheckCircle2,
@@ -23,6 +23,8 @@ import {
   Activity,
   FileCode,
   Layers,
+  AlertTriangle,
+  RotateCcw,
 } from "lucide-react";
 import { CodeBlock } from "./DocsComponents";
 import { DEFAULT_RISK_CONFIG } from "@/lib/risk-engine";
@@ -99,6 +101,66 @@ export function LinearProductSections() {
     setCommittedFixes((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // Chapter 1: Typewriter Motion & Live Detection Simulation State
+  const [typedChars, setTypedChars] = useState<number>(0);
+  const [isTyping, setIsTyping] = useState<boolean>(true);
+  const [detectionState, setDetectionState] = useState<"typing" | "scanning" | "detected" | "remediated">("typing");
+
+  // Typewriting cadence trigger whenever PR selection changes
+  useEffect(() => {
+    setTypedChars(0);
+    setIsTyping(true);
+    setDetectionState("typing");
+
+    const fullText = activePR.oldCode;
+    let currentIdx = 0;
+
+    const interval = setInterval(() => {
+      currentIdx++;
+      setTypedChars(currentIdx);
+      if (currentIdx >= fullText.length) {
+        clearInterval(interval);
+        setIsTyping(false);
+        setDetectionState("scanning");
+
+        setTimeout(() => {
+          setDetectionState(committedFixes[activePR.id] ? "remediated" : "detected");
+        }, 500);
+      }
+    }, 28);
+
+    return () => clearInterval(interval);
+  }, [selectedPrId, activePR.oldCode]);
+
+  // Sync commit status with detection state
+  useEffect(() => {
+    if (committedFixes[activePR.id]) {
+      setDetectionState("remediated");
+    } else if (typedChars >= activePR.oldCode.length) {
+      setDetectionState("detected");
+    }
+  }, [committedFixes, activePR.id, typedChars, activePR.oldCode.length]);
+
+  const replayTypewriter = () => {
+    setTypedChars(0);
+    setIsTyping(true);
+    setDetectionState("typing");
+    let currentIdx = 0;
+    const fullText = activePR.oldCode;
+    const interval = setInterval(() => {
+      currentIdx++;
+      setTypedChars(currentIdx);
+      if (currentIdx >= fullText.length) {
+        clearInterval(interval);
+        setIsTyping(false);
+        setDetectionState("scanning");
+        setTimeout(() => {
+          setDetectionState(committedFixes[activePR.id] ? "remediated" : "detected");
+        }, 500);
+      }
+    }, 28);
+  };
+
   // Chapter 2: AI Orchestration State
   const [selectedAgent, setSelectedAgent] = useState<"buggers" | "claude" | "gpt4o" | "gemini">("buggers");
   const [activeFeature2, setActiveFeature2] = useState<string | null>(null);
@@ -160,7 +222,7 @@ export function LinearProductSections() {
   const gatePassed = computedRiskScore <= gateThreshold;
 
   return (
-    <div className="w-full space-y-36">
+    <div className="w-full space-y-16 sm:space-y-20">
 
       {/* ================================================================ */}
       {/* CHAPTER 1: Build, review, and ship */}
@@ -286,64 +348,142 @@ export function LinearProductSections() {
                   <FileCode className="h-3.5 w-3.5 text-neutral-400" />
                   <span>{activePR.file}</span>
                 </span>
-                <span className="text-neutral-500">PR #{activePR.id} Unified Diff</span>
+                
+                <div className="flex items-center gap-2">
+                  {/* Status Indicator pill */}
+                  {detectionState === "typing" && (
+                    <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 font-mono animate-pulse">
+                      Typing AST Node...
+                    </span>
+                  )}
+                  {detectionState === "scanning" && (
+                    <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20 font-mono animate-pulse">
+                      AST Scanning...
+                    </span>
+                  )}
+                  {detectionState === "detected" && (
+                    <span className="text-[10px] text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded-full border border-rose-500/30 font-mono flex items-center gap-1 font-semibold animate-pulse">
+                      <AlertTriangle className="h-3 w-3" />
+                      <span>{activePR.cwe} Detected</span>
+                    </span>
+                  )}
+                  {detectionState === "remediated" && (
+                    <span className="text-[10px] text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30 font-mono flex items-center gap-1 font-semibold">
+                      <Check className="h-3 w-3" />
+                      <span>AST Fixed</span>
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={replayTypewriter}
+                    className="p-1 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                    title="Replay Code Typewriter & Detection"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
 
-              {/* Code Lines with Syntax Styling & Dynamic Transition */}
-              <div key={activePR.id} className="font-mono text-xs leading-relaxed space-y-1 select-none animate-in fade-in duration-200">
+              {/* Code Lines with Dynamic Typewriter and Detection Effect */}
+              <div key={activePR.id} className="font-mono text-xs leading-relaxed space-y-1.5 select-none animate-in fade-in duration-200">
                 <div className="text-neutral-600">05  import &#123; createHmac, timingSafeEqual &#125; from 'crypto';</div>
                 <div className="text-neutral-600">06  </div>
                 <div className="text-neutral-500">07  export function verifySessionToken(token: string, session: Session) &#123;</div>
-                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
-                  isFixCommitted
+                
+                {/* Dynamic Typewritten Vulnerable AST Node Line */}
+                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 relative overflow-hidden ${
+                  detectionState === "remediated"
                     ? "bg-rose-500/[0.04] text-rose-400/40 line-through"
+                    : detectionState === "detected"
+                    ? "bg-rose-500/15 text-rose-300 border-l-2 border-rose-500 shadow-[0_0_16px_rgba(244,63,94,0.15)]"
                     : "bg-rose-500/10 text-rose-400"
                 }`}>
-                  <span>{activePR.oldCode}</span>
-                  <span className="text-[10px] font-sans text-rose-400/80">{activePR.issueBadge}</span>
+                  <div className="flex items-center">
+                    <span>{activePR.oldCode.slice(0, typedChars)}</span>
+                    {isTyping && (
+                      <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-0.5 animate-pulse" />
+                    )}
+                  </div>
+                  {detectionState === "detected" && (
+                    <span className="text-[10px] font-sans text-rose-300 font-semibold bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30 flex items-center gap-1 animate-in fade-in">
+                      <AlertTriangle className="h-2.5 w-2.5 text-rose-400" />
+                      <span>{activePR.issueBadge} ({activePR.cwe})</span>
+                    </span>
+                  )}
                 </div>
-                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
-                  isFixCommitted
-                    ? "bg-emerald-500/[0.16] text-emerald-300 border-l-2 border-emerald-400 font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)]"
-                    : "bg-emerald-500/10 text-emerald-400"
-                }`}>
-                  <span>{activePR.newCode}</span>
-                  <span className="text-[10px] font-sans text-emerald-400/90 flex items-center gap-1">
-                    {isFixCommitted && <Check className="h-3 w-3 text-emerald-400" />}
-                    <span>{isFixCommitted ? "Patch Applied" : "Deterministic Fix"}</span>
-                  </span>
-                </div>
+
+                {/* Remediated / Suggested AST Fix Line */}
+                {(detectionState === "detected" || detectionState === "remediated") && (
+                  <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
+                    detectionState === "remediated"
+                      ? "bg-emerald-500/[0.16] text-emerald-300 border-l-2 border-emerald-400 font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)] animate-in fade-in"
+                      : "bg-emerald-500/[0.06] text-emerald-400/70 border-l border-emerald-500/30 animate-in fade-in"
+                  }`}>
+                    <span>{activePR.newCode}</span>
+                    <span className="text-[10px] font-sans text-emerald-400/90 flex items-center gap-1">
+                      {detectionState === "remediated" && <Check className="h-3 w-3 text-emerald-400" />}
+                      <span>{detectionState === "remediated" ? "Patch Applied" : "Suggested AST Fix"}</span>
+                    </span>
+                  </div>
+                )}
+
                 <div className="text-neutral-500">10        return true;</div>
                 <div className="text-neutral-500">11      &#125;</div>
               </div>
 
               {/* Buggers Bot Comment & Action Callout */}
-              <div className="border-l-2 border-l-amber-400 bg-white/[0.02] pl-4 py-3 space-y-2.5 rounded-r">
+              <div className={`border-l-2 ${
+                detectionState === "remediated"
+                  ? "border-l-emerald-400 bg-emerald-500/[0.03]"
+                  : detectionState === "detected"
+                  ? "border-l-rose-500 bg-rose-500/[0.03]"
+                  : "border-l-amber-400 bg-white/[0.02]"
+              } pl-4 py-3 space-y-2.5 rounded-r transition-colors duration-300`}>
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                    <Sparkles className={`h-3.5 w-3.5 ${
+                      detectionState === "remediated" ? "text-emerald-400" : detectionState === "detected" ? "text-rose-400" : "text-amber-400"
+                    }`} />
                     <span className="font-medium text-white">Buggers Review Bot</span>
-                    <span className="text-[10px] font-mono text-neutral-400">98% Confidence</span>
+                    <span className="text-[10px] font-mono text-neutral-400">
+                      {detectionState === "typing"
+                        ? "Typing stream..."
+                        : detectionState === "scanning"
+                        ? "Scanning AST..."
+                        : detectionState === "remediated"
+                        ? "100% Remediated"
+                        : "98% Confidence"}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-mono text-amber-400 uppercase">{activePR.cwe}</span>
+                  <span className={`text-[10px] font-mono uppercase ${
+                    detectionState === "remediated" ? "text-emerald-400" : detectionState === "detected" ? "text-rose-400" : "text-amber-400"
+                  }`}>
+                    {activePR.cwe}
+                  </span>
                 </div>
                 <p className="text-xs text-neutral-300 leading-normal font-sans">
-                  {activePR.botAnalysis}
+                  {detectionState === "typing"
+                    ? "Streaming code changes into in-process AST analyzer..."
+                    : activePR.botAnalysis}
                 </p>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-[10px] font-mono text-neutral-500">
-                    {isFixCommitted ? "Commit sha: 4f98a12 (Pushed to PR branch)" : "Verified AST Hunk Replacement"}
+                    {detectionState === "remediated"
+                      ? "Commit sha: 4f98a12 (Pushed to PR branch)"
+                      : detectionState === "detected"
+                      ? "Detection confirmed · AST replacement ready"
+                      : "Awaiting AST completion"}
                   </span>
                   <button
                     type="button"
                     onClick={() => toggleCommitFix(activePR.id)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                      isFixCommitted
+                      detectionState === "remediated"
                         ? "bg-emerald-500 text-black font-semibold shadow-[0_0_16px_rgba(52,211,153,0.3)]"
                         : "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
                     }`}
                   >
-                    {isFixCommitted ? (
+                    {detectionState === "remediated" ? (
                       <>
                         <Check className="h-3.5 w-3.5" />
                         <span>Fix Committed to Branch</span>

@@ -208,14 +208,11 @@
   }
 
   /* Eliminate Chromium snapshot zoom warp / jitter between pages of different heights */
-  ::view-transition-group(*) {
-    animation: none !important;
-    transform: none !important;
-  }
+  ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
-    animation-duration: 0.15s !important;
-    animation-timing-function: ease-out !important;
+    animation: none !important;
+    transform: none !important;
   }
 
   /* Completely isolate fixed header from document view transitions */
@@ -677,18 +674,16 @@ a {
 
 @keyframes smoothRouteEntrance {
   0% {
-    opacity: 0.88;
-    transform: translateY(2px);
+    opacity: 0;
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .route-content-enter {
-  animation: smoothRouteEntrance 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: opacity, transform;
+  animation: smoothRouteEntrance 120ms ease-out both;
+  will-change: opacity;
 }
 
 @keyframes scrollPill {

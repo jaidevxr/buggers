@@ -283,6 +283,34 @@ export function AboutPage() {
           <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
 
+          {/* Authentic macOS Window Header Bar */}
+          <div className="px-4 sm:px-6 py-2.5 bg-[#0b0c10] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
+            {/* macOS 3 Traffic Light Window Dots */}
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Close" />
+              <span className="h-3 w-3 rounded-full bg-[#ffbd2e] border border-[#dea123]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Minimize" />
+              <span className="h-3 w-3 rounded-full bg-[#27c93f] border border-[#1aab29]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Expand" />
+            </div>
+
+            {/* Centered Window Title & Breadcrumb */}
+            <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400">
+              <Terminal className="h-3.5 w-3.5 text-neutral-500" />
+              <span className="text-neutral-300 font-medium">buggers-studio</span>
+              <span className="text-neutral-600">—</span>
+              <span className="text-neutral-500">triage-workspace.zsh</span>
+              <span className="text-neutral-600">—</span>
+              <span className="text-emerald-400/90 text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 font-semibold">
+                git:(main)
+              </span>
+            </div>
+
+            {/* Right macOS Window Status Pill */}
+            <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 hidden sm:flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span>Node v22 · Deterministic AST</span>
+            </div>
+          </div>
+
           {/* Interactive Top Tab Navigation & Simulation Controls */}
           <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">

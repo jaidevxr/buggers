@@ -86,10 +86,119 @@ const NAV_TABS: NavTab[] = [
   { id: "deployment", label: "Deployment & Ops", targetId: "deployment" },
 ];
 
+interface SpecSearchItem {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  targetId: string;
+  keywords: string[];
+}
+
+const SPEC_SEARCH_INDEX: SpecSearchItem[] = [
+  {
+    id: "diff-triage",
+    category: "Spec 01",
+    title: "Build, review, and ship · Diff Triage",
+    description: "AST coordinate verification, confidence thresholds, and line-by-line diff remediation.",
+    targetId: "build-review-ship",
+    keywords: ["diff", "review", "ast", "timing", "cwe-208", "cwe-89", "sql", "bot", "triage", "pr", "patch", "typewriter"],
+  },
+  {
+    id: "ai-automations",
+    category: "Spec 02",
+    title: "AI & Automations · Multi-Provider Orchestration",
+    description: "Multi-provider fallback chains across Claude 3.5 Sonnet, GPT-4o, and Gemini 2.0 Flash.",
+    targetId: "ai-automations",
+    keywords: ["ai", "automations", "claude", "gpt4o", "gemini", "orchestration", "fallback", "tokens", "cost"],
+  },
+  {
+    id: "risk-engine",
+    category: "Spec 03",
+    title: "Mathematical Risk Engine 1.1.0",
+    description: "Deterministic risk calibration: entropy, commit volatility, defect ratio, and change spread.",
+    targetId: "risk-engine",
+    keywords: ["risk", "engine", "weights", "entropy", "churn", "volatility", "scoring", "defects", "thresholds"],
+  },
+  {
+    id: "quality-gates",
+    category: "Spec 04",
+    title: "Quality Gate Simulator & Policy Enforcement",
+    description: "Threshold enforcement, hard blocks on secrets, and branch protection checks.",
+    targetId: "quality-gates",
+    keywords: ["quality", "gates", "block", "secrets", "threshold", "policy", "branch", "checks"],
+  },
+  {
+    id: "security-scanners",
+    category: "Spec 05",
+    title: "Pre-Execution Security & OWASP SAST",
+    description: "In-process regex scanner and concrete syntax tree verification catching leaks in 140ms.",
+    targetId: "security-scanners",
+    keywords: ["security", "sast", "owasp", "scanner", "secrets", "aws", "pat", "injection", "testbed", "regex"],
+  },
+  {
+    id: "worker-pipeline",
+    category: "Spec 06",
+    title: "Worker Runtime & 9-Stage Pipeline",
+    description: "5-minute heartbeat leases, exponential backoff reapers, and webhook ingestion.",
+    targetId: "pipeline",
+    keywords: ["worker", "runtime", "pipeline", "stages", "heartbeat", "lease", "reaper", "webhook", "redis"],
+  },
+  {
+    id: "architecture",
+    category: "Spec 07",
+    title: "Architecture & Dual-Auth Isolation",
+    description: "Supabase JWT authentication, Row-Level Security (RLS), and AES-256-GCM token encryption.",
+    targetId: "architecture",
+    keywords: ["architecture", "dual-auth", "supabase", "rls", "aes-256", "jwt", "encryption", "nitro", "routes"],
+  },
+  {
+    id: "api-reference",
+    category: "Spec 08",
+    title: "API Reference & Nitro RPC Endpoints",
+    description: "RPC endpoints for analysis jobs, findings queries, and webhook signature verification.",
+    targetId: "api",
+    keywords: ["api", "reference", "rpc", "endpoints", "nitro", "curl", "post", "get", "findings", "jobs"],
+  },
+  {
+    id: "deployment-ops",
+    category: "Spec 09",
+    title: "Deployment & Production Runbooks",
+    description: "Vercel Nitro preset, Docker Compose deployment, and environment configurations.",
+    targetId: "deployment",
+    keywords: ["deployment", "production", "runbook", "vercel", "docker", "compose", "env", "nitro"],
+  },
+];
+
 export function DocsPage() {
   const [activeTab, setActiveTab] = useState<SectionId>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedCurl, setCopiedCurl] = useState<string | null>(null);
+
+  // Instant reactive search filter calculation
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return SPEC_SEARCH_INDEX.filter((spec) => {
+      return (
+        spec.title.toLowerCase().includes(q) ||
+        spec.description.toLowerCase().includes(q) ||
+        spec.category.toLowerCase().includes(q) ||
+        spec.keywords.some((k) => k.toLowerCase().includes(q))
+      );
+    });
+  }, [searchQuery]);
+
+  // Press ESC to close search overlay
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && searchQuery) {
+        setSearchQuery("");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchQuery]);
 
   // Smooth scroll jump
   const scrollToSection = (tab: NavTab) => {
@@ -191,24 +300,95 @@ export function DocsPage() {
                 <span>10 SPECIFICATION MODULES</span>
               </div>
 
-              {/* Clean Integrated Search Bar */}
-              <div className="relative w-full sm:w-72">
+              {/* Clean Integrated Search Bar with Live Results Drawer */}
+              <div className="relative w-full sm:w-80">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Filter specifications..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchResults.length > 0) {
+                      const first = searchResults[0];
+                      if (first) {
+                        const elem = document.getElementById(first.targetId);
+                        if (elem) elem.scrollIntoView({ behavior: "smooth", block: "start" });
+                        setSearchQuery("");
+                      }
+                    }
+                  }}
+                  placeholder="Filter specifications (e.g. AST, Timing, RLS)..."
                   className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white/30 transition-colors"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 hover:text-white cursor-pointer"
                   >
                     Clear
                   </button>
+                )}
+
+                {/* Instant Floating Search Results Drawer */}
+                {searchQuery.trim().length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.12] bg-[#0c0d11]/95 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] z-50 p-2 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-1.5 flex items-center justify-between text-[10px] font-mono text-neutral-400 border-b border-white/[0.06]">
+                      <span>{searchResults.length} {searchResults.length === 1 ? "SPECIFICATION MATCH" : "SPECIFICATIONS MATCHED"}</span>
+                      <span>ESC to close</span>
+                    </div>
+
+                    {searchResults.length > 0 ? (
+                      <div className="max-h-80 overflow-y-auto divide-y divide-white/[0.04]">
+                        {searchResults.map((result) => (
+                          <button
+                            key={result.id}
+                            type="button"
+                            onClick={() => {
+                              const elem = document.getElementById(result.targetId);
+                              if (elem) {
+                                elem.scrollIntoView({ behavior: "smooth", block: "start" });
+                                elem.classList.add("ring-1", "ring-emerald-400/60");
+                                setTimeout(() => elem.classList.remove("ring-1", "ring-emerald-400/60"), 2500);
+                              }
+                              const tab = NAV_TABS.find((t) => t.targetId === result.targetId);
+                              if (tab) setActiveTab(tab.id);
+                              setSearchQuery("");
+                            }}
+                            className="w-full text-left p-2.5 rounded-lg hover:bg-white/[0.06] transition-colors group flex items-start justify-between gap-3 cursor-pointer"
+                          >
+                            <div className="space-y-1 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-mono text-emerald-400 uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 font-semibold">
+                                  {result.category}
+                                </span>
+                                <span className="text-xs font-medium text-white group-hover:text-emerald-300 transition-colors">
+                                  {result.title}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-neutral-400 font-sans line-clamp-2">
+                                {result.description}
+                              </p>
+                            </div>
+                            <ArrowRight className="h-3.5 w-3.5 text-neutral-500 group-hover:text-white group-hover:translate-x-1 transition-all shrink-0 mt-1" />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center space-y-2">
+                        <p className="text-xs text-neutral-400 font-sans">
+                          No specifications match <span className="text-white font-mono">"{searchQuery}"</span>
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery("")}
+                          className="text-[11px] font-mono text-neutral-300 hover:text-white underline cursor-pointer"
+                        >
+                          Clear search filter
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -217,6 +397,7 @@ export function DocsPage() {
             <nav className="hidden lg:flex flex-wrap items-center gap-1.5 text-xs font-medium">
               {NAV_TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
+                const matchesSearch = searchQuery.trim().length > 0 && searchResults.some((r) => r.targetId === tab.targetId);
                 return (
                   <button
                     key={tab.id}
@@ -225,6 +406,8 @@ export function DocsPage() {
                     className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
                       isActive
                         ? "bg-white text-black font-semibold shadow-sm"
+                        : matchesSearch
+                        ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
                         : "text-[#8a8f98] hover:text-white hover:bg-white/[0.05] border border-white/[0.04]"
                     }`}
                   >
@@ -244,14 +427,14 @@ export function DocsPage() {
         {/* ============================================================== */}
         {/* 2. Flagship Linear Product Chapters (Chapters 1 - 4) */}
         {/* ============================================================== */}
-        <div className="my-20">
+        <div className="my-8 sm:my-12">
           <LinearProductSections />
         </div>
 
         {/* ============================================================== */}
         {/* 3. CHAPTER 5: Pre-Execution Security & SAST Scanners */}
         {/* ============================================================== */}
-        <section id="security-scanners" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-24">
+        <section id="security-scanners" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-14 sm:pt-16">
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
@@ -289,7 +472,7 @@ export function DocsPage() {
         {/* ============================================================== */}
         {/* 4. CHAPTER 6: Worker Runtime & 9-Stage Pipeline */}
         {/* ============================================================== */}
-        <section id="pipeline" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-24">
+        <section id="pipeline" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-14 sm:pt-16">
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
@@ -327,7 +510,7 @@ export function DocsPage() {
         {/* ============================================================== */}
         {/* 5. CHAPTER 7: Architecture & API Reference */}
         {/* ============================================================== */}
-        <section id="architecture" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-24">
+        <section id="architecture" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-14 sm:pt-16">
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
@@ -467,7 +650,7 @@ export function DocsPage() {
         {/* ============================================================== */}
         {/* 6. CHAPTER 8: Production Deployment & Runbook */}
         {/* ============================================================== */}
-        <section id="deployment" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-24">
+        <section id="deployment" className="w-full space-y-8 scroll-mt-28 border-t border-white/[0.08] pt-14 sm:pt-16">
           {/* Split Header */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
             <div className="lg:col-span-7">
