@@ -119,76 +119,62 @@ const SCENARIOS: CodeScenario[] = [
 export function AnimatedCodeScanner() {
   const [selectedScenarioIdx, setSelectedScenarioIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [progress, setProgress] = useState(0); // 0 to 100 representing scan phase
+  const [stage, setStage] = useState<"SCANNING" | "DETECTED" | "REMEDIATED">("SCANNING");
+  const [cycleKey, setCycleKey] = useState(0);
 
   const activeScenario = SCENARIOS[selectedScenarioIdx]!;
-  const animRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number | null>(null);
 
-  // Animation timeline loop:
-  // 0% - 30%: Laser scanning down
-  // 30% - 55%: Flaw detected, highlighted, popover displayed
-  // 55% - 85%: Auto-applying fix, hunk replaced, risk score drops
-  // 85% - 100%: Clean verified checkmark state, then loops or advances
+  // Smooth cinematic timeline driven by clean timers (no 60fps React re-render hitching)
   useEffect(() => {
     if (!isPlaying) return;
 
-    const DURATION = 7000; // 7 seconds per cycle
+    setStage("SCANNING");
+    let isCancelled = false;
 
-    function loop(timestamp: number) {
-      if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-      const delta = timestamp - lastTimeRef.current;
-      lastTimeRef.current = timestamp;
+    // Phase 1: SCANNING (1800ms)
+    const scanTimer = setTimeout(() => {
+      if (isCancelled) return;
+      setStage("DETECTED");
 
-      setProgress((prev) => {
-        const next = prev + (delta / DURATION) * 100;
-        if (next >= 100) {
-          // Loop to next scenario smoothly
+      // Phase 2: DETECTED (2200ms)
+      const detectTimer = setTimeout(() => {
+        if (isCancelled) return;
+        setStage("REMEDIATED");
+
+        // Phase 3: REMEDIATED (4000ms), then advance
+        const nextTimer = setTimeout(() => {
+          if (isCancelled) return;
           setSelectedScenarioIdx((curr) => (curr + 1) % SCENARIOS.length);
-          return 0;
-        }
-        return next;
-      });
+          setCycleKey((k) => k + 1);
+        }, 4000);
 
-      animRef.current = requestAnimationFrame(loop);
-    }
+        return () => clearTimeout(nextTimer);
+      }, 2200);
 
-    animRef.current = requestAnimationFrame(loop);
+      return () => clearTimeout(detectTimer);
+    }, 1800);
 
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      lastTimeRef.current = null;
+      isCancelled = true;
+      clearTimeout(scanTimer);
     };
-  }, [isPlaying]);
+  }, [selectedScenarioIdx, isPlaying, cycleKey]);
 
   const handleSelectScenario = (idx: number) => {
     setSelectedScenarioIdx(idx);
-    setProgress(0);
-    lastTimeRef.current = null;
+    setCycleKey((k) => k + 1);
   };
 
   const handleReset = () => {
-    setProgress(0);
-    lastTimeRef.current = null;
+    setCycleKey((k) => k + 1);
   };
 
-  // Phase derived states
-  const isScanning = progress < 30;
-  const isDetected = progress >= 30 && progress < 55;
-  const isApplyingFix = progress >= 55 && progress < 70;
-  const isFixed = progress >= 70;
+  const isScanning = stage === "SCANNING";
+  const isDetected = stage === "DETECTED";
+  const isFixed = stage === "REMEDIATED";
 
-  // Scanline vertical position (0 to 100%)
-  const scanlineY = Math.min(100, (progress / 30) * 100);
-
-  // Dynamic risk score interpolating downwards when fixed
   const currentRiskScore = isFixed
     ? activeScenario.riskScoreFixed
-    : isApplyingFix
-    ? Math.round(
-        activeScenario.riskScoreInitial -
-          ((progress - 55) / 15) * (activeScenario.riskScoreInitial - activeScenario.riskScoreFixed)
-      )
     : activeScenario.riskScoreInitial;
 
   return (
@@ -263,11 +249,10 @@ export function AnimatedCodeScanner() {
                 <span className="text-[10px] text-neutral-500 font-mono">
                   {isScanning && "Scanning AST hunks..."}
                   {isDetected && "Flaw detected"}
-                  {isApplyingFix && "Applying git patch..."}
                   {isFixed && "Verified safe commit"}
                 </span>
                 <span
-                  className={`h-2 w-2 rounded-full ${
+                  className={`h-2 w-2 rounded-full transition-colors duration-500 ${
                     isFixed
                       ? "bg-emerald-400"
                       : isDetected
@@ -284,8 +269,7 @@ export function AnimatedCodeScanner() {
               {/* Laser Scanning Beam (Visible only during scanning phase) */}
               {isScanning && (
                 <div
-                  className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none transition-all duration-75 ease-linear shadow-[0_0_12px_rgba(255,255,255,0.8)] z-30"
-                  style={{ top: `${scanlineY}%` }}
+                  className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none shadow-[0_0_12px_rgba(255,255,255,0.8)] z-30 animate-scanline"
                 />
               )}
 
@@ -297,7 +281,7 @@ export function AnimatedCodeScanner() {
                   // Normal lines before or after target
                   if (!isTargetLine) {
                     return (
-                      <div key={idx} className="flex items-start text-neutral-400">
+                      <div key={idx} className="flex items-center text-neutral-400 min-h-[1.5rem]">
                         <span className="w-8 shrink-0 select-none text-neutral-600 text-right pr-3 text-[11px]">
                           {line.lineNum}
                         </span>
@@ -311,13 +295,13 @@ export function AnimatedCodeScanner() {
                     // Applied Diff State: Deleted line red, Added line green
                     return (
                       <div key={idx} className="space-y-1 my-1">
-                        <div className="flex items-start bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded border-l-2 border-rose-500/60 transition-all duration-300">
+                        <div className="flex items-center bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded border-l-2 border-rose-500/60 transition-all duration-500 min-h-[1.5rem]">
                           <span className="w-10 shrink-0 select-none text-rose-400/70 text-right pr-3 text-[11px]">
                             {activeScenario.removedLine.lineNum}
                           </span>
                           <span className="whitespace-pre">{activeScenario.removedLine.text}</span>
                         </div>
-                        <div className="flex items-start bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border-l-2 border-emerald-500/60 transition-all duration-300">
+                        <div className="flex items-center bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border-l-2 border-emerald-500/60 transition-all duration-500 min-h-[1.5rem]">
                           <span className="w-10 shrink-0 select-none text-emerald-400/70 text-right pr-3 text-[11px]">
                             {activeScenario.addedLine.lineNum}
                           </span>
@@ -327,12 +311,12 @@ export function AnimatedCodeScanner() {
                     );
                   }
 
-                  if (isDetected || isApplyingFix) {
+                  if (isDetected) {
                     // Flaw Detected State: Glowing red highlight with inline alert
                     return (
                       <div
                         key={idx}
-                        className="my-1 py-1 px-2 rounded bg-rose-500/15 border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] flex flex-col gap-1 transition-all duration-300 animate-pulse"
+                        className="my-1 py-1 px-2 rounded bg-rose-500/15 border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] flex flex-col gap-1 transition-all duration-500 min-h-[1.5rem]"
                       >
                         <div className="flex items-center justify-between text-rose-300">
                           <div className="flex items-center">
@@ -351,7 +335,7 @@ export function AnimatedCodeScanner() {
 
                   // Default Unscanned State
                   return (
-                    <div key={idx} className="flex items-start text-neutral-300">
+                    <div key={idx} className="flex items-center text-neutral-300 min-h-[1.5rem]">
                       <span className="w-8 shrink-0 select-none text-neutral-600 text-right pr-3 text-[11px]">
                         {line.lineNum}
                       </span>
@@ -366,8 +350,9 @@ export function AnimatedCodeScanner() {
             {/* Bottom Progress Bar */}
             <div className="h-0.5 bg-white/[0.04] w-full overflow-hidden">
               <div
-                className="h-full bg-white transition-all duration-75 ease-linear"
-                style={{ width: `${progress}%` }}
+                className={`h-full transition-all duration-700 ease-out ${
+                  isFixed ? "bg-emerald-400 w-full" : isDetected ? "bg-rose-400 w-2/3" : "bg-white/70 w-1/3"
+                }`}
               />
             </div>
           </div>
@@ -398,13 +383,13 @@ export function AnimatedCodeScanner() {
             <div className="space-y-1.5 font-mono text-xs">
               <div className="flex items-center justify-between text-[11px] text-neutral-400">
                 <span>Calculated Composite Risk:</span>
-                <span className={`font-bold transition-all ${isFixed ? "text-emerald-400" : "text-white"}`}>
+                <span className={`font-bold transition-all duration-500 ${isFixed ? "text-emerald-400" : "text-white"}`}>
                   {currentRiskScore} / 100
                 </span>
               </div>
               <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-300 ${
+                  className={`h-full transition-all duration-700 ease-out ${
                     currentRiskScore > 75
                       ? "bg-rose-400"
                       : currentRiskScore > 40
@@ -430,8 +415,8 @@ export function AnimatedCodeScanner() {
                 </div>
               )}
 
-              {(isDetected || isApplyingFix) && (
-                <div className="border-l-2 border-l-rose-400 bg-rose-500/[0.04] pl-4 py-3 space-y-2 text-xs animate-fadeIn">
+              {isDetected && (
+                <div className="border-l-2 border-l-rose-400 bg-rose-500/[0.04] pl-4 py-3 space-y-2 text-xs transition-opacity duration-300">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-rose-400 font-semibold">
                       <ShieldAlert className="h-3.5 w-3.5" />
