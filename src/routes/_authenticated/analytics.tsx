@@ -6,6 +6,7 @@ import { listFindings } from "@/lib/findings.functions";
 import { PageHeader, errMsg } from "@/components/layout/PageHeader";
 import { AnalyticsSkeleton } from "@/components/LoadingSkeletons";
 import { ErrorState } from "@/components/status/EmptyState";
+import { LinearCycleBurndown } from "@/components/analytics/LinearCycleBurndown";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics – Buggers" }] }),
@@ -48,8 +49,16 @@ function Analytics() {
   const volume = done.map((x) => ({ name: `#${x.pr_number}`, additions: x.additions ?? 0, deletions: x.deletions ?? 0 }));
 
   return (
-    <div className="page-view content-fade-in">
+    <div className="page-view content-fade-in space-y-6">
       <PageHeader title="Analytics" description="Built only from your stored analyses and findings." />
+      
+      {/* Linear Cycle Burndown & Scope Tracker */}
+      <LinearCycleBurndown
+        realPrCount={a.data?.analyses.length ?? 0}
+        realCompletedCount={done.length}
+        realFindingsCount={f.data?.findings.length ?? 0}
+      />
+
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Risk over time" enough={riskOverTime.length >= 2}>
           <ResponsiveContainer><LineChart data={riskOverTime}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" /><YAxis domain={[0, 100]} /><Tooltip /><Line dataKey="score" stroke="var(--primary)" strokeWidth={2} /></LineChart></ResponsiveContainer>
