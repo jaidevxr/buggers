@@ -145,14 +145,15 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const isAuthRoute =
+  const isDashboardRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/repositories") ||
     pathname.startsWith("/pull-requests") ||
     pathname.startsWith("/findings") ||
     pathname.startsWith("/analytics") ||
     pathname.startsWith("/tickets") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/analysis");
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
@@ -167,13 +168,13 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-screen w-full bg-[#000000] text-neutral-100 flex flex-col selection:bg-white/20 relative">
-          {!isAuthRoute && <AtmosphericBackdrop />}
-          {!isAuthRoute && <PublicHeader />}
+          {!isDashboardRoute && <AtmosphericBackdrop />}
+          {!isDashboardRoute && <PublicHeader />}
           <main
             key={pathname}
             className={cn(
               "flex-1 w-full flex flex-col relative z-10",
-              !isAuthRoute && "public-page-transition",
+              !isDashboardRoute && "public-page-transition",
             )}
           >
             <Outlet />
