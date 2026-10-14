@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Check,
   CheckCircle2,
@@ -6,6 +6,7 @@ import {
   GitPullRequest,
   Lock,
   Play,
+  Pause,
   Shield,
   ShieldAlert,
   Sparkles,
@@ -29,6 +30,13 @@ import {
 import { CodeBlock } from "./DocsComponents";
 import { DEFAULT_RISK_CONFIG } from "@/lib/risk-engine";
 
+interface CodeLine {
+  num: string;
+  text: string;
+  isVulnerable?: boolean;
+  fixText?: string;
+}
+
 interface PRScenario {
   id: number;
   ticket: string;
@@ -36,8 +44,7 @@ interface PRScenario {
   riskTier: "High" | "Critical" | "Low";
   riskScore: number;
   file: string;
-  oldCode: string;
-  newCode: string;
+  lines: CodeLine[];
   issueBadge: string;
   cwe: string;
   botAnalysis: string;
@@ -51,12 +58,20 @@ const PR_SCENARIOS: PRScenario[] = [
     riskTier: "High",
     riskScore: 78,
     file: "src/auth/session.ts",
-    oldCode: "08 -   if (token === session.signature) {",
-    newCode: "09 +   if (timingSafeEqual(Buffer.from(token), Buffer.from(session.signature))) {",
     issueBadge: "Timing Flaw",
     cwe: "CWE-208",
     botAnalysis:
       "Direct equality operator === leaks execution time through early byte mismatch termination. Constant-time comparison via timingSafeEqual prevents side-channel token recovery.",
+    lines: [
+      { num: "05", text: "import { createHmac, timingSafeEqual } from 'node:crypto';" },
+      { num: "06", text: "export function verifySessionToken(token: string, session: Session) {" },
+      { num: "07", text: "  const sig = req.headers.get('x-signature') ?? '';" },
+      { num: "08", text: "  if (token === session.signature) {", isVulnerable: true, fixText: "  if (timingSafeEqual(Buffer.from(token), Buffer.from(session.signature))) {" },
+      { num: "09", text: "    return { verified: true, session };" },
+      { num: "10", text: "  }" },
+      { num: "11", text: "  throw new UnauthorizedError('HMAC signature mismatch');" },
+      { num: "12", text: "}" },
+    ],
   },
   {
     id: 142,
@@ -65,12 +80,20 @@ const PR_SCENARIOS: PRScenario[] = [
     riskTier: "Critical",
     riskScore: 92,
     file: "src/server/storage.ts",
-    oldCode: '14 -   accessKeyId: "AKIAIOSFODNN7EXAMPLE",',
-    newCode: "15 +   accessKeyId: process.env.AWS_ACCESS_KEY_ID,",
     issueBadge: "Hardcoded Secret",
     cwe: "CWE-798",
     botAnalysis:
       "Plaintext AWS Access Key detected in repository diff hunk. Replaced with process.env.AWS_ACCESS_KEY_ID runtime injection to prevent immediate cloud compromise.",
+    lines: [
+      { num: "11", text: "import { S3Client } from '@aws-sdk/client-s3';" },
+      { num: "12", text: "export function initializeStorage() {" },
+      { num: "13", text: "  return new S3Client({" },
+      { num: "14", text: "    region: 'us-east-1'," },
+      { num: "15", text: '    accessKeyId: "AKIAIOSFODNN7EXAMPLE",', isVulnerable: true, fixText: "    accessKeyId: process.env.AWS_ACCESS_KEY_ID!," },
+      { num: "16", text: "    endpoint: 'https://s3.amazonaws.com'," },
+      { num: "17", text: "  });" },
+      { num: "18", text: "}" },
+    ],
   },
   {
     id: 139,
@@ -79,12 +102,19 @@ const PR_SCENARIOS: PRScenario[] = [
     riskTier: "Low",
     riskScore: 18,
     file: "src/routes/repos.ts",
-    oldCode: "42 -   const query = `SELECT * FROM repos WHERE id = '${repoId}'`;",
-    newCode: '43 +   const query = "SELECT * FROM repos WHERE id = $1";',
     issueBadge: "SQL Injection",
     cwe: "CWE-89",
     botAnalysis:
       "Direct string template interpolation allows arbitrary SQL injection. Parameterized binding with $1 binds user input as a literal parameter, eliminating SQL injection vectors.",
+    lines: [
+      { num: "39", text: "import { pool } from '../db/connection';" },
+      { num: "40", text: "export async function getRepositoryById(repoId: string) {" },
+      { num: "41", text: "  // Query database for repository record:" },
+      { num: "42", text: "  const query = `SELECT * FROM repos WHERE id = '${repoId}'`;", isVulnerable: true, fixText: '  const query = sql`SELECT * FROM repos WHERE id = ${repoId}`;' },
+      { num: "43", text: "  const result = await pool.query(query);" },
+      { num: "44", text: "  return result.rows[0] ?? null;" },
+      { num: "45", text: "}" },
+    ],
   },
 ];
 
@@ -101,64 +131,112 @@ export function LinearProductSections() {
     setCommittedFixes((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Chapter 1: Typewriter Motion & Live Detection Simulation State
-  const [typedChars, setTypedChars] = useState<number>(0);
-  const [isTyping, setIsTyping] = useState<boolean>(true);
-  const [detectionState, setDetectionState] = useState<"typing" | "scanning" | "detected" | "remediated">("typing");
+  // Chapter 1: Viewport Observer & Full Multi-line Sequential Typewriter Simulation
+  const chapter1Ref = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState<boolean>(false);
+  const [simPhase, setSimPhase] = useState<"idle" | "typing" | "scanning" | "detected" | "remediated">("idle");
+  const [activeLineIdx, setActiveLineIdx] = useState<number>(0);
+  const [activeCharIdx, setActiveCharIdx] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [replayKey, setReplayKey] = useState<number>(0);
 
-  // Typewriting cadence trigger whenever PR selection changes
+  // Trigger simulation ONLY when Chapter 1 enters the viewport!
   useEffect(() => {
-    setTypedChars(0);
-    setIsTyping(true);
-    setDetectionState("typing");
+    const elem = chapter1Ref.current;
+    if (!elem) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true);
+        } else {
+          // Pause / reset when scrolled far away so it's fresh when user returns
+          setIsInView(false);
+        }
+      },
+      { threshold: 0.12 }
+    );
+    observer.observe(elem);
+    return () => observer.disconnect();
+  }, []);
 
-    const fullText = activePR.oldCode;
-    let currentIdx = 0;
+  // Multi-line typewriter & sequential detection simulation engine
+  useEffect(() => {
+    if (!isInView || isPaused) return;
+
+    setActiveLineIdx(0);
+    setActiveCharIdx(0);
+    setSimPhase("typing");
+
+    const lines = activePR.lines;
+    let lineI = 0;
+    let charI = 0;
+    let scanTimer: ReturnType<typeof setTimeout> | null = null;
+    let remTimer: ReturnType<typeof setTimeout> | null = null;
+    let loopTimer: ReturnType<typeof setTimeout> | null = null;
 
     const interval = setInterval(() => {
-      currentIdx++;
-      setTypedChars(currentIdx);
-      if (currentIdx >= fullText.length) {
+      if (lineI >= lines.length) {
         clearInterval(interval);
-        setIsTyping(false);
-        setDetectionState("scanning");
+        setActiveLineIdx(lines.length);
+        setSimPhase("scanning");
 
-        setTimeout(() => {
-          setDetectionState(committedFixes[activePR.id] ? "remediated" : "detected");
-        }, 500);
+        // 750ms AST scanning phase
+        scanTimer = setTimeout(() => {
+          setSimPhase("detected");
+
+          // Auto-apply remediation after detection
+          remTimer = setTimeout(() => {
+            setSimPhase("remediated");
+
+            // Loop to next PR scenario after 4.5s so animation is perpetually active
+            loopTimer = setTimeout(() => {
+              setSelectedPrId((prev) => {
+                const idx = PR_SCENARIOS.findIndex((p) => p.id === prev);
+                const nextIdx = (idx + 1) % PR_SCENARIOS.length;
+                return PR_SCENARIOS[nextIdx]!.id;
+              });
+            }, 4500);
+          }, 2400);
+        }, 750);
+
+        return;
       }
-    }, 28);
 
-    return () => clearInterval(interval);
-  }, [selectedPrId, activePR.oldCode]);
+      const curLine = lines[lineI];
+      if (!curLine) return;
 
-  // Sync commit status with detection state
-  useEffect(() => {
-    if (committedFixes[activePR.id]) {
-      setDetectionState("remediated");
-    } else if (typedChars >= activePR.oldCode.length) {
-      setDetectionState("detected");
-    }
-  }, [committedFixes, activePR.id, typedChars, activePR.oldCode.length]);
+      charI += 2; // fluid, snappy 2-character cadence
+      if (charI >= curLine.text.length) {
+        charI = 0;
+        lineI++;
+        setActiveLineIdx(lineI);
+        setActiveCharIdx(0);
+      } else {
+        setActiveCharIdx(charI);
+      }
+    }, 16);
+
+    return () => {
+      clearInterval(interval);
+      if (scanTimer) clearTimeout(scanTimer);
+      if (remTimer) clearTimeout(remTimer);
+      if (loopTimer) clearTimeout(loopTimer);
+    };
+  }, [isInView, selectedPrId, isPaused, activePR.lines, replayKey]);
 
   const replayTypewriter = () => {
-    setTypedChars(0);
-    setIsTyping(true);
-    setDetectionState("typing");
-    let currentIdx = 0;
-    const fullText = activePR.oldCode;
-    const interval = setInterval(() => {
-      currentIdx++;
-      setTypedChars(currentIdx);
-      if (currentIdx >= fullText.length) {
-        clearInterval(interval);
-        setIsTyping(false);
-        setDetectionState("scanning");
-        setTimeout(() => {
-          setDetectionState(committedFixes[activePR.id] ? "remediated" : "detected");
-        }, 500);
-      }
-    }, 28);
+    setIsPaused(false);
+    setReplayKey((k) => k + 1);
+  };
+
+  const handleApplyFix = () => {
+    if (simPhase === "remediated") {
+      setCommittedFixes((prev) => ({ ...prev, [activePR.id]: !prev[activePR.id] }));
+      setSimPhase("detected");
+    } else {
+      setCommittedFixes((prev) => ({ ...prev, [activePR.id]: true }));
+      setSimPhase("remediated");
+    }
   };
 
   // Chapter 2: AI Orchestration State
@@ -227,7 +305,7 @@ export function LinearProductSections() {
       {/* ================================================================ */}
       {/* CHAPTER 1: Build, review, and ship */}
       {/* ================================================================ */}
-      <section id="build-review-ship" className="w-full space-y-8 scroll-mt-28">
+      <section id="build-review-ship" ref={chapter1Ref} className="w-full space-y-8 scroll-mt-28">
         {/* Editorial Split Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-4 border-b border-white/[0.06]">
           <div className="lg:col-span-7">
@@ -285,12 +363,15 @@ export function LinearProductSections() {
               <div className="border-y border-white/[0.08] divide-y divide-white/[0.06] rounded-lg overflow-hidden">
                 {PR_SCENARIOS.map((pr) => {
                   const isSelected = pr.id === selectedPrId;
-                  const isCommitted = Boolean(committedFixes[pr.id]);
+                  const isCommitted = Boolean(committedFixes[pr.id]) || (isSelected && simPhase === "remediated");
                   return (
                     <button
                       key={pr.id}
                       type="button"
-                      onClick={() => setSelectedPrId(pr.id)}
+                      onClick={() => {
+                        setSelectedPrId(pr.id);
+                        setIsPaused(false);
+                      }}
                       className={`w-full text-left py-3.5 px-3.5 transition-all duration-200 cursor-pointer ${
                         isSelected
                           ? "bg-white/[0.06] border-l-2 border-l-white text-white translate-x-1"
@@ -305,16 +386,29 @@ export function LinearProductSections() {
                               <Check className="h-2.5 w-2.5" />
                               <span>Committed</span>
                             </span>
-                          ) : isSelected ? (
+                          ) : isSelected && simPhase === "detected" ? (
+                            <span className="text-[10px] text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded-full font-sans animate-pulse flex items-center gap-1">
+                              <AlertTriangle className="h-2.5 w-2.5" />
+                              <span>AST Alert</span>
+                            </span>
+                          ) : isSelected && simPhase === "typing" ? (
                             <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full font-sans animate-pulse">
-                              Inspecting
+                              Typing Code...
+                            </span>
+                          ) : isSelected && simPhase === "scanning" ? (
+                            <span className="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full font-sans animate-pulse">
+                              AST Scanning
                             </span>
                           ) : null}
                         </div>
                         <span
                           className={`text-[10px] font-medium transition-colors duration-200 ${
                             isCommitted
-                              ? "text-emerald-400"
+                              ? "text-emerald-400 font-semibold"
+                              : isSelected && simPhase === "detected"
+                              ? "text-rose-400 font-semibold"
+                              : isSelected && (simPhase === "typing" || simPhase === "scanning")
+                              ? "text-amber-400"
                               : pr.riskTier === "Critical"
                               ? "text-rose-400"
                               : pr.riskTier === "High"
@@ -322,7 +416,13 @@ export function LinearProductSections() {
                               : "text-emerald-400"
                           }`}
                         >
-                          {isCommitted ? "Risk: 12/100 (Pass)" : `Risk: ${pr.riskScore}/100 (${pr.riskTier})`}
+                          {isCommitted
+                            ? "Risk: 12/100 (Pass)"
+                            : isSelected && simPhase === "typing"
+                            ? "Streaming Code..."
+                            : isSelected && simPhase === "scanning"
+                            ? "AST Scanning..."
+                            : `Risk: ${pr.riskScore}/100 (${pr.riskTier})`}
                         </span>
                       </div>
                       <div className="text-xs text-neutral-300 mt-1.5 truncate font-sans">
@@ -336,154 +436,252 @@ export function LinearProductSections() {
 
             {/* Right IDE Diff Editor Window - Linear Hairline Precision with Dynamic Scanline */}
             <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] p-5 space-y-4 relative z-10 rounded-xl overflow-hidden shadow-2xl">
-              {/* Dynamic Laser Scanning Line */}
-              <div className="absolute inset-x-0 h-8 bg-gradient-to-b from-transparent via-emerald-400/15 to-transparent pointer-events-none animate-scanline z-20" />
+              {/* Dynamic Laser Scanning Line during AST Scan */}
+              {simPhase === "scanning" && (
+                <div className="absolute inset-x-0 h-12 bg-gradient-to-b from-transparent via-cyan-400/25 to-transparent pointer-events-none animate-scanline z-20" />
+              )}
+              {simPhase === "detected" && (
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent pointer-events-none animate-pulse z-20" />
+              )}
+              {simPhase === "remediated" && (
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none z-20" />
+              )}
 
               {/* Side black gradient fades for seamless edge feathering */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#07080a] to-transparent z-20" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#07080a] via-[#07080a]/90 to-transparent z-20" />
 
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
-                <span className="text-neutral-300 flex items-center gap-1.5">
+                <span className="text-neutral-300 flex items-center gap-1.5 font-medium">
                   <FileCode className="h-3.5 w-3.5 text-neutral-400" />
                   <span>{activePR.file}</span>
                 </span>
                 
                 <div className="flex items-center gap-2">
                   {/* Status Indicator pill */}
-                  {detectionState === "typing" && (
-                    <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 font-mono animate-pulse">
-                      Typing AST Node...
+                  {simPhase === "idle" && (
+                    <span className="text-[10px] text-neutral-500 font-mono">
+                      Scroll to trigger
                     </span>
                   )}
-                  {detectionState === "scanning" && (
-                    <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20 font-mono animate-pulse">
-                      AST Scanning...
+                  {simPhase === "typing" && (
+                    <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 font-mono flex items-center gap-1.5 animate-pulse">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
+                      <span>Typing Live Code ({Math.min(activeLineIdx + 1, activePR.lines.length)}/{activePR.lines.length})</span>
                     </span>
                   )}
-                  {detectionState === "detected" && (
+                  {simPhase === "scanning" && (
+                    <span className="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 font-mono flex items-center gap-1.5 animate-pulse">
+                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
+                      <span>AST Laser Scan...</span>
+                    </span>
+                  )}
+                  {simPhase === "detected" && (
                     <span className="text-[10px] text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded-full border border-rose-500/30 font-mono flex items-center gap-1 font-semibold animate-pulse">
                       <AlertTriangle className="h-3 w-3" />
                       <span>{activePR.cwe} Detected</span>
                     </span>
                   )}
-                  {detectionState === "remediated" && (
+                  {simPhase === "remediated" && (
                     <span className="text-[10px] text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30 font-mono flex items-center gap-1 font-semibold">
                       <Check className="h-3 w-3" />
-                      <span>AST Fixed</span>
+                      <span>AST Patch Applied</span>
                     </span>
                   )}
+
+                  {/* Play / Pause Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setIsPaused((p) => !p)}
+                    className="p-1 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                    title={isPaused ? "Resume simulation" : "Pause simulation"}
+                  >
+                    {isPaused ? <Play className="h-3.5 w-3.5 text-emerald-400" /> : <Pause className="h-3.5 w-3.5" />}
+                  </button>
+
+                  {/* Replay Button */}
                   <button
                     type="button"
                     onClick={replayTypewriter}
                     className="p-1 text-neutral-400 hover:text-white transition-colors cursor-pointer"
-                    title="Replay Code Typewriter & Detection"
+                    title="Replay Code Typewriter & AST Scan"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
 
-              {/* Code Lines with Dynamic Typewriter and Detection Effect */}
-              <div key={activePR.id} className="font-mono text-xs leading-relaxed space-y-1.5 select-none animate-in fade-in duration-200">
-                <div className="text-neutral-600">05  import &#123; createHmac, timingSafeEqual &#125; from 'crypto';</div>
-                <div className="text-neutral-600">06  </div>
-                <div className="text-neutral-500">07  export function verifySessionToken(token: string, session: Session) &#123;</div>
-                
-                {/* Dynamic Typewritten Vulnerable AST Node Line */}
-                <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 relative overflow-hidden ${
-                  detectionState === "remediated"
-                    ? "bg-rose-500/[0.04] text-rose-400/40 line-through"
-                    : detectionState === "detected"
-                    ? "bg-rose-500/15 text-rose-300 border-l-2 border-rose-500 shadow-[0_0_16px_rgba(244,63,94,0.15)]"
-                    : "bg-rose-500/10 text-rose-400"
-                }`}>
-                  <div className="flex items-center">
-                    <span>{activePR.oldCode.slice(0, typedChars)}</span>
-                    {isTyping && (
-                      <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-0.5 animate-pulse" />
-                    )}
-                  </div>
-                  {detectionState === "detected" && (
-                    <span className="text-[10px] font-sans text-rose-300 font-semibold bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30 flex items-center gap-1 animate-in fade-in">
-                      <AlertTriangle className="h-2.5 w-2.5 text-rose-400" />
-                      <span>{activePR.issueBadge} ({activePR.cwe})</span>
-                    </span>
-                  )}
-                </div>
+              {/* Code Lines with Sequential Typewriter, Scanline, and Remediated Diff */}
+              <div key={`${activePR.id}-${replayKey}`} className="font-mono text-xs leading-relaxed space-y-1 select-none py-1 min-h-[220px]">
+                {activePR.lines.map((line, idx) => {
+                  if (simPhase === "typing" && idx > activeLineIdx) {
+                    return (
+                      <div key={idx} className="flex items-center text-neutral-700/30 py-0.5">
+                        <span className="w-7 text-neutral-700 select-none shrink-0">{line.num}</span>
+                        <span className="opacity-0">.</span>
+                      </div>
+                    );
+                  }
 
-                {/* Remediated / Suggested AST Fix Line */}
-                {(detectionState === "detected" || detectionState === "remediated") && (
-                  <div className={`px-2.5 py-1.5 rounded flex items-center justify-between transition-all duration-300 ${
-                    detectionState === "remediated"
-                      ? "bg-emerald-500/[0.16] text-emerald-300 border-l-2 border-emerald-400 font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)] animate-in fade-in"
-                      : "bg-emerald-500/[0.06] text-emerald-400/70 border-l border-emerald-500/30 animate-in fade-in"
-                  }`}>
-                    <span>{activePR.newCode}</span>
-                    <span className="text-[10px] font-sans text-emerald-400/90 flex items-center gap-1">
-                      {detectionState === "remediated" && <Check className="h-3 w-3 text-emerald-400" />}
-                      <span>{detectionState === "remediated" ? "Patch Applied" : "Suggested AST Fix"}</span>
-                    </span>
-                  </div>
-                )}
+                  const isCurrentTypingLine = simPhase === "typing" && idx === activeLineIdx;
+                  const displayText = isCurrentTypingLine
+                    ? line.text.slice(0, activeCharIdx)
+                    : line.text;
 
-                <div className="text-neutral-500">10        return true;</div>
-                <div className="text-neutral-500">11      &#125;</div>
+                  // Vulnerable AST line handling
+                  if (line.isVulnerable) {
+                    if (simPhase === "remediated") {
+                      return (
+                        <div key={idx} className="space-y-1 my-1">
+                          {/* Strikethrough original vulnerable code */}
+                          <div className="flex items-center justify-between px-2.5 py-1 rounded bg-rose-500/[0.05] text-rose-400/40 line-through text-[11px] sm:text-xs">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="w-4 text-rose-500/60 select-none font-semibold shrink-0">-</span>
+                              <span className="w-6 text-neutral-600 select-none shrink-0">{line.num}</span>
+                              <span className="truncate">{line.text}</span>
+                            </div>
+                            <span className="text-[10px] font-sans text-rose-400/60 shrink-0 ml-2">Vulnerable</span>
+                          </div>
+
+                          {/* Green Remediated Fix Line */}
+                          <div className="flex items-center justify-between px-2.5 py-1.5 rounded bg-emerald-500/[0.14] text-emerald-300 border-l-2 border-emerald-400 text-[11px] sm:text-xs font-semibold shadow-[0_0_16px_rgba(52,211,153,0.15)] animate-in fade-in duration-300">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="w-4 text-emerald-400 select-none font-bold shrink-0">+</span>
+                              <span className="w-6 text-emerald-500/70 select-none shrink-0">{line.num}</span>
+                              <span className="truncate">{line.fixText}</span>
+                            </div>
+                            <span className="text-[10px] font-sans text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded flex items-center gap-1 shrink-0 ml-2 font-semibold">
+                              <Check className="h-2.5 w-2.5" />
+                              <span>AST Patch Applied</span>
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (simPhase === "detected") {
+                      return (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded bg-rose-500/15 text-rose-200 border-l-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.25)] text-[11px] sm:text-xs font-medium my-1 animate-in fade-in duration-200"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="w-4 text-rose-400 select-none font-bold shrink-0">!</span>
+                            <span className="w-6 text-neutral-500 select-none shrink-0">{line.num}</span>
+                            <span className="truncate">{line.text}</span>
+                          </div>
+                          <span className="text-[10px] font-sans text-rose-300 font-semibold bg-rose-500/25 px-2 py-0.5 rounded border border-rose-500/40 flex items-center gap-1 shrink-0 ml-2 animate-pulse">
+                            <AlertTriangle className="h-2.5 w-2.5 text-rose-400" />
+                            <span>{activePR.issueBadge} ({activePR.cwe})</span>
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+
+                  // Standard line or currently active typing line
+                  return (
+                    <div
+                      key={idx}
+                      className={`flex items-center px-2 py-0.5 rounded text-[11px] sm:text-xs transition-colors ${
+                        isCurrentTypingLine ? "bg-white/[0.04]" : ""
+                      }`}
+                    >
+                      <span className="w-7 text-neutral-600 select-none shrink-0 font-mono">{line.num}</span>
+                      <span
+                        className={
+                          line.isVulnerable && (simPhase === "typing" || simPhase === "scanning")
+                            ? "text-amber-200/90"
+                            : "text-neutral-300"
+                        }
+                      >
+                        {displayText}
+                      </span>
+                      {isCurrentTypingLine && (
+                        <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-1 animate-pulse shrink-0" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Buggers Bot Comment & Action Callout */}
-              <div className={`border-l-2 ${
-                detectionState === "remediated"
-                  ? "border-l-emerald-400 bg-emerald-500/[0.03]"
-                  : detectionState === "detected"
-                  ? "border-l-rose-500 bg-rose-500/[0.03]"
-                  : "border-l-amber-400 bg-white/[0.02]"
-              } pl-4 py-3 space-y-2.5 rounded-r transition-colors duration-300`}>
+              <div
+                className={`border-l-2 ${
+                  simPhase === "remediated"
+                    ? "border-l-emerald-400 bg-emerald-500/[0.03]"
+                    : simPhase === "detected"
+                    ? "border-l-rose-500 bg-rose-500/[0.03]"
+                    : simPhase === "scanning"
+                    ? "border-l-cyan-400 bg-cyan-500/[0.02]"
+                    : "border-l-amber-400 bg-white/[0.02]"
+                } pl-4 py-3 space-y-2.5 rounded-r transition-colors duration-300`}
+              >
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <Sparkles className={`h-3.5 w-3.5 ${
-                      detectionState === "remediated" ? "text-emerald-400" : detectionState === "detected" ? "text-rose-400" : "text-amber-400"
-                    }`} />
+                    <Sparkles
+                      className={`h-3.5 w-3.5 ${
+                        simPhase === "remediated"
+                          ? "text-emerald-400"
+                          : simPhase === "detected"
+                          ? "text-rose-400"
+                          : simPhase === "scanning"
+                          ? "text-cyan-400"
+                          : "text-amber-400"
+                      }`}
+                    />
                     <span className="font-medium text-white">Buggers Review Bot</span>
                     <span className="text-[10px] font-mono text-neutral-400">
-                      {detectionState === "typing"
+                      {simPhase === "idle"
+                        ? "Ready"
+                        : simPhase === "typing"
                         ? "Typing stream..."
-                        : detectionState === "scanning"
-                        ? "Scanning AST..."
-                        : detectionState === "remediated"
+                        : simPhase === "scanning"
+                        ? "Scanning AST rules..."
+                        : simPhase === "remediated"
                         ? "100% Remediated"
                         : "98% Confidence"}
                     </span>
                   </div>
-                  <span className={`text-[10px] font-mono uppercase ${
-                    detectionState === "remediated" ? "text-emerald-400" : detectionState === "detected" ? "text-rose-400" : "text-amber-400"
-                  }`}>
+                  <span
+                    className={`text-[10px] font-mono uppercase ${
+                      simPhase === "remediated"
+                        ? "text-emerald-400"
+                        : simPhase === "detected"
+                        ? "text-rose-400"
+                        : "text-amber-400"
+                    }`}
+                  >
                     {activePR.cwe}
                   </span>
                 </div>
                 <p className="text-xs text-neutral-300 leading-normal font-sans">
-                  {detectionState === "typing"
-                    ? "Streaming code changes into in-process AST analyzer..."
+                  {simPhase === "typing"
+                    ? `Streaming code modifications into in-process AST analyzer (${activePR.ticket})...`
+                    : simPhase === "scanning"
+                    ? "Evaluating syntax tree for dangerous patterns, timing vulnerabilities, and raw sinks..."
                     : activePR.botAnalysis}
                 </p>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-[10px] font-mono text-neutral-500">
-                    {detectionState === "remediated"
+                    {simPhase === "remediated"
                       ? "Commit sha: 4f98a12 (Pushed to PR branch)"
-                      : detectionState === "detected"
+                      : simPhase === "detected"
                       ? "Detection confirmed · AST replacement ready"
+                      : simPhase === "scanning"
+                      ? "AST traversal active"
                       : "Awaiting AST completion"}
                   </span>
                   <button
                     type="button"
-                    onClick={() => toggleCommitFix(activePR.id)}
+                    onClick={handleApplyFix}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                      detectionState === "remediated"
-                        ? "bg-emerald-500 text-black font-semibold shadow-[0_0_16px_rgba(52,211,153,0.3)]"
+                      simPhase === "remediated"
+                        ? "bg-emerald-500 text-black font-semibold shadow-[0_0_16px_rgba(52,211,153,0.3)] hover:bg-emerald-400"
                         : "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
                     }`}
                   >
-                    {detectionState === "remediated" ? (
+                    {simPhase === "remediated" ? (
                       <>
                         <Check className="h-3.5 w-3.5" />
                         <span>Fix Committed to Branch</span>
