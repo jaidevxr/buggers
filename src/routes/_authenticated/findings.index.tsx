@@ -8,7 +8,7 @@ import { FindingsTableSkeleton } from "@/components/LoadingSkeletons";
 import { ConfidenceMeter, SeverityBadge, StatusPill } from "@/components/status/StatusBadges";
 
 export const Route = createFileRoute("/_authenticated/findings/")({
-  head: () => ({ meta: [{ title: "Findings — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Findings – Buggers" }] }),
   component: Findings,
 });
 

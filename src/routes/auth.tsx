@@ -17,12 +17,12 @@ import { BugMark } from "@/components/brand/BugMark";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Buggers — Sign in & Sign up" },
+      { title: "Buggers – Sign in & Sign up" },
       {
         name: "description",
         content: "Sign in or create your Buggers account to analyze pull requests.",
       },
-      { property: "og:title", content: "Buggers — Sign in & Sign up" },
+      { property: "og:title", content: "Buggers – Sign in & Sign up" },
       {
         property: "og:description",
         content: "Continue with GitHub, Google, or Email to start reviewing code with AI.",

@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Overview — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Overview – Buggers" }] }),
   component: Dashboard,
 });
 

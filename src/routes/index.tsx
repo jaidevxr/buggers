@@ -20,13 +20,13 @@ import { AnimatedCodeScanner } from "@/components/home/AnimatedCodeScanner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Buggers — Catch critical issues before they reach production" },
+      { title: "Buggers – Catch critical issues before they reach production" },
       {
         name: "description",
         content:
-          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.",
+          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues – so you can ship with confidence.",
       },
-      { property: "og:title", content: "Buggers — Catch critical issues before they reach production" },
+      { property: "og:title", content: "Buggers – Catch critical issues before they reach production" },
       {
         property: "og:description",
         content:

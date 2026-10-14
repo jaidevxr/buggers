@@ -9,7 +9,7 @@ import { PullList } from "@/components/github/PullList";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/repositories/$owner/$repo")({
-  head: ({ params }) => ({ meta: [{ title: `${params.owner}/${params.repo} — Buggers` }] }),
+  head: ({ params }) => ({ meta: [{ title: `${params.owner}/${params.repo} – Buggers` }] }),
   component: RepoOverview,
 });
 

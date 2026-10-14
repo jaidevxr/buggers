@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Settings – Buggers" }] }),
   component: Settings,
 });
 

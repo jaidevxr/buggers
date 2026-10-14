@@ -12,7 +12,7 @@ import { ConnectGitHubCard } from "@/components/github/ConnectGitHubCard";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/_authenticated/repositories/")({
-  head: () => ({ meta: [{ title: "Repositories — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Repositories – Buggers" }] }),
   component: Repositories,
 });
 

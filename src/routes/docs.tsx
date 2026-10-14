@@ -36,13 +36,13 @@ import { PipelineStageVisualizer } from "@/components/docs/PipelineStageVisualiz
 export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
-      { title: "Documentation — Buggers Engineering Specifications" },
+      { title: "Documentation – Buggers Engineering Specifications" },
       {
         name: "description",
         content:
           "Engineering documentation for Buggers: Deterministic risk scoring model 1.1.0, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and Nitro server functions.",
       },
-      { property: "og:title", content: "Documentation — Buggers Engineering Specifications" },
+      { property: "og:title", content: "Documentation – Buggers Engineering Specifications" },
       {
         property: "og:description",
         content:

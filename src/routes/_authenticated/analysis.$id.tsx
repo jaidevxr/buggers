@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button";
 import { DiffViewer } from "@/components/diff/DiffViewer";
 
 export const Route = createFileRoute("/_authenticated/analysis/$id")({
-  head: () => ({ meta: [{ title: "Analysis — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Analysis – Buggers" }] }),
   component: AnalysisPage,
 });
 

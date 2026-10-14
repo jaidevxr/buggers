@@ -8,7 +8,7 @@ import { EmptyState, ErrorState } from "@/components/status/EmptyState";
 import { SeverityBadge } from "@/components/status/StatusBadges";
 
 export const Route = createFileRoute("/_authenticated/tickets")({
-  head: () => ({ meta: [{ title: "Tickets — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Tickets – Buggers" }] }),
   component: Tickets,
 });
 

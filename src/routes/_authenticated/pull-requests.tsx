@@ -9,7 +9,7 @@ import { ConnectGitHubCard } from "@/components/github/ConnectGitHubCard";
 import { PullList } from "@/components/github/PullList";
 
 export const Route = createFileRoute("/_authenticated/pull-requests")({
-  head: () => ({ meta: [{ title: "Pull requests — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Pull requests – Buggers" }] }),
   component: PullRequests,
 });
 

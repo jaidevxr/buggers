@@ -32,7 +32,7 @@ import { ConfidenceMeter, SeverityBadge, StatusPill } from "@/components/status/
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/findings/$id")({
-  head: () => ({ meta: [{ title: "Finding — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Finding – Buggers" }] }),
   component: FindingDetail,
 });
 

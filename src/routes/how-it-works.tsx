@@ -20,13 +20,13 @@ import { BugMark } from "@/components/brand/BugMark";
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How It Works — Buggers" },
+      { title: "How It Works – Buggers" },
       {
         name: "description",
         content:
           "See how Buggers ingests pull requests, detects regression risks using churn history, and suggests verified fixes.",
       },
-      { property: "og:title", content: "How It Works — Buggers" },
+      { property: "og:title", content: "How It Works – Buggers" },
       {
         property: "og:description",
         content:

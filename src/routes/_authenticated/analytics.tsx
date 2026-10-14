@@ -8,7 +8,7 @@ import { AnalyticsSkeleton } from "@/components/LoadingSkeletons";
 import { ErrorState } from "@/components/status/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — Buggers" }] }),
+  head: () => ({ meta: [{ title: "Analytics – Buggers" }] }),
   component: Analytics,
 });
 
