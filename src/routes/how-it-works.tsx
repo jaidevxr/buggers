@@ -108,8 +108,8 @@ export function HowItWorksPage() {
           </div>
         </div>
 
-        {/* Live Scenario Preview: PR #184 with Feathered Bottom Edges */}
-        <div className="mt-16 relative rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15">
+        {/* Live Scenario Preview: PR #184 with Linear Feathered Bottom Edges */}
+        <div className="mt-16 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
             <div>
               <div className="flex items-center gap-3">
@@ -192,8 +192,8 @@ export function HowItWorksPage() {
             </div>
           </div>
 
-          {/* Subtle bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none" />
+          {/* Linear bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
         </div>
 
         {/* Bottom CTA Banner */}

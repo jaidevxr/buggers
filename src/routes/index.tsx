@@ -142,8 +142,8 @@ export function Landing() {
               </div>
             </div>
 
-            {/* PR #184 Realistic Triage Preview with Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15">
+            {/* PR #184 Realistic Triage Preview with Linear Feathered Edges */}
+            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
                 <div>
                   <div className="flex items-center gap-2.5">
@@ -232,15 +232,15 @@ export function Landing() {
                 </div>
               </div>
 
-              {/* Subtle bottom fade to seamlessly merge preview into canvas */}
-              <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none" />
+              {/* Linear bottom fade to seamlessly merge preview into canvas */}
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             </div>
           </div>
 
           {/* Feature 2: Churn & P95 Risk Engine (Alternating: Metrics Card on Left, Text on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Churn & Volatility Visual Card with Feathered Edges */}
-            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4">
+            {/* Churn & Volatility Visual Card with Linear Feathered Edges */}
+            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="h-4 w-4 text-zinc-400" />
@@ -286,8 +286,8 @@ export function Landing() {
                 <span className="font-mono font-bold text-zinc-200">82 / 100 (HIGH REGRESSION RISK)</span>
               </div>
 
-              {/* Subtle bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none" />
+              {/* Linear bottom fade to seamlessly merge preview into canvas */}
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             </div>
 
             {/* Text on Right */}
@@ -337,8 +337,8 @@ export function Landing() {
               </div>
             </div>
 
-            {/* Config & Check Run Card with Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4">
+            {/* Config & Check Run Card with Linear Feathered Edges */}
+            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2">
                   <FileCode className="h-4 w-4 text-zinc-400" />
@@ -377,8 +377,8 @@ ignore:
                 </span>
               </div>
 
-              {/* Subtle bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none" />
+              {/* Linear bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             </div>
           </div>
 

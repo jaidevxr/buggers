@@ -190,16 +190,16 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Product Preview Canvas (No clunky card styling) */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-4 sm:p-8 lg:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+        {/* Spacious Elevated Product Preview Canvas (Linear Overlapping Composition) */}
+        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-4 sm:p-8 lg:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-radial">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left PR List Column */}
             <div className="lg:col-span-5 space-y-3 font-mono text-xs">
               <div className="text-[11px] text-neutral-500 font-semibold px-2 py-1 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-white/70" />
                   <span>In Review (3 active PRs)</span>
                 </span>
                 <span>Select to inspect</span>
@@ -248,8 +248,8 @@ export function LinearProductSections() {
               })}
             </div>
 
-            {/* Right IDE Diff Editor Window */}
-            <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#07080a] p-5 shadow-2xl space-y-4">
+            {/* Right IDE Diff Editor Window (Overlapping Depth) */}
+            <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#0c0d12]/95 p-5 shadow-[-20px_20px_50px_rgba(0,0,0,0.9)] space-y-4 lg:-ml-6 relative z-10">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
                 <span className="text-neutral-400">{activePR.file}</span>
                 <span className="text-neutral-500">PR #{activePR.id} Unified Diff</span>
@@ -431,8 +431,10 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious 4-Card Multi-Provider Deck */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Spacious 4-Card Multi-Provider Deck (Linear Feathered Dissolve) */}
+        <div className="relative linear-preview-fade-bottom pb-8">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-0">
           {/* Card 1: Buggers In-Process */}
           <div
             onClick={() => setSelectedAgent("buggers")}
@@ -543,6 +545,7 @@ export function LinearProductSections() {
             </div>
           </div>
         </div>
+        </div>
 
         {/* Features Row with Working Drawers */}
         <div className="space-y-4 pt-2">
@@ -639,9 +642,9 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Risk Simulator & Scatter Plot Grid */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+        {/* Spacious Elevated Risk Simulator & Scatter Plot Grid (Linear Feathered Dissolve) */}
+        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-0">
             
             {/* Left: 8-Signal Interactive Simulator */}
@@ -738,69 +741,103 @@ export function LinearProductSections() {
               </div>
             </div>
 
-            {/* Right: 30-PR Cycle Risk Scatter Plot */}
+            {/* Right: 30-PR Cycle Risk Scatter Plot (Linear Column Clustering) */}
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-white font-semibold">Cycle Risk Distribution (30 Pull Requests)</span>
-                <span className="text-amber-400 font-bold">Policy Threshold: {gateThreshold}</span>
+                <div>
+                  <span className="text-white font-semibold">Cycle Risk Distribution</span>
+                  <span className="text-neutral-500 ml-2">(30 Pull Requests)</span>
+                </div>
+                <span className="text-neutral-400 font-medium">Policy Threshold: {gateThreshold}</span>
               </div>
 
-              {/* High-Resolution SVG Scatter Plot */}
-              <div className="rounded-xl border border-white/[0.08] bg-[#07080a] p-4 relative h-64 flex flex-col justify-between">
-                {/* Threshold Guideline */}
-                <div
-                  className="absolute left-0 right-0 border-b border-dashed border-amber-400/50 flex items-center justify-end pr-2 text-[10px] font-mono text-amber-400"
-                  style={{ bottom: `${gateThreshold}%` }}
-                >
-                  Threshold {gateThreshold}
+              {/* High-Precision Dark Canvas Scatter Plot */}
+              <div className="rounded-xl border border-white/[0.08] bg-[#07080a] p-5 relative h-72 flex flex-col justify-between overflow-hidden">
+                {/* Horizontal Guide Rules */}
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none p-5 pb-8">
+                  <div className="w-full border-b border-white/[0.04] text-[9px] font-mono text-neutral-600 flex justify-between">
+                    <span>100</span>
+                    <span className="text-rose-500/60 uppercase">Critical Tier (&gt;75)</span>
+                  </div>
+                  <div className="w-full border-b border-white/[0.04] text-[9px] font-mono text-neutral-600">
+                    <span>75</span>
+                  </div>
+                  <div className="w-full border-b border-white/[0.04] text-[9px] font-mono text-neutral-600">
+                    <span>50</span>
+                  </div>
+                  <div className="w-full border-b border-white/[0.04] text-[9px] font-mono text-neutral-600">
+                    <span>25</span>
+                  </div>
+                  <div className="w-full border-b border-white/[0.06] text-[9px] font-mono text-neutral-600">
+                    <span>0</span>
+                  </div>
                 </div>
 
-                {/* Critical Zone Marker */}
-                <div className="absolute top-2 right-2 text-[10px] font-mono text-rose-400/70">
-                  Critical Zone (&gt;75)
-                </div>
+                {/* Spline Threshold Curve Across Sprints */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                  <path
+                    d={`M 20 ${240 - gateThreshold * 1.9} Q 180 ${250 - gateThreshold * 1.9}, 360 ${235 - gateThreshold * 1.9} T 520 ${240 - gateThreshold * 1.9}`}
+                    fill="none"
+                    stroke="rgba(245, 158, 11, 0.4)"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 4"
+                  />
+                </svg>
 
-                {/* Simulated Pull Request Scatter Points */}
-                <div className="relative w-full h-full">
+                {/* 3 Sprint Columns Clustering (Linear Cycle Style) */}
+                <div className="relative w-full h-full z-10 pt-2 pb-6">
                   {[
-                    { id: 1, x: 5, y: 18, color: "bg-emerald-400" },
-                    { id: 2, x: 8, y: 22, color: "bg-emerald-400" },
-                    { id: 3, x: 12, y: 15, color: "bg-emerald-400" },
-                    { id: 4, x: 16, y: 35, color: "bg-yellow-400" },
-                    { id: 5, x: 20, y: 48, color: "bg-yellow-400" },
-                    { id: 6, x: 24, y: computedRiskScore, color: riskTier.badge.includes("rose") ? "bg-rose-400 ring-4 ring-rose-500/30" : "bg-amber-400 ring-4 ring-amber-500/30" },
-                    { id: 7, x: 28, y: 72, color: "bg-rose-400" },
-                    { id: 8, x: 32, y: 84, color: "bg-rose-400" },
-                    { id: 9, x: 36, y: 62, color: "bg-amber-400" },
-                    { id: 10, x: 40, y: 29, color: "bg-emerald-400" },
-                    { id: 11, x: 44, y: 14, color: "bg-emerald-400" },
-                    { id: 12, x: 48, y: 41, color: "bg-yellow-400" },
-                    { id: 13, x: 52, y: 53, color: "bg-amber-400" },
-                    { id: 14, x: 56, y: 79, color: "bg-rose-400" },
-                    { id: 15, x: 60, y: 12, color: "bg-emerald-400" },
-                    { id: 16, x: 64, y: 31, color: "bg-yellow-400" },
-                    { id: 17, x: 68, y: 24, color: "bg-emerald-400" },
-                    { id: 18, x: 72, y: 88, color: "bg-rose-400" },
-                    { id: 19, x: 76, y: 45, color: "bg-yellow-400" },
-                    { id: 20, x: 80, y: 20, color: "bg-emerald-400" },
-                    { id: 21, x: 84, y: 68, color: "bg-amber-400" },
-                    { id: 22, x: 88, y: 16, color: "bg-emerald-400" },
-                    { id: 23, x: 92, y: 38, color: "bg-yellow-400" },
-                    { id: 24, x: 96, y: 27, color: "bg-emerald-400" },
+                    // Column 1: Sprint 24 (Oct)
+                    { id: 1, x: 14, y: 18, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 2, x: 18, y: 24, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 3, x: 15, y: 32, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 4, x: 21, y: 44, color: "bg-amber-400" },
+                    { id: 5, x: 19, y: 55, color: "bg-amber-400" },
+                    { id: 6, x: 16, y: 68, color: "bg-rose-400" },
+                    { id: 7, x: 23, y: 22, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 8, x: 17, y: 15, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 9, x: 20, y: 38, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+
+                    // Column 2: Sprint 25 (Nov)
+                    { id: 10, x: 48, y: 20, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 11, x: 52, y: 29, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 12, x: 49, y: 35, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 13, x: 54, y: 48, color: "bg-amber-400" },
+                    { id: 14, x: 47, y: computedRiskScore, color: riskTier.badge.includes("rose") ? "bg-rose-400 ring-4 ring-rose-500/30 scale-125" : "bg-cyan-400 ring-4 ring-cyan-500/30 scale-125" },
+                    { id: 15, x: 51, y: 62, color: "bg-amber-400" },
+                    { id: 16, x: 53, y: 78, color: "bg-rose-400" },
+                    { id: 17, x: 46, y: 14, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 18, x: 50, y: 26, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+
+                    // Column 3: Sprint 26 (Dec)
+                    { id: 19, x: 80, y: 16, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 20, x: 84, y: 23, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 21, x: 81, y: 31, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 22, x: 86, y: 42, color: "bg-amber-400" },
+                    { id: 23, x: 79, y: 53, color: "bg-amber-400" },
+                    { id: 24, x: 83, y: 74, color: "bg-rose-400" },
+                    { id: 25, x: 85, y: 86, color: "bg-rose-400" },
+                    { id: 26, x: 78, y: 19, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                    { id: 27, x: 82, y: 27, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
                   ].map((pt) => (
                     <div
                       key={pt.id}
-                      className={`absolute h-2.5 w-2.5 rounded-full ${pt.color} transition-all duration-300 hover:scale-150 cursor-pointer`}
-                      style={{ left: `${pt.x}%`, bottom: `${pt.y}%` }}
-                      title={`PR #${140 + pt.id} — Score: ${pt.y}`}
+                      className={`absolute h-2 w-2 rounded-full ${pt.color} transition-all duration-300 hover:scale-150 cursor-pointer animate-graph-point`}
+                      style={{
+                        left: `${pt.x}%`,
+                        bottom: `${pt.y * 0.7 + 10}%`,
+                        animationDelay: `${pt.id * 22}ms`,
+                      }}
+                      title={`PR #${160 + pt.id} — Score: ${pt.y}`}
                     />
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 pt-2 border-t border-white/[0.04]">
-                  <span>Sprint Start</span>
-                  <span>Active Release Candidate</span>
-                  <span>26/30 Merged Safely (87%)</span>
+                {/* Sprint Cycle Timeline Labels (Linear Style) */}
+                <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2 border-t border-white/[0.04] z-10">
+                  <span className="w-1/3 text-center">Sprint 24 (Oct)</span>
+                  <span className="w-1/3 text-center text-white/90 font-semibold">Sprint 25 (Nov - Current)</span>
+                  <span className="w-1/3 text-center">Sprint 26 (Dec)</span>
                 </div>
               </div>
             </div>
@@ -979,9 +1016,9 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Policy Preview Canvas */}
-        <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+        {/* Spacious Policy Preview Canvas (Linear Feathered Dissolve) */}
+        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
             {/* Left: Policy Controller */}

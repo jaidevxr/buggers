@@ -5,6 +5,7 @@ import {
   ArrowRight,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronRight,
   Code2,
   Copy,
@@ -158,10 +159,62 @@ export function DocsPage() {
             Deterministic release intelligence, mathematical risk models, automated OWASP AST vulnerability scanners, and production deployment specifications grounded in verified pull request diffs.
           </p>
 
-          {/* Sticky, Frosted Category Filter Bar & Live Search */}
-          <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-5 sticky top-16 bg-[#08090a]/85 backdrop-blur-md z-30">
-            {/* Category Filter Pills */}
-            <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs font-medium no-scrollbar">
+          {/* Sticky, Frosted Category Filter Bar & Live Search (Zero Horizontal Overflow) */}
+          <div className="pt-6 pb-4 border-b border-white/[0.08] sticky top-16 bg-[#08090a]/90 backdrop-blur-md z-30 space-y-3.5">
+            {/* Top row: Section status indicator & Live Search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Mobile compact dropdown selector (< lg screens) */}
+              <div className="block lg:hidden w-full sm:w-auto">
+                <div className="relative">
+                  <select
+                    value={activeTab}
+                    aria-label="Select Specification Section"
+                    onChange={(e) => {
+                      const target = NAV_TABS.find((t) => t.id === e.target.value);
+                      if (target) scrollToSection(target);
+                    }}
+                    className="w-full sm:w-80 appearance-none bg-[#12141a] border border-white/[0.12] rounded-lg px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/40 cursor-pointer pr-8"
+                  >
+                    {NAV_TABS.map((tab) => (
+                      <option key={tab.id} value={tab.id} className="bg-[#12141a] text-neutral-200">
+                        {tab.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Desktop Section Count Indicator */}
+              <div className="hidden lg:flex items-center gap-2 text-xs font-mono text-neutral-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                <span>10 SPECIFICATION MODULES</span>
+              </div>
+
+              {/* Clean Integrated Search Bar */}
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Filter specifications..."
+                  className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white/30 transition-colors"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 hover:text-white"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Category Filter Pills (flex-wrap: zero horizontal scrolling, all pills visible) */}
+            <nav className="hidden lg:flex flex-wrap items-center gap-1.5 text-xs font-medium">
               {NAV_TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -169,10 +222,10 @@ export function DocsPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => scrollToSection(tab)}
-                    className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
                       isActive
-                        ? "bg-white text-black font-semibold shadow-md"
-                        : "text-neutral-400 hover:text-white hover:bg-white/5"
+                        ? "bg-white text-black font-semibold shadow-sm"
+                        : "text-[#8a8f98] hover:text-white hover:bg-white/[0.05] border border-white/[0.04]"
                     }`}
                   >
                     {tab.label}
@@ -180,27 +233,6 @@ export function DocsPage() {
                 );
               })}
             </nav>
-
-            {/* Clean Integrated Search Bar */}
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search formulas, APIs, scanners..."
-                className="w-full pl-9 pr-8 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white/30 transition-colors"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 hover:text-white"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
           </div>
         </header>
 
@@ -245,8 +277,8 @@ export function DocsPage() {
           </div>
 
           {/* Interactive In-Process Scanner Testbed */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             <div className="relative z-0">
               <LiveScannerPlayground />
             </div>
@@ -282,8 +314,8 @@ export function DocsPage() {
           </div>
 
           {/* Interactive 9-Stage Pipeline Visualizer */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             <div className="relative z-0">
               <PipelineStageVisualizer />
             </div>
@@ -319,8 +351,8 @@ export function DocsPage() {
           </div>
 
           {/* Dual-Auth Architecture Blueprint */}
-          <div className="w-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-8 relative overflow-hidden">
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-8 relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
             <div className="relative z-0 space-y-8">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
               <span className="text-white font-semibold uppercase">Dual-Auth Boundary Isolation</span>

@@ -636,7 +636,8 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   .page-view,
-  .page-transition {
+  .page-transition,
+  .animate-graph-point {
     animation: none !important;
   }
   *,
@@ -646,6 +647,46 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* =========================================================================
+ * LINEAR FEATHERED IMAGE & PREVIEW EDGE BLENDING (Root-Cause Fix)
+ * Eliminates harsh card boundaries; dissolves mockups into #08090a canvas
+ * ========================================================================= */
+.linear-preview-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+}
+
+.linear-preview-fade-radial {
+  -webkit-mask-image: radial-gradient(ellipse 110% 100% at 50% 0%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 100%);
+  mask-image: radial-gradient(ellipse 110% 100% at 50% 0%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 100%);
+}
+
+.linear-preview-fade-all-edges {
+  -webkit-mask-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, rgba(0, 0, 0, 0) 100%);
+  mask-composite: intersect;
+}
+
+@keyframes graphScatterReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.3) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-graph-point {
+  animation: graphScatterReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 
