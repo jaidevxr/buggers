@@ -246,7 +246,7 @@ export function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased selection:bg-white/20 flex flex-col justify-between overflow-x-clip">
+    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased selection:bg-white/20 flex flex-col justify-between overflow-x-clip route-fade-entrance">
       {/* Expansive Main Editorial Container */}
       <main className="w-full max-w-[1380px] mx-auto px-6 sm:px-10 lg:px-12 pt-28 pb-32 flex-1 flex flex-col">
         

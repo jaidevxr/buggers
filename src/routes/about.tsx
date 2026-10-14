@@ -248,7 +248,7 @@ export function AboutPage() {
   }, [progress, current.riskScore, current.remediatedRiskScore]);
 
   return (
-    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between route-fade-entrance">
       {/* Expansive Main Editorial Content with generous top padding to clear floating island */}
       <main className="pt-40 sm:pt-48 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1240px] mx-auto flex-1 w-full space-y-24">
         

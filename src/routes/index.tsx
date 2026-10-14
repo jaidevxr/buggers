@@ -58,7 +58,7 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between route-fade-entrance">
       {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Rendered over persistent AtmosphericBackdrop) */}
       <section
         id="hero"
