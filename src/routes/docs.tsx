@@ -173,10 +173,10 @@ export function DocsPage() {
                       const target = NAV_TABS.find((t) => t.id === e.target.value);
                       if (target) scrollToSection(target);
                     }}
-                    className="w-full sm:w-80 appearance-none bg-[#12141a] border border-white/[0.12] rounded-lg px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/40 cursor-pointer pr-8"
+                    className="w-full sm:w-80 appearance-none bg-[#121316] border border-white/[0.12] rounded-lg px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/40 cursor-pointer pr-8"
                   >
                     {NAV_TABS.map((tab) => (
-                      <option key={tab.id} value={tab.id} className="bg-[#12141a] text-neutral-200">
+                      <option key={tab.id} value={tab.id} className="bg-[#121316] text-neutral-200">
                         {tab.label}
                       </option>
                     ))}

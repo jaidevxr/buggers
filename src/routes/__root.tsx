@@ -7,6 +7,7 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  ScrollRestoration,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -100,7 +101,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
-      { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp" },
       { rel: "icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico?v=3", type: "image/x-icon" },
     ],
@@ -131,6 +131,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -159,13 +160,6 @@ function RootComponent() {
     });
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
-
-  // Smooth scroll reset on route change
-  useEffect(() => {
-    if (window.scrollY > 0) {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    }
-  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

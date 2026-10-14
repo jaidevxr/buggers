@@ -46,7 +46,7 @@ export function AboutPage() {
         </div>
 
         {/* 3 Core Pillars in Linear FIG Architectural Grid */}
-        <div className="mt-16 border border-white/[0.08] rounded-2xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-3 bg-[#0e1015]/40 backdrop-blur-sm">
+        <div className="mt-16 border border-white/[0.08] rounded-2xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-3 bg-[#0c0d10]/60 backdrop-blur-sm">
           <div className="p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
             <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
               FIG 0.1
@@ -88,7 +88,7 @@ export function AboutPage() {
         </div>
 
         {/* CTA Banner */}
-        <div className="mt-16 rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/60 via-[#0e1015]/80 to-[#08090a] p-8 sm:p-12 text-center relative overflow-hidden shadow-xl">
+        <div className="mt-16 rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#121316]/60 via-[#0c0d10]/80 to-[#08090a] p-8 sm:p-12 text-center relative overflow-hidden shadow-xl">
           <div className="relative z-10 max-w-xl mx-auto space-y-4">
             <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               Ready to ship safer pull requests?
@@ -100,6 +100,7 @@ export function AboutPage() {
               <Link
                 to="/auth"
                 preload="intent"
+                viewTransition={true}
                 className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center gap-2"
               >
                 <span>Get Started Now</span>

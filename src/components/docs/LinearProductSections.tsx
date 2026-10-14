@@ -249,7 +249,7 @@ export function LinearProductSections() {
             </div>
 
             {/* Right IDE Diff Editor Window (Overlapping Depth) */}
-            <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#0c0d12]/95 p-5 shadow-[-20px_20px_50px_rgba(0,0,0,0.9)] space-y-4 lg:-ml-6 relative z-10">
+            <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#0c0d10]/95 p-5 shadow-[-20px_20px_50px_rgba(0,0,0,0.9)] space-y-4 lg:-ml-6 relative z-10">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
                 <span className="text-neutral-400">{activePR.file}</span>
                 <span className="text-neutral-500">PR #{activePR.id} Unified Diff</span>
@@ -440,8 +440,8 @@ export function LinearProductSections() {
             onClick={() => setSelectedAgent("buggers")}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
               selectedAgent === "buggers"
-                ? "bg-[#0f1117] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#090a0d] border-white/[0.06] hover:bg-[#0c0d12] hover:border-white/10"
+                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
+                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
             }`}
           >
             <div className="space-y-4">
@@ -469,8 +469,8 @@ export function LinearProductSections() {
             onClick={() => setSelectedAgent("claude")}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
               selectedAgent === "claude"
-                ? "bg-[#0f1117] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#090a0d] border-white/[0.06] hover:bg-[#0c0d12] hover:border-white/10"
+                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
+                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
             }`}
           >
             <div className="space-y-4">
@@ -496,8 +496,8 @@ export function LinearProductSections() {
             onClick={() => setSelectedAgent("gpt4o")}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
               selectedAgent === "gpt4o"
-                ? "bg-[#0f1117] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#090a0d] border-white/[0.06] hover:bg-[#0c0d12] hover:border-white/10"
+                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
+                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
             }`}
           >
             <div className="space-y-4">
@@ -523,8 +523,8 @@ export function LinearProductSections() {
             onClick={() => setSelectedAgent("gemini")}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
               selectedAgent === "gemini"
-                ? "bg-[#0f1117] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#090a0d] border-white/[0.06] hover:bg-[#0c0d12] hover:border-white/10"
+                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
+                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
             }`}
           >
             <div className="space-y-4">

@@ -30,9 +30,6 @@ export const Route = createFileRoute("/auth")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp" },
-    ],
   }),
   component: AuthPage,
 });
@@ -147,7 +144,7 @@ export function AuthPage() {
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
         {/* Symmetrical Centered Form Card */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
-          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0e1015]/90 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.6)] space-y-5 transition-all duration-200">
+          <div className="w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0c0d10] p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-5 transition-all duration-200">
             <div className="text-center space-y-1">
               <span className="text-[10px] font-mono font-bold tracking-widest text-[#8a8f98] uppercase">
                 START FOR FREE
@@ -177,7 +174,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("github")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#14161e] hover:bg-[#1a1d26] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "github" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -191,7 +188,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#14161e] hover:bg-[#1a1d26] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-150 active:scale-[0.985] cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "google" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -205,7 +202,7 @@ export function AuthPage() {
             {/* Symmetrical Divider */}
             <div className="relative flex items-center justify-center my-3">
               <div className="w-full border-t border-white/[0.08]" />
-              <span className="absolute bg-[#0e1015] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
+              <span className="absolute bg-[#0c0d10] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
                 Or continue with email
               </span>
             </div>
@@ -214,7 +211,7 @@ export function AuthPage() {
             <form className="space-y-3.5" onSubmit={handleSubmit}>
               {mode === "signup" && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                  <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
                     <label className="block text-[10px] font-medium text-[#8a8f98]">First name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
@@ -229,7 +226,7 @@ export function AuthPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+                  <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
                     <label className="block text-[10px] font-medium text-[#8a8f98]">Last name</label>
                     <div className="flex items-center justify-between mt-0.5">
                       <input
@@ -246,7 +243,7 @@ export function AuthPage() {
                 </div>
               )}
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
                 <label className="block text-[10px] font-medium text-[#8a8f98]">Email</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input
@@ -261,7 +258,7 @@ export function AuthPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#14161e] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
+              <div className="rounded-xl border border-white/[0.08] bg-[#121316] px-4 py-2.5 transition-all duration-150 focus-within:border-white/25 focus-within:ring-1 focus-within:ring-white/10">
                 <label className="block text-[10px] font-medium text-[#8a8f98]">Password</label>
                 <div className="flex items-center justify-between mt-0.5">
                   <input

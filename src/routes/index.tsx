@@ -57,13 +57,13 @@ export function Landing() {
 
   return (
     <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Rendered over persistent AtmosphericBackdrop) */}
+      {/* Main Hero Section */}
       <section
         id="hero"
-        className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
+        className="relative w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 pt-32 sm:pt-40 pb-16 overflow-hidden"
       >
         {/* Subtle feathered fade at bottom edge into #08090a background */}
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
@@ -143,7 +143,7 @@ export function Landing() {
             </div>
 
             {/* PR #184 Realistic Triage Preview with Linear Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
+            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 linear-preview-fade-bottom">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
                 <div>
                   <div className="flex items-center gap-2.5">
@@ -218,7 +218,7 @@ export function Landing() {
               </div>
 
               {/* Verified Remediation Advisory with Feathered Bottom Blend */}
-              <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#0e121a]/80 p-3.5 text-xs text-slate-300 leading-relaxed">
+              <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#121316]/90 p-3.5 text-xs text-slate-300 leading-relaxed">
                 <div className="flex items-center gap-2 font-semibold text-slate-200 text-xs">
                   <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
                   <span>AI Remediation Suggestion</span>
@@ -240,7 +240,7 @@ export function Landing() {
           {/* Feature 2: Churn & P95 Risk Engine (Alternating: Metrics Card on Left, Text on Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Churn & Volatility Visual Card with Linear Feathered Edges */}
-            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
+            <div className="lg:col-span-7 order-2 lg:order-1 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="h-4 w-4 text-zinc-400" />
@@ -338,7 +338,7 @@ export function Landing() {
             </div>
 
             {/* Config & Check Run Card with Linear Feathered Edges */}
-            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#12141c]/90 via-[#0e1017]/90 to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
+            <div className="lg:col-span-7 relative rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#121316] via-[#0c0d10] to-[#08090a] p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 hover:border-white/15 space-y-4 linear-preview-fade-bottom">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2">
                   <FileCode className="h-4 w-4 text-zinc-400" />
@@ -383,7 +383,7 @@ ignore:
           </div>
 
           {/* Section 4: Linear FIG Minimal Wireframe Grid */}
-          <div className="border border-white/[0.08] rounded-2xl overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0e1015]/40 backdrop-blur-sm">
+          <div className="border border-white/[0.08] rounded-2xl overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0c0d10]/60 backdrop-blur-sm">
             <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
               <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
                 FIG 0.1
@@ -426,7 +426,7 @@ ignore:
           </div>
 
           {/* Section 5: Bottom CTA */}
-          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#12141c]/60 via-[#0e1015]/80 to-[#08090a] p-8 sm:p-12 text-center space-y-4 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#121316]/60 via-[#0c0d10]/80 to-[#08090a] p-8 sm:p-12 text-center space-y-4 shadow-xl">
             <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
               Ready to review pull requests with ease?
             </h3>
@@ -437,6 +437,7 @@ ignore:
               <Link
                 to="/auth"
                 preload="intent"
+                viewTransition={true}
                 className="w-full sm:w-auto rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold shadow-md hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center justify-center gap-2"
               >
                 <span>Get Started</span>
@@ -445,6 +446,7 @@ ignore:
               <Link
                 to="/how-it-works"
                 preload="intent"
+                viewTransition={true}
                 className="w-full sm:w-auto rounded-full bg-white/5 border border-white/[0.08] px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-[background-color,border-color,transform] duration-150 flex items-center justify-center gap-2 active:scale-[0.985]"
               >
                 <Play className="h-3.5 w-3.5 fill-current" />
