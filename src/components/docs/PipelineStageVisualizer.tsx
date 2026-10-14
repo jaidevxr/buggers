@@ -16,14 +16,14 @@ const STAGES: StageInfo[] = [
     name: "1. Queued & Ingested",
     phase: "Ingestion",
     description: "Webhook event or UI request is ingested, idempotency checked per SHA, and queued in Supabase.",
-    keyOutputs: ["Initial analysis record", "Initial pending GitHub commit status check", "Heartbeat initialized"],
+    keyOutputs: ["Initial analysis record", "Pending GitHub status check", "5-minute lease initialized"],
     latency: "< 50ms",
   },
   {
     id: "fetching_pr",
     name: "2. Fetching PR Metadata",
     phase: "GitHub REST",
-    description: "Queries GitHub Pulls API to extract title, body, author, base branch, head branch, and head SHA.",
+    description: "Queries GitHub Pulls API to extract title, body, author, base branch, head branch, and head commit SHA.",
     keyOutputs: ["PR metadata stored", "Author & branch references resolved"],
     latency: "100–300ms",
   },
@@ -57,7 +57,7 @@ const STAGES: StageInfo[] = [
     phase: "AI Orchestration",
     description: "Prioritizes high-churn files, checks diff cache, delimits untrusted author text, and invokes LLM.",
     keyOutputs: ["Candidate defect findings", "Token usage & estimated cost tracking"],
-    latency: "2.5–6.0s",
+    latency: "1.4–4.0s",
   },
   {
     id: "validating_findings",
@@ -91,41 +91,43 @@ export function PipelineStageVisualizer() {
   const current = STAGES.find((s) => s.id === selectedStage) ?? STAGES[0]!;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0c0e15] p-5 sm:p-6 my-6 shadow-xl space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+    <div className="w-full space-y-6">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
+          <div className="flex items-center gap-2 text-xs font-mono text-blue-400">
             <Activity className="h-4 w-4" />
-            <span>EXECUTION RUNTIME</span>
+            <span>EXECUTION RUNTIME SPECIFICATION</span>
           </div>
-          <h3 className="text-lg font-bold text-white mt-1">
-            9-Stage Analysis Pipeline
+          <h3 className="text-xl font-medium text-white mt-1">
+            9-Stage Deterministic Analysis Pipeline
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Click any stage in the sequence to inspect its internal logic, latency profile, and persisted outputs.
+          <p className="text-xs text-neutral-400 mt-0.5">
+            Select any stage in the sequence to inspect its internal logic, latency profile, and persisted outputs.
           </p>
         </div>
-        <span className="text-xs font-mono text-slate-500">
-          Typical End-to-End: ~4–8 seconds
+        <span className="text-xs font-mono text-neutral-500">
+          Typical End-to-End: ~3.5–6.0s
         </span>
       </div>
 
-      {/* Stage Flow Indicator */}
-      <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5 p-1.5 rounded-xl bg-[#07090e] border border-white/10">
+      {/* Stage Flow Stepper Indicator */}
+      <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5 p-2 rounded-xl bg-[#07080a] border border-white/[0.08]">
         {STAGES.map((stage, idx) => {
           const isSelected = stage.id === selectedStage;
           return (
             <button
               key={stage.id}
+              type="button"
               onClick={() => setSelectedStage(stage.id)}
-              className={`p-2 rounded-lg text-center transition-all cursor-pointer ${
+              className={`p-2.5 rounded-lg text-center transition-all cursor-pointer ${
                 isSelected
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shadow-md"
-                  : "bg-white/[0.02] text-slate-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
+                  ? "bg-white text-black font-semibold shadow-lg"
+                  : "bg-white/[0.02] text-neutral-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
               }`}
             >
               <div className="text-[10px] font-mono leading-none">{idx + 1}</div>
-              <div className="text-[9px] truncate font-sans mt-1">
+              <div className="text-[10px] truncate font-sans mt-1">
                 {stage.id.replace("_", " ")}
               </div>
             </button>
@@ -133,34 +135,34 @@ export function PipelineStageVisualizer() {
         })}
       </div>
 
-      {/* Selected Stage Detail Box */}
-      <div className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/10 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/5">
-          <div className="flex items-center gap-2.5">
-            <span className="text-sm sm:text-base font-bold text-white">{current.name}</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+      {/* Selected Stage Detail Window */}
+      <div className="p-6 rounded-xl bg-[#0c0d10] border border-white/[0.08] space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <span className="text-base font-semibold text-white">{current.name}</span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">
               {current.phase}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <Clock className="h-3.5 w-3.5 text-slate-500" />
+          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+            <Clock className="h-3.5 w-3.5 text-neutral-500" />
             <span>Execution Latency: {current.latency}</span>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-sans">
           {current.description}
         </p>
 
         <div>
-          <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-400 block mb-2">
-            Persisted Outputs & Telemetry
+          <span className="text-[10px] font-mono uppercase font-semibold tracking-wider text-neutral-400 block mb-2">
+            Persisted Outputs &amp; Telemetry
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {current.keyOutputs.map((out, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-2 p-2.5 rounded-lg bg-black/40 border border-white/5 text-xs text-slate-300"
+                className="flex items-start gap-2 p-3 rounded-lg bg-black/40 border border-white/[0.04] text-xs text-neutral-300 font-sans"
               >
                 <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
                 <span>{out}</span>
