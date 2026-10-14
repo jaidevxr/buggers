@@ -541,7 +541,6 @@ export function AboutPage() {
             <Link
               to="/auth"
               preload="intent"
-              viewTransition={true}
               className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-all duration-150 active:scale-[0.985] flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <span>Get Started Now</span>

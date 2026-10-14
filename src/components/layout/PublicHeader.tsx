@@ -11,7 +11,6 @@ export function PublicHeader() {
         <Link
           to="/"
           preload="intent"
-          viewTransition={true}
           className="flex items-center gap-2.5 font-semibold text-white transition-opacity duration-150 hover:opacity-85 active:scale-95"
         >
           <BugMark className="h-5 w-5 text-white fill-white" />
@@ -25,7 +24,6 @@ export function PublicHeader() {
           <Link
             to="/"
             preload="intent"
-            viewTransition={true}
             className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/" ? "text-white font-semibold" : "text-slate-300"
             }`}
@@ -35,7 +33,6 @@ export function PublicHeader() {
           <Link
             to="/docs"
             preload="intent"
-            viewTransition={true}
             className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/docs"
                 ? "text-white font-semibold"
@@ -47,7 +44,6 @@ export function PublicHeader() {
           <Link
             to="/about"
             preload="intent"
-            viewTransition={true}
             className={`transition-colors duration-150 hover:text-white active:scale-95 ${
               pathname === "/about"
                 ? "text-white font-semibold"
@@ -62,11 +58,10 @@ export function PublicHeader() {
         <Link
           to="/auth"
           preload="intent"
-          viewTransition={true}
-          className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-[background-color,color,transform,box-shadow] duration-150 shadow-xs active:scale-[0.97] ${
+          className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-all duration-150 shadow-xs active:scale-[0.97] cursor-pointer ${
             pathname === "/auth"
               ? "bg-white text-black ring-2 ring-white/30"
-              : "bg-white text-black hover:bg-slate-200"
+              : "bg-white text-black hover:bg-neutral-200"
           }`}
         >
           Login

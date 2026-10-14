@@ -201,8 +201,21 @@
   html {
     color-scheme: dark;
     background-color: #08090a;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  }
+
+  /* Eliminate Chromium snapshot zoom warp / jitter between pages of different heights */
+  ::view-transition-group(*) {
+    animation: none !important;
+    transform: none !important;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.15s !important;
+    animation-timing-function: ease-out !important;
   }
 
   /* Sleek modern dark scrollbar — completely eliminates white browser scrollbar flashes */
@@ -489,16 +502,29 @@ a {
 }
 
 /* ==========================================================================
-   Coordinated, Hardware-Accelerated Linear View Transition System
-   Fluid, organic cross-fade with zero layout warping, shaking, or dark dipping
+   Coordinated, Zero-Jitter Linear View Transition System
+   Fluid cross-fade with zero layout warping, scaling zoom, or scrollbar jump
    ========================================================================== */
 
+::view-transition-group(*) {
+  animation: none !important;
+  transform: none !important;
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
 ::view-transition-old(root) {
-  animation: 180ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeOut;
+  animation: 120ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeOut;
+  transform: none !important;
+  mix-blend-mode: normal;
 }
 
 ::view-transition-new(root) {
-  animation: 200ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
+  animation: 140ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
+  transform: none !important;
+  mix-blend-mode: normal;
 }
 
 @keyframes pageFadeOut {

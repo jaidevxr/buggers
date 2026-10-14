@@ -154,8 +154,8 @@ export function LiveScannerPlayground() {
 
       {/* Editor & Detection Results Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Code Input & Editor Window */}
-        <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#07080a] overflow-hidden shadow-2xl">
+        {/* Left: Code Input & Editor Window - Linear Hairline Precision */}
+        <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] overflow-hidden">
           <div className="px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.06] flex items-center justify-between text-xs font-mono text-neutral-400">
             <span className="text-neutral-300">diff --git a/test.ts b/test.ts</span>
             <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export function LiveScannerPlayground() {
               <button
                 type="button"
                 onClick={() => setCustomCode(SAMPLE_SNIPPETS.find((s) => s.id === selectedSnippetId)?.code || "")}
-                className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1"
+                className="text-[10px] text-neutral-400 hover:text-white flex items-center gap-1 cursor-pointer"
                 title="Reset sample code"
               >
                 <RefreshCw className="h-2.5 w-2.5" />
@@ -206,7 +206,7 @@ export function LiveScannerPlayground() {
 
           <div className="space-y-3">
             {totalFindings === 0 && (
-              <div className="p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-2">
+              <div className="p-4 border-l-2 border-l-emerald-400 bg-emerald-500/[0.03] space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
                   <Check className="h-4 w-4" />
                   <span>Verified Clean Patch</span>
@@ -219,7 +219,7 @@ export function LiveScannerPlayground() {
 
             {/* Detected Secrets */}
             {detectedSecrets.map((s, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/[0.04] space-y-2">
+              <div key={idx} className="p-4 border-l-2 border-l-amber-400 bg-amber-500/[0.04] space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-amber-400 flex items-center gap-1.5">
                     <Lock className="h-3.5 w-3.5" />
@@ -238,7 +238,7 @@ export function LiveScannerPlayground() {
 
             {/* Detected SAST Findings */}
             {detectedSast.map((s, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/[0.04] space-y-2">
+              <div key={idx} className="p-4 border-l-2 border-l-rose-400 bg-rose-500/[0.04] space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-rose-400 flex items-center gap-1.5">
                     <AlertTriangle className="h-3.5 w-3.5" />

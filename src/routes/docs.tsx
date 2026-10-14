@@ -276,9 +276,10 @@ export function DocsPage() {
             </div>
           </div>
 
-          {/* Interactive In-Process Scanner Testbed */}
-          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          {/* Interactive In-Process Scanner Testbed (Linear Open Hairline with Seamless Dissolve) */}
+          <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
             <div className="relative z-0">
               <LiveScannerPlayground />
             </div>
@@ -313,9 +314,10 @@ export function DocsPage() {
             </div>
           </div>
 
-          {/* Interactive 9-Stage Pipeline Visualizer */}
-          <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+          {/* Interactive 9-Stage Pipeline Visualizer (Linear Open Hairline with Seamless Dissolve) */}
+          <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
             <div className="relative z-0">
               <PipelineStageVisualizer />
             </div>

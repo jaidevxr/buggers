@@ -192,8 +192,8 @@ export function HowItWorksPage() {
           })}
         </div>
 
-        {/* Interactive Dynamic Stage Inspector Preview (Linear feathered edge) */}
-        <section className="relative rounded-2xl border border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden">
+        {/* Interactive Dynamic Stage Inspector Preview (Linear Open Hairline with Feathered Edge) */}
+        <section className="relative border-y border-white/[0.08] bg-[#090a0d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden linear-preview-fade-bottom">
           {/* Subtle top edge lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
@@ -313,7 +313,6 @@ export function HowItWorksPage() {
             <Link
               to="/auth"
               preload="intent"
-              viewTransition={true}
               className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-all duration-150 active:scale-[0.985] flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <span>Get Started with GitHub</span>

@@ -190,14 +190,15 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Product Preview Canvas (Linear Overlapping Composition) */}
-        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-4 sm:p-8 lg:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-radial">
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] via-[#08090a]/80 to-transparent pointer-events-none z-20" />
+        {/* Spacious Elevated Product Preview Canvas (Linear Open Hairline with Seamless Dissolve) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
-            {/* Left PR List Column */}
+            {/* Left PR List Column - Linear Open Hairline List */}
             <div className="lg:col-span-5 space-y-3 font-mono text-xs">
-              <div className="text-[11px] text-neutral-500 font-semibold px-2 py-1 flex items-center justify-between">
+              <div className="text-[11px] text-neutral-500 font-semibold px-2 py-1 flex items-center justify-between border-b border-white/[0.06] pb-2">
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-white/70" />
                   <span>In Review (3 active PRs)</span>
@@ -205,51 +206,53 @@ export function LinearProductSections() {
                 <span>Select to inspect</span>
               </div>
 
-              {PR_SCENARIOS.map((pr) => {
-                const isSelected = pr.id === selectedPrId;
-                const isCommitted = Boolean(committedFixes[pr.id]);
-                return (
-                  <button
-                    key={pr.id}
-                    type="button"
-                    onClick={() => setSelectedPrId(pr.id)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-white/[0.08] border-white/20 text-white shadow-lg"
-                        : "bg-white/[0.02] border-white/[0.04] text-neutral-400 hover:bg-white/[0.04]"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">{pr.ticket}</span>
-                        {isCommitted && (
-                          <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded font-sans">
-                            Committed
-                          </span>
-                        )}
+              <div className="border-y border-white/[0.08] divide-y divide-white/[0.06]">
+                {PR_SCENARIOS.map((pr) => {
+                  const isSelected = pr.id === selectedPrId;
+                  const isCommitted = Boolean(committedFixes[pr.id]);
+                  return (
+                    <button
+                      key={pr.id}
+                      type="button"
+                      onClick={() => setSelectedPrId(pr.id)}
+                      className={`w-full text-left py-3.5 px-3 transition-colors cursor-pointer ${
+                        isSelected
+                          ? "bg-white/[0.06] border-l-2 border-l-white text-white"
+                          : "text-neutral-400 hover:text-white hover:bg-white/[0.02]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-white">{pr.ticket}</span>
+                          {isCommitted && (
+                            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded font-sans">
+                              Committed
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className={`text-[10px] font-medium ${
+                            pr.riskTier === "Critical"
+                              ? "text-rose-400"
+                              : pr.riskTier === "High"
+                              ? "text-amber-400"
+                              : "text-emerald-400"
+                          }`}
+                        >
+                          Risk: {pr.riskScore}/100 ({pr.riskTier})
+                        </span>
                       </div>
-                      <span
-                        className={`text-[10px] font-medium ${
-                          pr.riskTier === "Critical"
-                            ? "text-rose-400"
-                            : pr.riskTier === "High"
-                            ? "text-amber-400"
-                            : "text-emerald-400"
-                        }`}
-                      >
-                        Risk: {pr.riskScore}/100 ({pr.riskTier})
-                      </span>
-                    </div>
-                    <div className="text-xs text-neutral-200 mt-1 truncate font-sans">
-                      {pr.title}
-                    </div>
-                  </button>
-                );
-              })}
+                      <div className="text-xs text-neutral-300 mt-1 truncate font-sans">
+                        {pr.title}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Right IDE Diff Editor Window (Overlapping Depth) */}
-            <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#0c0d10]/95 p-5 shadow-[-20px_20px_50px_rgba(0,0,0,0.9)] space-y-4 lg:-ml-6 relative z-10">
+            {/* Right IDE Diff Editor Window - Linear Hairline Precision */}
+            <div className="lg:col-span-7 border border-white/[0.08] bg-[#07080a] p-5 space-y-4 relative z-10">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
                 <span className="text-neutral-400">{activePR.file}</span>
                 <span className="text-neutral-500">PR #{activePR.id} Unified Diff</span>
@@ -272,8 +275,8 @@ export function LinearProductSections() {
                 <div className="text-neutral-500">11      &#125;</div>
               </div>
 
-              {/* Floating Buggers Bot Comment & Action Button */}
-              <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-4 space-y-3">
+              {/* Buggers Bot Comment & Action Callout */}
+              <div className="border-l-2 border-l-amber-400 bg-white/[0.02] pl-4 py-3 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-3.5 w-3.5 text-amber-400" />
@@ -348,7 +351,7 @@ export function LinearProductSections() {
 
           {/* Interactive Feature Drawer */}
           {activeFeature1 && (
-            <div className="p-5 rounded-xl border border-white/[0.08] bg-[#0c0d10] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
+            <div className="p-6 border-y border-white/[0.08] bg-[#0a0b0e] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
               {activeFeature1 === "ast_diffs" && (
                 <div>
                   <h4 className="text-white font-semibold font-mono text-sm mb-1">AST Diff Parser &amp; Node Replacement</h4>
@@ -431,17 +434,17 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious 4-Card Multi-Provider Deck (Linear Feathered Dissolve) */}
-        <div className="relative linear-preview-fade-bottom pb-8">
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-0">
+        {/* Multi-Provider AI Architecture (Linear Open Hairline 4-Column Grid with Edge Blending) */}
+        <div className="border-y border-white/[0.08] divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#090a0d] relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+
           {/* Card 1: Buggers In-Process */}
           <div
             onClick={() => setSelectedAgent("buggers")}
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
+            className={`p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-colors cursor-pointer relative z-0 ${
               selectedAgent === "buggers"
-                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
+                ? "bg-white/[0.05]"
+                : "hover:bg-white/[0.02]"
             }`}
           >
             <div className="space-y-4">
@@ -451,14 +454,14 @@ export function LinearProductSections() {
                   Active (0ms)
                 </span>
               </div>
-              <div className="rounded-lg bg-black/40 p-3 font-mono text-[11px] text-neutral-300 border border-white/[0.04]">
+              <div className="border-l-2 border-l-white/40 pl-3 py-1 font-mono text-[11px] text-neutral-300">
                 In-process regex scanner &amp; AST structural verification
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed font-sans">
                 Evaluates diff patches in 140ms with zero token cost before any LLM API is invoked.
               </p>
             </div>
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
               <span>Stage 1-5 In-Process</span>
               <span className="text-amber-400 font-semibold">$0.00 / PR</span>
             </div>
@@ -467,10 +470,10 @@ export function LinearProductSections() {
           {/* Card 2: Claude 3.5 Sonnet */}
           <div
             onClick={() => setSelectedAgent("claude")}
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
+            className={`p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-colors cursor-pointer relative z-0 ${
               selectedAgent === "claude"
-                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
+                ? "bg-white/[0.05]"
+                : "hover:bg-white/[0.02]"
             }`}
           >
             <div className="space-y-4">
@@ -478,14 +481,14 @@ export function LinearProductSections() {
                 <span className="font-semibold text-white">Claude 3.5</span>
                 <span className="text-[10px] text-neutral-400">Primary AI</span>
               </div>
-              <div className="rounded-lg bg-black/40 p-3 font-mono text-[11px] text-neutral-300 border border-white/[0.04]">
+              <div className="border-l-2 border-l-white/40 pl-3 py-1 font-mono text-[11px] text-neutral-300">
                 Deep architectural refactoring &amp; defect reasoning
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed font-sans">
                 Generates verified replacement diff hunks with exact line mappings and rationale.
               </p>
             </div>
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
               <span>~2,410 tokens</span>
               <span className="text-neutral-300">$0.007 / PR</span>
             </div>
@@ -494,10 +497,10 @@ export function LinearProductSections() {
           {/* Card 3: GPT-4o */}
           <div
             onClick={() => setSelectedAgent("gpt4o")}
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
+            className={`p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-colors cursor-pointer relative z-0 ${
               selectedAgent === "gpt4o"
-                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
+                ? "bg-white/[0.05]"
+                : "hover:bg-white/[0.02]"
             }`}
           >
             <div className="space-y-4">
@@ -505,14 +508,14 @@ export function LinearProductSections() {
                 <span className="font-semibold text-white">GPT-4o</span>
                 <span className="text-[10px] text-neutral-400">Fallback 1</span>
               </div>
-              <div className="rounded-lg bg-black/40 p-3 font-mono text-[11px] text-neutral-300 border border-white/[0.04]">
+              <div className="border-l-2 border-l-white/40 pl-3 py-1 font-mono text-[11px] text-neutral-300">
                 Standby secondary verification &amp; JSON schema parsing
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed font-sans">
                 Automatically triggered if primary AI rate-limits or times out after 4 seconds.
               </p>
             </div>
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
               <span>Automatic Failover</span>
               <span className="text-neutral-300">&lt;200ms switch</span>
             </div>
@@ -521,10 +524,10 @@ export function LinearProductSections() {
           {/* Card 4: Gemini Flash */}
           <div
             onClick={() => setSelectedAgent("gemini")}
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-6 ${
+            className={`p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-colors cursor-pointer relative z-0 ${
               selectedAgent === "gemini"
-                ? "bg-[#141518] border-white/30 shadow-2xl scale-[1.01]"
-                : "bg-[#0c0d10] border-white/[0.06] hover:bg-[#121316] hover:border-white/10"
+                ? "bg-white/[0.05]"
+                : "hover:bg-white/[0.02]"
             }`}
           >
             <div className="space-y-4">
@@ -532,19 +535,18 @@ export function LinearProductSections() {
                 <span className="font-semibold text-white">Gemini Flash</span>
                 <span className="text-[10px] text-neutral-400">Fallback 2</span>
               </div>
-              <div className="rounded-lg bg-black/40 p-3 font-mono text-[11px] text-neutral-300 border border-white/[0.04]">
+              <div className="border-l-2 border-l-white/40 pl-3 py-1 font-mono text-[11px] text-neutral-300">
                 High-throughput emergency queue processing
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed font-sans">
                 Zero-downtime queue worker fallback handling large mono-repo diff bursts.
               </p>
             </div>
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-neutral-500">
               <span>1M Context Window</span>
               <span className="text-neutral-300">Fast Stream</span>
             </div>
           </div>
-        </div>
         </div>
 
         {/* Features Row with Working Drawers */}
@@ -575,7 +577,7 @@ export function LinearProductSections() {
           </div>
 
           {activeFeature2 && (
-            <div className="p-5 rounded-xl border border-white/[0.08] bg-[#0c0d10] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
+            <div className="p-6 border-y border-white/[0.08] bg-[#0a0b0e] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
               {activeFeature2 === "diff_cache" && (
                 <div>
                   <h4 className="text-white font-semibold font-mono text-sm mb-1">Content-Addressable Diff Caching</h4>
@@ -642,17 +644,18 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Elevated Risk Simulator & Scatter Plot Grid (Linear Feathered Dissolve) */}
-        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+        {/* Spacious Elevated Risk Simulator & Dynamic Scatter/Velocity Graph (Linear Open Hairline with Feathered Edge) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-0">
             
             {/* Left: 8-Signal Interactive Simulator */}
             <div className="lg:col-span-6 space-y-6">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                 <div className="flex items-center gap-2">
-                  <Cpu className="h-4 w-4 text-amber-400" />
-                  <span className="text-xs font-mono font-semibold text-white uppercase">
+                  <Cpu className="h-4 w-4 text-white" />
+                  <span className="text-xs font-mono font-semibold text-white uppercase tracking-wider">
                     Risk Engine 1.1.0 Live Simulator
                   </span>
                 </div>
@@ -667,7 +670,7 @@ export function LinearProductSections() {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-neutral-300">
                     <span>Lines Churned:</span>
-                    <span className="text-amber-400 font-bold">{churnLines} lines</span>
+                    <span className="text-white font-bold">{churnLines} lines</span>
                   </div>
                   <input
                     type="range"
@@ -676,7 +679,7 @@ export function LinearProductSections() {
                     step="10"
                     value={churnLines}
                     onChange={(e) => setChurnLines(Number(e.target.value))}
-                    className="w-full accent-amber-400 bg-white/10 h-1.5 rounded-lg cursor-pointer"
+                    className="w-full accent-white bg-white/10 h-1.5 rounded-lg cursor-pointer"
                   />
                   <div className="text-[10px] text-neutral-500 font-sans">
                     Saturating curve: saturate({churnLines}, 400) = {(sChangeSize * 100).toFixed(0)}% contribution (weight: 0.18)
@@ -687,7 +690,7 @@ export function LinearProductSections() {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-neutral-300">
                     <span>Historical 90-Day Churn:</span>
-                    <span className="text-amber-400 font-bold">{fileChurnAvg} avg commits</span>
+                    <span className="text-white font-bold">{fileChurnAvg} avg commits</span>
                   </div>
                   <input
                     type="range"
@@ -696,7 +699,7 @@ export function LinearProductSections() {
                     step="1"
                     value={fileChurnAvg}
                     onChange={(e) => setFileChurnAvg(Number(e.target.value))}
-                    className="w-full accent-amber-400 bg-white/10 h-1.5 rounded-lg cursor-pointer"
+                    className="w-full accent-white bg-white/10 h-1.5 rounded-lg cursor-pointer"
                   />
                   <div className="text-[10px] text-neutral-500 font-sans">
                     Saturating curve: saturate({fileChurnAvg}, 15) = {(sFileChurn * 100).toFixed(0)}% contribution (weight: 0.20)
@@ -707,7 +710,7 @@ export function LinearProductSections() {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-neutral-300">
                     <span>Past Defect Commits on Files:</span>
-                    <span className="text-amber-400 font-bold">{defectCommits} commits</span>
+                    <span className="text-white font-bold">{defectCommits} commits</span>
                   </div>
                   <input
                     type="range"
@@ -716,7 +719,7 @@ export function LinearProductSections() {
                     step="1"
                     value={defectCommits}
                     onChange={(e) => setDefectCommits(Number(e.target.value))}
-                    className="w-full accent-amber-400 bg-white/10 h-1.5 rounded-lg cursor-pointer"
+                    className="w-full accent-white bg-white/10 h-1.5 rounded-lg cursor-pointer"
                   />
                   <div className="text-[10px] text-neutral-500 font-sans">
                     Defect multiplier: {(defectCommits / 20).toFixed(2)} &times; 2.0x (weight: 0.20)
@@ -724,24 +727,24 @@ export function LinearProductSections() {
                 </div>
 
                 {/* Manifest Toggle */}
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-neutral-300">Touches Critical Manifests (package.json, go.mod):</span>
+                <div className="flex items-center justify-between pt-2 border-t border-white/[0.04]">
+                  <span className="text-neutral-300">Touches Critical Manifests:</span>
                   <button
                     type="button"
                     onClick={() => setTouchesManifest(!touchesManifest)}
-                    className={`px-3 py-1 rounded-md text-xs font-mono transition-colors cursor-pointer ${
+                    className={`px-3 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                       touchesManifest
                         ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
-                        : "bg-white/5 text-neutral-400 border border-white/10"
+                        : "bg-white/5 text-neutral-400 border border-white/10 hover:text-white"
                     }`}
                   >
-                    {touchesManifest ? "Yes (+0.60 penalty)" : "No"}
+                    {touchesManifest ? "Yes (+0.60 penalty)" : "No (Normal)"}
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Right: 30-PR Cycle Risk Scatter Plot (Linear Column Clustering) */}
+            {/* Right: 30-PR Cycle Risk Graph (Dynamic Linear Cluster with All Points Moving) */}
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center justify-between text-xs font-mono">
                 <div>
@@ -751,8 +754,8 @@ export function LinearProductSections() {
                 <span className="text-neutral-400 font-medium">Policy Threshold: {gateThreshold}</span>
               </div>
 
-              {/* High-Precision Dark Canvas Scatter Plot */}
-              <div className="rounded-xl border border-white/[0.08] bg-[#07080a] p-5 relative h-72 flex flex-col justify-between overflow-hidden">
+              {/* High-Precision Dark Canvas Scatter & Density Plot */}
+              <div className="border border-white/[0.08] bg-[#07080a] p-5 relative h-72 flex flex-col justify-between overflow-hidden linear-preview-fade-edges">
                 {/* Horizontal Guide Rules */}
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none p-5 pb-8">
                   <div className="w-full border-b border-white/[0.04] text-[9px] font-mono text-neutral-600 flex justify-between">
@@ -773,70 +776,112 @@ export function LinearProductSections() {
                   </div>
                 </div>
 
-                {/* Spline Threshold Curve Across Sprints */}
+                {/* Dynamic SVG Risk Curve Across Sprints */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="riskAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                    </linearGradient>
+                  </defs>
+                  {/* Interactive area fill */}
                   <path
-                    d={`M 20 ${240 - gateThreshold * 1.9} Q 180 ${250 - gateThreshold * 1.9}, 360 ${235 - gateThreshold * 1.9} T 520 ${240 - gateThreshold * 1.9}`}
+                    d={`M 15 230 Q 180 210, 270 ${Math.max(30, 240 - computedRiskScore * 1.9)} T 520 215 L 520 250 L 15 250 Z`}
+                    fill="url(#riskAreaGrad)"
+                  />
+                  {/* Active Density Line */}
+                  <path
+                    d={`M 15 230 Q 180 210, 270 ${Math.max(30, 240 - computedRiskScore * 1.9)} T 520 215`}
                     fill="none"
-                    stroke="rgba(245, 158, 11, 0.4)"
+                    stroke="rgba(255, 255, 255, 0.7)"
                     strokeWidth="1.5"
+                    className="transition-all duration-300"
+                  />
+                  {/* Policy Gate Dashed Rule */}
+                  <line
+                    x1="15"
+                    y1={240 - gateThreshold * 1.9}
+                    x2="520"
+                    y2={240 - gateThreshold * 1.9}
+                    stroke="rgba(245, 158, 11, 0.5)"
+                    strokeWidth="1.2"
                     strokeDasharray="4 4"
                   />
                 </svg>
 
-                {/* 3 Sprint Columns Clustering (Linear Cycle Style) */}
+                {/* 3 Sprint Columns Clustering (Linear Cycle Style) with ALL Points Dynamically Reacting */}
                 <div className="relative w-full h-full z-10 pt-2 pb-6">
-                  {[
-                    // Column 1: Sprint 24 (Oct)
-                    { id: 1, x: 14, y: 18, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 2, x: 18, y: 24, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 3, x: 15, y: 32, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 4, x: 21, y: 44, color: "bg-amber-400" },
-                    { id: 5, x: 19, y: 55, color: "bg-amber-400" },
-                    { id: 6, x: 16, y: 68, color: "bg-rose-400" },
-                    { id: 7, x: 23, y: 22, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 8, x: 17, y: 15, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 9, x: 20, y: 38, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                  {(() => {
+                    const volatilityDelta = (computedRiskScore - 48);
+                    const sprintPoints = [
+                      // Column 1: Sprint 24 (Oct) - Baseline historical
+                      { id: 1, x: 14, y: 18, isSimulated: false },
+                      { id: 2, x: 18, y: 24, isSimulated: false },
+                      { id: 3, x: 15, y: 32, isSimulated: false },
+                      { id: 4, x: 21, y: 44, isSimulated: false },
+                      { id: 5, x: 19, y: 55, isSimulated: false },
+                      { id: 6, x: 16, y: 68, isSimulated: false },
+                      { id: 7, x: 23, y: 22, isSimulated: false },
+                      { id: 8, x: 17, y: 15, isSimulated: false },
+                      { id: 9, x: 20, y: 38, isSimulated: false },
 
-                    // Column 2: Sprint 25 (Nov)
-                    { id: 10, x: 48, y: 20, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 11, x: 52, y: 29, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 12, x: 49, y: 35, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 13, x: 54, y: 48, color: "bg-amber-400" },
-                    { id: 14, x: 47, y: computedRiskScore, color: riskTier.badge.includes("rose") ? "bg-rose-400 ring-4 ring-rose-500/30 scale-125" : "bg-cyan-400 ring-4 ring-cyan-500/30 scale-125" },
-                    { id: 15, x: 51, y: 62, color: "bg-amber-400" },
-                    { id: 16, x: 53, y: 78, color: "bg-rose-400" },
-                    { id: 17, x: 46, y: 14, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 18, x: 50, y: 26, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
+                      // Column 2: Sprint 25 (Nov - Current Active Sprint, reacts dynamically to sliders!)
+                      { id: 10, x: 48, y: Math.max(8, Math.min(92, Math.round(20 + volatilityDelta * 0.45))), isSimulated: false },
+                      { id: 11, x: 52, y: Math.max(10, Math.min(94, Math.round(29 + volatilityDelta * 0.55))), isSimulated: false },
+                      { id: 12, x: 49, y: Math.max(12, Math.min(95, Math.round(35 + volatilityDelta * 0.65))), isSimulated: false },
+                      { id: 13, x: 54, y: Math.max(14, Math.min(96, Math.round(48 + volatilityDelta * 0.8))), isSimulated: false },
+                      { id: 14, x: 47, y: computedRiskScore, isSimulated: true },
+                      { id: 15, x: 51, y: Math.max(16, Math.min(98, Math.round(62 + volatilityDelta * 0.7))), isSimulated: false },
+                      { id: 16, x: 53, y: Math.max(20, Math.min(99, Math.round(78 + volatilityDelta * 0.5))), isSimulated: false },
+                      { id: 17, x: 46, y: Math.max(6, Math.min(88, Math.round(14 + volatilityDelta * 0.4))), isSimulated: false },
+                      { id: 18, x: 50, y: Math.max(8, Math.min(90, Math.round(26 + volatilityDelta * 0.5))), isSimulated: false },
 
-                    // Column 3: Sprint 26 (Dec)
-                    { id: 19, x: 80, y: 16, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 20, x: 84, y: 23, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 21, x: 81, y: 31, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 22, x: 86, y: 42, color: "bg-amber-400" },
-                    { id: 23, x: 79, y: 53, color: "bg-amber-400" },
-                    { id: 24, x: 83, y: 74, color: "bg-rose-400" },
-                    { id: 25, x: 85, y: 86, color: "bg-rose-400" },
-                    { id: 26, x: 78, y: 19, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                    { id: 27, x: 82, y: 27, color: "bg-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.7)]" },
-                  ].map((pt) => (
-                    <div
-                      key={pt.id}
-                      className={`absolute h-2 w-2 rounded-full ${pt.color} transition-all duration-300 hover:scale-150 cursor-pointer animate-graph-point`}
-                      style={{
-                        left: `${pt.x}%`,
-                        bottom: `${pt.y * 0.7 + 10}%`,
-                        animationDelay: `${pt.id * 22}ms`,
-                      }}
-                      title={`PR #${160 + pt.id} — Score: ${pt.y}`}
-                    />
-                  ))}
+                      // Column 3: Sprint 26 (Dec) - Projected pipeline
+                      { id: 19, x: 80, y: Math.max(10, Math.min(88, Math.round(16 + volatilityDelta * 0.3))), isSimulated: false },
+                      { id: 20, x: 84, y: Math.max(12, Math.min(90, Math.round(23 + volatilityDelta * 0.35))), isSimulated: false },
+                      { id: 21, x: 81, y: Math.max(14, Math.min(92, Math.round(31 + volatilityDelta * 0.4))), isSimulated: false },
+                      { id: 22, x: 86, y: Math.max(16, Math.min(94, Math.round(42 + volatilityDelta * 0.5))), isSimulated: false },
+                      { id: 23, x: 79, y: Math.max(18, Math.min(95, Math.round(53 + volatilityDelta * 0.45))), isSimulated: false },
+                      { id: 24, x: 83, y: Math.max(22, Math.min(97, Math.round(74 + volatilityDelta * 0.4))), isSimulated: false },
+                      { id: 25, x: 85, y: Math.max(24, Math.min(99, Math.round(86 + volatilityDelta * 0.3))), isSimulated: false },
+                      { id: 26, x: 78, y: Math.max(8, Math.min(86, Math.round(19 + volatilityDelta * 0.25))), isSimulated: false },
+                      { id: 27, x: 82, y: Math.max(12, Math.min(89, Math.round(27 + volatilityDelta * 0.3))), isSimulated: false },
+                    ];
+
+                    return sprintPoints.map((pt) => {
+                      const isCritical = pt.y > 75;
+                      const isHigh = pt.y > gateThreshold;
+                      const colorClass = pt.isSimulated
+                        ? isCritical
+                          ? "bg-rose-400 ring-4 ring-rose-500/30 scale-150"
+                          : isHigh
+                          ? "bg-amber-400 ring-4 ring-amber-500/30 scale-150"
+                          : "bg-white ring-4 ring-white/30 scale-150"
+                        : isCritical
+                        ? "bg-rose-400/90"
+                        : isHigh
+                        ? "bg-amber-400/80"
+                        : "bg-neutral-300/80";
+
+                      return (
+                        <div
+                          key={pt.id}
+                          className={`absolute h-2 w-2 rounded-full ${colorClass} transition-all duration-300 hover:scale-150 cursor-pointer`}
+                          style={{
+                            left: `${pt.x}%`,
+                            bottom: `${Math.max(6, Math.min(94, pt.y * 0.72 + 8))}%`,
+                          }}
+                          title={`PR #${160 + pt.id} — Score: ${pt.y}`}
+                        />
+                      );
+                    });
+                  })()}
                 </div>
 
                 {/* Sprint Cycle Timeline Labels (Linear Style) */}
                 <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2 border-t border-white/[0.04] z-10">
                   <span className="w-1/3 text-center">Sprint 24 (Oct)</span>
-                  <span className="w-1/3 text-center text-white/90 font-semibold">Sprint 25 (Nov - Current)</span>
+                  <span className="w-1/3 text-center text-white/90 font-semibold">Sprint 25 (Nov - Active)</span>
                   <span className="w-1/3 text-center">Sprint 26 (Dec)</span>
                 </div>
               </div>
@@ -845,21 +890,21 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Exact Mathematical Formula & Weights Matrix from Source Code */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-          <div className="space-y-4">
+        {/* Exact Mathematical Formula & Weights Matrix: Open Linear 2-Column Hairline */}
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/[0.08] border-y border-white/[0.08] py-8">
+          <div className="py-4 md:pr-8 space-y-4">
             <h3 className="text-base font-medium text-white flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-amber-400" />
+              <Cpu className="h-4 w-4 text-white" />
               <span>Additive Normalized Formulation</span>
             </h3>
-            <div className="rounded-xl border border-white/[0.08] bg-[#0c0d10] p-5 text-xs font-mono text-neutral-300 space-y-3">
-              <p className="text-neutral-400 text-[11px] font-sans">
+            <div className="space-y-3 text-xs font-mono text-neutral-300">
+              <p className="text-neutral-400 text-xs font-sans">
                 Computed deterministically without hallucinated priors:
               </p>
-              <div className="text-amber-200/95 bg-black/50 p-3 rounded-lg border border-white/[0.04] select-all">
+              <div className="text-neutral-200 bg-white/[0.02] p-3 rounded border border-white/[0.06] select-all font-mono">
                 Score = round( &Sigma;(s.value &times; s.weight) / &Sigma;(s.weight) &times; 100 )
               </div>
-              <ul className="space-y-1.5 text-[11px] text-neutral-400 font-sans">
+              <ul className="space-y-1.5 text-xs text-neutral-400 font-sans">
                 <li>&bull; <strong className="text-white font-mono">saturate(n, mid) = n / (n + mid)</strong>: Smooth non-linear asymptote</li>
                 <li>&bull; <strong className="text-white font-mono">insufficient_data</strong>: Automatically dropped from denominator</li>
                 <li>&bull; <strong className="text-white font-mono">confidence</strong>: Proportion of observed weights &times; file coverage</li>
@@ -867,50 +912,50 @@ export function LinearProductSections() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="py-4 md:pl-8 space-y-4">
             <h3 className="text-base font-medium text-white flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-emerald-400" />
+              <Sliders className="h-4 w-4 text-white" />
               <span>Observable Signal Weights Matrix</span>
             </h3>
-            <div className="rounded-xl border border-white/[0.08] bg-[#0c0d10] overflow-hidden text-xs">
+            <div className="overflow-x-auto text-xs border-y border-white/[0.06]">
               <table className="w-full text-left">
-                <thead className="border-b border-white/[0.08] bg-white/[0.02] text-neutral-400 text-[11px] font-mono">
+                <thead className="border-b border-white/[0.06] bg-white/[0.02] text-neutral-400 text-[11px] font-mono">
                   <tr>
-                    <th className="py-2.5 px-4">Signal ID</th>
-                    <th className="py-2.5 px-4">Weight</th>
-                    <th className="py-2.5 px-4">Midpoint / Parameter</th>
+                    <th className="py-2.5 px-3">Signal ID</th>
+                    <th className="py-2.5 px-3">Weight</th>
+                    <th className="py-2.5 px-3">Midpoint / Parameter</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04] text-neutral-300 font-mono text-[11px]">
                   <tr>
-                    <td className="py-2 px-4 text-white">change_size</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.changeSize}</td>
-                    <td className="py-2 px-4 text-neutral-400">400 lines</td>
+                    <td className="py-2 px-3 text-white">change_size</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.changeSize}</td>
+                    <td className="py-2 px-3 text-neutral-400">400 lines</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 text-white">file_churn</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.fileChurn}</td>
-                    <td className="py-2 px-4 text-neutral-400">15 commits (90-day window)</td>
+                    <td className="py-2 px-3 text-white">file_churn</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.fileChurn}</td>
+                    <td className="py-2 px-3 text-neutral-400">15 commits (90-day window)</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 text-white">defect_history</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.defectHistory}</td>
-                    <td className="py-2 px-4 text-neutral-400">2.0x multiplier on fix/revert commits</td>
+                    <td className="py-2 px-3 text-white">defect_history</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.defectHistory}</td>
+                    <td className="py-2 px-3 text-neutral-400">2.0x multiplier on fix/revert commits</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 text-white">change_spread</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.changeSpread}</td>
-                    <td className="py-2 px-4 text-neutral-400">12 files</td>
+                    <td className="py-2 px-3 text-white">change_spread</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.changeSpread}</td>
+                    <td className="py-2 px-3 text-neutral-400">12 files</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 text-white">test_changes</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.testChanges}</td>
-                    <td className="py-2 px-4 text-neutral-400">0.33 code-to-test ratio</td>
+                    <td className="py-2 px-3 text-white">test_changes</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.testChanges}</td>
+                    <td className="py-2 px-3 text-neutral-400">0.33 code-to-test ratio</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 text-white">dependency_changes</td>
-                    <td className="py-2 px-4 text-amber-400">{DEFAULT_RISK_CONFIG.weights.dependencyChanges}</td>
-                    <td className="py-2 px-4 text-neutral-400">0.60 manifest modification penalty</td>
+                    <td className="py-2 px-3 text-white">dependency_changes</td>
+                    <td className="py-2 px-3 text-neutral-200">{DEFAULT_RISK_CONFIG.weights.dependencyChanges}</td>
+                    <td className="py-2 px-3 text-neutral-400">0.60 manifest modification penalty</td>
                   </tr>
                 </tbody>
               </table>
@@ -946,7 +991,7 @@ export function LinearProductSections() {
           </div>
 
           {activeFeature3 && (
-            <div className="p-5 rounded-xl border border-white/[0.08] bg-[#0c0d10] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
+            <div className="p-6 border-y border-white/[0.08] bg-[#0a0b0e] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
               {activeFeature3 === "saturating_curves" && (
                 <div>
                   <h4 className="text-white font-semibold font-mono text-sm mb-1">Smooth Asymptotic Saturation</h4>
@@ -1016,20 +1061,21 @@ export function LinearProductSections() {
           </div>
         </div>
 
-        {/* Spacious Policy Preview Canvas (Linear Feathered Dissolve) */}
-        <div className="w-full rounded-t-2xl border-t border-x border-b-0 border-white/[0.08] bg-gradient-to-b from-[#0e1015] via-[#0a0b0f] to-[#08090a] p-6 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] relative overflow-hidden linear-preview-fade-bottom">
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+        {/* Spacious Policy Preview Canvas (Linear Open Hairline with Seamless Dissolve) */}
+        <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-0">
             
-            {/* Left: Policy Controller */}
+            {/* Left: Policy Controller - Linear Hairline List */}
             <div className="lg:col-span-6 space-y-5 text-xs font-mono">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                 <span className="text-white font-semibold">Repository Policy Controller</span>
                 <span className="text-neutral-400">.buggers.yml</span>
               </div>
 
-              <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.04] space-y-2">
+              <div className="border-y border-white/[0.08] divide-y divide-white/[0.06]">
+                <div className="py-3 px-1 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-neutral-300">Max Allowable Risk Threshold:</span>
                     <span className="text-amber-400 font-bold">{gateThreshold} / 100</span>
@@ -1045,7 +1091,7 @@ export function LinearProductSections() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/[0.04]">
+                <div className="flex items-center justify-between py-3.5 px-1">
                   <span className="text-neutral-300">Block on Plaintext Secrets:</span>
                   <button
                     type="button"
@@ -1060,7 +1106,7 @@ export function LinearProductSections() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/[0.04]">
+                <div className="flex items-center justify-between py-3.5 px-1">
                   <span className="text-neutral-300">Block on Critical OWASP SAST:</span>
                   <button
                     type="button"
@@ -1077,13 +1123,13 @@ export function LinearProductSections() {
               </div>
             </div>
 
-            {/* Right: Live GitHub Check Box Preview */}
+            {/* Right: Live GitHub Check Box Preview - Linear Hairline Precision */}
             <div className="lg:col-span-6 space-y-4">
               <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider block">
                 Simulated GitHub Commit Check Evaluation
               </span>
 
-              <div className="rounded-xl border border-white/[0.08] bg-[#07080a] p-5 space-y-4 font-mono text-xs">
+              <div className="border border-white/[0.08] bg-[#07080a] p-6 space-y-4 font-mono text-xs">
                 <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                   <div className="flex items-center gap-2">
                     {gatePassed ? (
@@ -1197,7 +1243,7 @@ status_checks:
           </div>
 
           {activeFeature4 && (
-            <div className="p-5 rounded-xl border border-white/[0.08] bg-[#0c0d10] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
+            <div className="p-6 border-y border-white/[0.08] bg-[#0a0b0e] text-xs font-sans text-neutral-300 space-y-2 animate-fadeIn">
               {activeFeature4 === "branch_protection" && (
                 <div>
                   <h4 className="text-white font-semibold font-mono text-sm mb-1">GitHub Native Branch Protection</h4>
