@@ -81,10 +81,13 @@ Visit [`http://localhost:8080`](http://localhost:8080) to access the Buggers app
 
 ```
 buggers/
-├── docs/                     # Architectural design & setup documentation
-│   ├── ARCHITECTURE.md       # Triage pipeline, queue worker & database schema
-│   ├── SETUP.md              # Detailed Supabase & GitHub App setup guide
-│   └── SECURITY.md           # Encryption, rate limits & prompt defense
+├── docs/                     # Engineering documentation suite
+│   ├── ARCHITECTURE.md       # Pipeline stages, queue worker, database schema & AI orchestration
+│   ├── SETUP.md              # Infrastructure provisioning, Supabase & GitHub OAuth setup
+│   ├── API_REFERENCE.md      # Nitro REST endpoints and TanStack Start server functions
+│   ├── RISK_AND_SCANNERS.md  # 0–100 deterministic risk engine, SAST & secret scanner rules
+│   └── TROUBLESHOOTING.md    # Diagnostics, error codes, and operational recovery
+├── SECURITY.md               # Threat model, prompt injection defense, and RLS policies
 ├── src/
 │   ├── components/           # Reusable UI components & floating public island
 │   │   ├── brand/            # Buggers brand marks & SVG wordmarks
