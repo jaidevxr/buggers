@@ -246,7 +246,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("github")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "github" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -260,7 +260,7 @@ export function AuthPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={Boolean(busyProvider)}
-                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#121316] hover:bg-[#18191c] hover:border-white/[0.16] hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 cursor-pointer disabled:opacity-50"
               >
                 {busyProvider === "google" ? (
                   <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
@@ -365,7 +365,7 @@ export function AuthPage() {
                 <button
                   type="submit"
                   disabled={Boolean(busyProvider)}
-                  className="w-full rounded-xl bg-white hover:bg-neutral-100 text-black py-2.5 text-xs font-semibold shadow-md hover:shadow-[0_0_24px_rgba(255,255,255,0.18)] transition-all duration-200 active:scale-[0.985] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full rounded-xl bg-white hover:bg-neutral-100 text-black py-2.5 text-xs font-semibold shadow-md hover:shadow-[0_0_24px_rgba(255,255,255,0.18)] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {busyProvider === "email" ? (
                     <>

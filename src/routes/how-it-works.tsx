@@ -404,7 +404,7 @@ export function HowItWorksPage() {
             <Link
               to="/auth"
               preload="intent"
-              className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-all duration-150 active:scale-[0.985] flex items-center gap-2 shadow-sm cursor-pointer"
+              className="rounded-full bg-white text-black px-7 py-2.5 text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-colors duration-150 flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <span>Get Started with GitHub</span>
               <ArrowRight className="h-4 w-4" />
