@@ -1,11 +1,39 @@
 import type { ReactNode } from "react";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  showBack,
+  onBack,
+}: {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  showBack?: boolean;
+  onBack?: () => void;
+}) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+      <div className="flex items-start gap-2.5">
+        {showBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack ?? (() => window.history.back())}
+            aria-label="Go back"
+            title="Go back"
+            className="h-8 w-8 shrink-0 mt-0.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-all duration-150 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+        </div>
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

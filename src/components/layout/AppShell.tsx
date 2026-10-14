@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
+  ArrowLeft,
   Bell,
   FolderGit2,
   GitPullRequest,
@@ -117,13 +118,31 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 w-full items-center gap-3 border-b border-border bg-background/95 px-4 lg:px-6 backdrop-blur">
+    <header className="sticky top-0 z-50 flex h-14 w-full items-center gap-2 sm:gap-3 border-b border-border bg-background/95 px-3 sm:px-4 lg:px-6 backdrop-blur">
       <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleMenu} aria-label="Toggle navigation">
         <Menu className="h-5 w-5" />
       </Button>
-      <Link to="/dashboard" className="shrink-0">
-        <BuggersWordmark />
-      </Link>
+      <div className="flex items-center gap-1.5">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            if (typeof window !== "undefined" && window.history.length > 1) {
+              window.history.back();
+            } else {
+              navigate({ to: "/dashboard" });
+            }
+          }}
+          aria-label="Go back"
+          title="Go back"
+          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-all duration-150 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Link to="/dashboard" className="shrink-0 flex items-center">
+          <BuggersWordmark />
+        </Link>
+      </div>
       <div className="ml-auto flex items-center gap-1.5">
         {/* Quick Theme Toggle */}
         <Button
