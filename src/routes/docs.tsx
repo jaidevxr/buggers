@@ -75,7 +75,7 @@ export function DocsPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#07090e] text-slate-100 antialiased selection:bg-white/20 flex flex-col justify-between">
       {/* Main Container - flex-1 pushes footer to the bottom */}
       <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full flex-1 flex flex-col">
         {/* Docs Header */}

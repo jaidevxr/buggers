@@ -141,9 +141,6 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  // Coordinated route transition key:
-  // For authenticated child routes, keep the authenticated shell persistent so TopBar/Sidebar never flash.
-  // For public routes, use pathname to coordinate smooth content entrance while PublicHeader stays anchored.
   const isAuthRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/repositories") ||
@@ -152,8 +149,6 @@ function RootComponent() {
     pathname.startsWith("/analytics") ||
     pathname.startsWith("/tickets") ||
     pathname.startsWith("/settings");
-
-  const topRouteKey = isAuthRoute ? "authenticated-shell" : pathname;
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
@@ -164,9 +159,9 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
-  // Clean instant scroll reset on route change without layout jumps
+  // Smooth scroll reset on route change
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [pathname]);
 
   return (
@@ -174,7 +169,7 @@ function RootComponent() {
       <ThemeProvider>
         <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col selection:bg-white/20">
           {!isAuthRoute && <PublicHeader />}
-          <div key={topRouteKey} className="flex-1 w-full flex flex-col page-view">
+          <div className="flex-1 w-full flex flex-col">
             <Outlet />
           </div>
         </div>

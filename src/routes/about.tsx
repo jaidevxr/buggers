@@ -25,7 +25,7 @@ export const Route = createFileRoute("/about")({
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Main Content */}
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
@@ -101,7 +101,7 @@ export function AboutPage() {
       </main>
 
       {/* Consistent Matte-Black Footer */}
-      <footer className="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500 bg-[#0a0c10]">
+      <footer className="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500 bg-[#07090e]">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-400">Buggers</span>

@@ -37,7 +37,7 @@ export const Route = createFileRoute("/how-it-works")({
 
 export function HowItWorksPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0a0c10] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Main Content Hero - flex-1 ensures it pushes the footer to the bottom */}
       <main className="pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto flex-1 w-full">
         {/* Title Header */}
@@ -210,7 +210,7 @@ export function HowItWorksPage() {
       </main>
 
       {/* Footer - Pinned to bottom */}
-      <footer className="border-t border-white/10 bg-[#0a0c10] py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
+      <footer className="border-t border-white/10 bg-[#07090e] py-10 px-4 sm:px-6 text-xs text-slate-500 mt-auto">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-white font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

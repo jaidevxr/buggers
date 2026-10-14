@@ -316,8 +316,7 @@
     background: radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--color-primary) 18%, transparent) 0%, transparent 70%);
   }
 
-  .page-enter,
-  .page-view {
+  .page-enter {
     animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: opacity, transform;
   }
@@ -560,7 +559,11 @@ a {
   }
 }
 
-.page-view,
+.page-view {
+  animation: pageSettleIn 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
 .page-transition {
   animation: pageSettleIn 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform;
