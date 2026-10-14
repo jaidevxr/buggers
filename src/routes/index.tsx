@@ -64,8 +64,8 @@ export function Landing() {
         id="hero"
         className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
       >
-        {/* Expansive feathered fade at bottom edge into #08090a background */}
-        <div className="absolute inset-x-0 bottom-0 h-48 sm:h-72 bg-gradient-to-t from-[#08090a] via-[#08090a]/95 via-[#08090a]/60 to-transparent pointer-events-none" />
+        {/* Expansive feathered fade at bottom edge into #000000 background */}
+        <div className="absolute inset-x-0 bottom-0 h-48 sm:h-72 bg-gradient-to-t from-[#000000] via-[#000000]/95 via-[#000000]/60 to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
@@ -157,7 +157,7 @@ export function Landing() {
       {/* ======================================================== */}
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (Linear-Style 2-Column Split) */}
       {/* ======================================================== */}
-      <section id="showcase" className="relative z-10 bg-[#08090a] pt-12 sm:pt-20 pb-24 sm:pb-36 scroll-mt-16">
+      <section id="showcase" className="relative z-10 bg-[#000000] pt-12 sm:pt-20 pb-24 sm:pb-36 scroll-mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Live Animated Code Detection & Remediation Simulator (Linear Style) */}
@@ -193,8 +193,8 @@ export function Landing() {
           {/* Feature 2: Churn & P95 Risk Engine (Linear Open Hairline) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Churn & Volatility Visual Card with Linear Hairline and Edge Dissolve */}
-            <div className="lg:col-span-7 order-2 lg:order-1 relative border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-8 space-y-5 linear-preview-fade-bottom">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+            <div className="lg:col-span-7 order-2 lg:order-1 relative border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-8 space-y-5 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="h-4 w-4 text-white" />
@@ -241,7 +241,7 @@ export function Landing() {
               </div>
 
               {/* Linear bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
             </div>
 
             {/* Text on Right */}
@@ -292,8 +292,8 @@ export function Landing() {
             </div>
 
             {/* Config & Check Run Card with Linear Feathered Edges */}
-            <div className="lg:col-span-7 relative border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-8 space-y-4 linear-preview-fade-bottom">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
+            <div className="lg:col-span-7 relative border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-8 space-y-4 linear-preview-fade-bottom">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 relative z-0">
                 <div className="flex items-center gap-2">
                   <FileCode className="h-4 w-4 text-white" />
@@ -302,7 +302,7 @@ export function Landing() {
                 <span className="font-mono text-[11px] text-[#8a8f98]">Repository Root Config</span>
               </div>
 
-              <div className="border border-white/[0.06] bg-[#07080a] p-4 font-mono text-xs text-neutral-300 overflow-x-auto relative z-0">
+              <div className="border border-white/[0.06] bg-[#050505] p-4 font-mono text-xs text-neutral-300 overflow-x-auto relative z-0">
                 <pre className="text-[11px] leading-relaxed">
 {`version: 1
 risk:
@@ -333,12 +333,12 @@ ignore:
               </div>
 
               {/* Linear bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-10" />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-10" />
             </div>
           </div>
 
           {/* Section 4: Linear FIG Minimal Wireframe Grid (Open Hairline) */}
-          <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#090a0d]">
+          <div className="border-y border-white/[0.08] divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[#0a0a0a]">
             <div className="p-6 sm:p-7 space-y-3 transition-colors hover:bg-white/[0.02]">
               <span className="font-mono text-[10px] tracking-widest text-[#8a8f98] uppercase block">
                 FIG 0.1
@@ -412,7 +412,7 @@ ignore:
       </section>
 
       {/* Minimal Dark Footer - Pinned to bottom */}
-      <footer className="bg-[#08090a] py-10 px-4 sm:px-6 text-xs text-[#8a8f98] border-t border-white/[0.08] mt-auto">
+      <footer className="bg-[#000000] py-10 px-4 sm:px-6 text-xs text-[#8a8f98] border-t border-white/[0.08] mt-auto">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-zinc-300 font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />

@@ -156,7 +156,7 @@ export function AuthPage() {
         {/* Symmetrical Centered Form Card with Linear Glide Animation */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
           <div
-            className={`w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0c0d10]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.03)] space-y-5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            className={`w-full max-w-md mx-auto rounded-2xl border border-white/[0.08] bg-[#0d0d0d]/95 backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.03)] space-y-5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               mounted
                 ? "opacity-100 translate-y-0 scale-100"
                 : "opacity-0 translate-y-4 scale-[0.985]"
@@ -237,7 +237,7 @@ export function AuthPage() {
             {/* Symmetrical Divider */}
             <div className="relative flex items-center justify-center my-2">
               <div className="w-full border-t border-white/[0.08]" />
-              <span className="absolute bg-[#0c0d10] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
+              <span className="absolute bg-[#0d0d0d] px-3 font-mono text-[10px] uppercase tracking-wider text-[#8a8f98]">
                 Or continue with email
               </span>
             </div>

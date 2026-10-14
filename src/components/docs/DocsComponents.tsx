@@ -54,7 +54,7 @@ export function CodeBlock({
       </div>
 
       {/* Code Body */}
-      <pre className="p-4 text-xs font-mono overflow-x-auto text-neutral-200 leading-relaxed bg-[#08090a]/60">
+      <pre className="p-4 text-xs font-mono overflow-x-auto text-neutral-200 leading-relaxed bg-[#000000]/60">
         {showLineNumbers ? (
           lines.map((line, idx) => (
             <div key={idx} className="flex">

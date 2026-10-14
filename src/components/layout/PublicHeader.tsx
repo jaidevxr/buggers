@@ -10,7 +10,7 @@ export function PublicHeader() {
       style={{ viewTransitionName: "none" }}
     >
       <div
-        className="public-header-pill pointer-events-auto flex items-center gap-6 sm:gap-7 rounded-full bg-[#08090a]/90 backdrop-blur-md px-5 sm:px-6 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.7)] border border-white/[0.08] text-xs font-medium text-neutral-300 transition-colors duration-200"
+        className="public-header-pill pointer-events-auto flex items-center gap-6 sm:gap-7 rounded-full bg-[#0a0a0a]/90 backdrop-blur-md px-5 sm:px-6 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.7)] border border-white/[0.08] text-xs font-medium text-neutral-300 transition-colors duration-200"
         style={{ viewTransitionName: "none" }}
       >
         {/* Buggers Logo */}

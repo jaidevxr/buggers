@@ -413,7 +413,7 @@ export function LinearWireframeGrid() {
                   width="44"
                   height="18"
                   rx="4"
-                  fill="#08090a"
+                  fill="#000000"
                   stroke="rgba(255,255,255,0.18)"
                   strokeWidth="0.8"
                 />

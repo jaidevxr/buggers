@@ -210,11 +210,11 @@ export function AnimatedCodeScanner() {
   return (
     <div
       ref={containerRef}
-      className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom"
+      className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom"
     >
       {/* Background black radial fade to blend in */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
 
       <div className="relative z-0 space-y-6">
         {/* Top Control Bar: Scenario Pills + Playback Controls */}

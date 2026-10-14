@@ -246,7 +246,7 @@ export function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#08090a] text-neutral-200 antialiased selection:bg-white/20 flex flex-col justify-between overflow-x-clip">
+    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased selection:bg-white/20 flex flex-col justify-between overflow-x-clip">
       {/* Expansive Main Editorial Container */}
       <main className="w-full max-w-[1380px] mx-auto px-6 sm:px-10 lg:px-12 pt-28 pb-32 flex-1 flex flex-col">
         
@@ -269,7 +269,7 @@ export function DocsPage() {
           </p>
 
           {/* Sticky, Frosted Category Filter Bar & Live Search (Zero Horizontal Overflow) */}
-          <div className="pt-6 pb-4 border-b border-white/[0.08] sticky top-16 bg-[#08090a]/90 backdrop-blur-md z-30 space-y-3.5">
+          <div className="pt-6 pb-4 border-b border-white/[0.08] sticky top-16 bg-[#000000]/90 backdrop-blur-md z-30 space-y-3.5">
             {/* Top row: Section status indicator & Live Search */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               {/* Mobile compact dropdown selector (< lg screens) */}
@@ -332,7 +332,7 @@ export function DocsPage() {
 
                 {/* Instant Floating Search Results Drawer */}
                 {searchQuery.trim().length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.12] bg-[#0c0d11]/95 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] z-50 p-2 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.12] bg-[#0d0d0d]/95 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] z-50 p-2 space-y-1 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-3 py-1.5 flex items-center justify-between text-[10px] font-mono text-neutral-400 border-b border-white/[0.06]">
                       <span>{searchResults.length} {searchResults.length === 1 ? "SPECIFICATION MATCH" : "SPECIFICATIONS MATCHED"}</span>
                       <span>ESC to close</span>
@@ -460,9 +460,9 @@ export function DocsPage() {
           </div>
 
           {/* Interactive In-Process Scanner Testbed (Linear Open Hairline with Seamless Dissolve) */}
-          <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+          <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
             <div className="relative z-0">
               <LiveScannerPlayground />
             </div>
@@ -498,9 +498,9 @@ export function DocsPage() {
           </div>
 
           {/* Interactive 9-Stage Pipeline Visualizer (Linear Open Hairline with Seamless Dissolve) */}
-          <div className="w-full border-y border-white/[0.08] bg-[#090a0d] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#08090a_100%)] pointer-events-none z-10" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08090a] to-transparent pointer-events-none z-20" />
+          <div className="w-full border-y border-white/[0.08] bg-[#0a0a0a] p-6 sm:p-10 relative overflow-hidden linear-preview-fade-bottom">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_#000000_100%)] pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none z-20" />
             <div className="relative z-0">
               <PipelineStageVisualizer />
             </div>

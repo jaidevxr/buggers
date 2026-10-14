@@ -248,7 +248,7 @@ export function AboutPage() {
   }, [progress, current.riskScore, current.remediatedRiskScore]);
 
   return (
-    <div className="min-h-screen w-full bg-[#08090a] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-[#000000] text-neutral-200 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
       {/* Expansive Main Editorial Content with generous top padding to clear floating island */}
       <main className="pt-40 sm:pt-48 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1240px] mx-auto flex-1 w-full space-y-24">
         
@@ -274,15 +274,15 @@ export function AboutPage() {
         {/* Linear Layered Interactive PR Triage & Simulation Showcase */}
         {/* Motion Design · Scanning Laser · Live AST & Churn Simulations */}
         {/* ============================================================== */}
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#040406] overflow-hidden">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#050505] overflow-hidden">
           {/* Subtle Linear top lighting flare */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none z-20" />
 
           {/* Expansive black fade gradient from below to seamlessly dissolve into the canvas */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 sm:h-64 bg-gradient-to-t from-[#08090a] via-[#08090a]/90 via-[#08090a]/40 to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 sm:h-64 bg-gradient-to-t from-[#000000] via-[#000000]/90 via-[#000000]/40 to-transparent z-20" />
 
           {/* Authentic macOS Window Header Bar */}
-          <div className="px-4 sm:px-6 py-2.5 bg-[#050608] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
+          <div className="px-4 sm:px-6 py-2.5 bg-[#0a0a0a] border-b border-white/[0.06] flex items-center justify-between select-none relative z-10">
             {/* macOS 3 Traffic Light Window Dots */}
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/80 inline-block shadow-sm transition-transform hover:scale-110 cursor-pointer" title="Close" />
@@ -310,7 +310,7 @@ export function AboutPage() {
           </div>
 
           {/* Interactive Top Tab Navigation & Simulation Controls */}
-          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#040507] flex flex-wrap items-center justify-between gap-4 relative z-10">
+          <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#080808] flex flex-wrap items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
               <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 mr-2 hidden sm:inline-block">
                 Triage Views
@@ -510,7 +510,7 @@ export function AboutPage() {
             </div>
 
             {/* Right Layer: Interactive Code Diff, AST Simulation & Live Churn Engine */}
-            <div className="lg:col-span-8 p-5 sm:p-8 flex flex-col justify-between bg-[#08090a] relative overflow-hidden">
+            <div className="lg:col-span-8 p-5 sm:p-8 flex flex-col justify-between bg-[#000000] relative overflow-hidden">
               {/* Dynamic Scanning Laser Beam */}
               {simStage === "SCANNING" && (
                 <div
@@ -522,7 +522,7 @@ export function AboutPage() {
               )}
 
               {/* Black fade gradient from below only (no side cutoff) */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent z-20" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#000000] to-transparent z-20" />
 
               <div className="space-y-5 relative z-10">
                 {/* PR Header Bar */}
@@ -557,9 +557,9 @@ export function AboutPage() {
                 {/* Special View: TAB 3 "Repository Churn +" (Animated Heatmap & Volatility Curve) */}
                 {/* ============================================================== */}
                 {activeTab === "churn" ? (
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0a0a] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
                     {/* Bottom fade gradient only (no side cutoff) */}
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0a0b0e] to-transparent z-10" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10" />
 
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
@@ -998,7 +998,7 @@ export function AboutPage() {
       </main>
 
       {/* Consistent Matte-Black Linear Footer */}
-      <footer className="w-full border-t border-white/[0.08] py-8 text-center text-xs text-[#8a8f98] bg-[#08090a]">
+      <footer className="w-full border-t border-white/[0.08] py-8 text-center text-xs text-[#8a8f98] bg-[#000000]">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-neutral-300 font-medium">
             <BugMark className="h-4 w-4 text-white fill-white" />
