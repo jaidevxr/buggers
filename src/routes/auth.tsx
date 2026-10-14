@@ -151,12 +151,12 @@ export function AuthPage() {
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between">
-      {/* Smooth feathered bottom fade anchored closer to bottom into #000000 background */}
+      {/* Smooth, subtle feathered bottom fade into #000000 background */}
       <div
-        className="absolute inset-x-0 bottom-0 h-28 sm:h-44 pointer-events-none z-0"
+        className="absolute inset-x-0 bottom-0 h-16 sm:h-28 pointer-events-none z-0"
         style={{
           background:
-            "linear-gradient(to top, #000000 0%, #000000 20%, rgba(0, 0, 0, 0.98) 34%, rgba(0, 0, 0, 0.88) 48%, rgba(0, 0, 0, 0.70) 62%, rgba(0, 0, 0, 0.44) 76%, rgba(0, 0, 0, 0.18) 88%, rgba(0, 0, 0, 0.04) 95%, transparent 100%)",
+            "linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.78) 12%, rgba(0, 0, 0, 0.58) 28%, rgba(0, 0, 0, 0.38) 46%, rgba(0, 0, 0, 0.20) 64%, rgba(0, 0, 0, 0.08) 80%, rgba(0, 0, 0, 0.02) 92%, transparent 100%)",
         }}
       />
 
