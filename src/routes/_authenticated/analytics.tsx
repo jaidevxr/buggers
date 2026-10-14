@@ -89,7 +89,7 @@ function Analytics() {
           title="Risk Velocity over Time"
           subtitle="PR risk scores over analysis sequence with critical danger zone"
           badge={
-            <span className="text-[11px] font-mono text-neutral-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+            <span className="text-[11px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border">
               {riskOverTime.length} PRs
             </span>
           }
@@ -102,7 +102,7 @@ function Analytics() {
           title="PR Risk Tier Distribution"
           subtitle="Categorization of evaluated pull requests by severity rating"
           badge={
-            <span className="text-[11px] font-mono text-neutral-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+            <span className="text-[11px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border">
               4 tiers
             </span>
           }
@@ -115,7 +115,7 @@ function Analytics() {
           title="Finding Discovery Trends"
           subtitle="Daily volume of detected security defects and code quality issues"
           badge={
-            <span className="text-[11px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+            <span className="text-[11px] font-mono text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/25">
               {f.data?.findings.length ?? 0} total defects
             </span>
           }
@@ -129,12 +129,12 @@ function Analytics() {
           subtitle="Lines of code added versus deleted across analyzed pull requests"
           badge={
             <div className="flex items-center gap-2.5 text-[10px] font-mono">
-              <span className="flex items-center gap-1 text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Additions
               </span>
-              <span className="flex items-center gap-1 text-rose-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+              <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
                 Deletions
               </span>
             </div>
