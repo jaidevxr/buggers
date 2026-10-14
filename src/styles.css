@@ -342,13 +342,11 @@
   .page-view,
   .page-transition,
   .content-fade-in {
-    animation: pageFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: opacity;
+    animation: pageFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  .public-page-transition {
-    animation: subtleFadeIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: opacity;
+  .auth-page-entrance {
+    animation: authEntrance 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .skeleton-shimmer {
@@ -543,19 +541,21 @@ select {
 
 @keyframes pageFadeIn {
   from {
-    opacity: 0;
+    opacity: 0.65;
   }
   to {
     opacity: 1;
   }
 }
 
-@keyframes subtleFadeIn {
-  from {
-    opacity: 0;
+@keyframes authEntrance {
+  0% {
+    opacity: 0.55;
+    transform: translateY(4px);
   }
-  to {
+  100% {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 

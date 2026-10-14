@@ -163,7 +163,7 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between page-enter">
+    <div className="w-full flex-1 relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between auth-page-entrance">
       {/* Smooth, subtle feathered bottom fade into #000000 background */}
       <div
         className="absolute inset-x-0 bottom-0 h-16 sm:h-28 pointer-events-none z-0"
@@ -174,7 +174,7 @@ export function AuthPage() {
       />
 
       {/* Main Content Layout */}
-      <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
+      <div className="relative z-10 flex-1 w-full flex flex-col justify-between">
         {/* Symmetrical Centered Form Card with Linear Glide Animation */}
         <main className="w-full flex-1 flex flex-col items-center justify-center px-4 pt-24 pb-10 sm:pt-28 sm:pb-14">
           {/* Small Top-Left Aligned Back Arrow to Home */}
@@ -446,7 +446,7 @@ export function AuthPage() {
         </main>
 
         {/* Bottom Footer Row — Smooth unified entrance */}
-        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-neutral-400 animate-in fade-in-0 duration-300">
+        <footer className="w-full flex items-center justify-between px-6 sm:px-12 lg:px-20 pb-6 sm:pb-8 text-[11px] text-neutral-400">
           <span className="flex items-center gap-1.5 transition-colors duration-200">
             <Shield className="h-3.5 w-3.5 text-emerald-400" />
             <span>Encrypted zero-trust repository credentials</span>
