@@ -142,20 +142,12 @@ export function AuthPage() {
   }
 
   return (
-    <div
-      className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-cover bg-center bg-no-repeat text-slate-100 flex flex-col justify-between"
-      style={{
-        backgroundImage: `url('/landing-bg.webp'), url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAASACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDktuKcsRbuMUm4Dmpo5ol5ZGPtmq0Js7ELxFaETL49ulSSzbsbRgYpm4HGR64xT0uJXsMPanMP3f40UVCL6AOEP4U3v+FFFNgf/9k=')`,
-      }}
-    >
-      {/* Overall backdrop tint: matched to landing page to prevent darkening flash */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/60 pointer-events-none" />
-
+    <div className="min-h-screen w-full relative overflow-x-hidden antialiased selection:bg-white/20 bg-transparent text-slate-100 flex flex-col justify-between">
       {/* Main Content Layout */}
       <div className="relative z-10 min-h-screen w-full flex flex-col justify-between">
         {/* Symmetrical Centered Form Card */}
         <main className="w-full flex-1 flex items-center justify-center px-4 pt-28 pb-12 sm:pt-32 sm:pb-16">
-          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-5 transition-all duration-300">
+          <div className="w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-[#0a0d14]/85 backdrop-blur-xl p-7 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-5 transition-all duration-300 animate-in fade-in zoom-in-[0.98]">
             <div className="text-center space-y-1">
               <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
                 START FOR FREE

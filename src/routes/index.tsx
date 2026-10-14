@@ -56,33 +56,13 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#07090e] text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
-      {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Preloaded Instant WebP) */}
+    <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between">
+      {/* Main Full-Bleed Atmospheric Night Studio Hero Section (Rendered over persistent AtmosphericBackdrop) */}
       <section
         id="hero"
-        className="relative min-h-screen w-full bg-cover bg-center flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
-        style={{
-          backgroundImage: `url('/landing-bg.webp'), url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAASACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDktuKcsRbuMUm4Dmpo5ol5ZGPtmq0Js7ELxFaETL49ulSSzbsbRgYpm4HGR64xT0uJXsMPanMP3f40UVCL6AOEP4U3v+FFFNgf/9k=')`,
-        }}
+        className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
       >
-        {/* Soft atmospheric night vignette overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
-
-        {/* Natural Ambient Lamp Breathing Animation (Positioned near the warm desk lamp) */}
-        <div className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe" />
-
-        {/* Subtle, Organic Lakeside Light Twinkling (Distant cottage reflections on the water) */}
-        <div className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1" />
-        <div className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2" />
-        <div className="pointer-events-none absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3" />
-
-        {/* Gentle, Natural Warm Filament Accent Following Cursor (Zero neon, zero harsh bloom) */}
-        <div
-          className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
-          style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
-        />
-
-        {/* Slight subtle fade at bottom edge below visible screen */}
+        {/* Slight subtle fade at bottom edge into dark content sections */}
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#07090e] to-transparent pointer-events-none" />
 
         {/* Centered Hero Content */}
@@ -112,6 +92,7 @@ export function Landing() {
             <Link
               to="/auth"
               preload="intent"
+              viewTransition={true}
               className="rounded-full bg-white text-black px-8 py-3.5 text-xs sm:text-sm font-semibold shadow-xl shadow-black/40 hover:bg-slate-200 transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.985] flex items-center gap-2 hover:-translate-y-0.5"
             >
               <span>Get Started</span>
@@ -121,6 +102,7 @@ export function Landing() {
             <Link
               to="/how-it-works"
               preload="intent"
+              viewTransition={true}
               className="rounded-full bg-black/40 backdrop-blur-md px-7 py-3.5 text-xs sm:text-sm font-medium text-white hover:bg-black/65 border border-white/15 transition-[background-color,color,transform,border-color] duration-150 flex items-center gap-2 active:scale-[0.985] hover:-translate-y-0.5"
             >
               <Play className="h-3.5 w-3.5 fill-current" />

@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { PublicHeader } from "@/components/layout/PublicHeader";
+import { AtmosphericBackdrop } from "@/components/layout/AtmosphericBackdrop";
 
 function NotFoundComponent() {
   return (
@@ -167,9 +168,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col selection:bg-white/20">
+        <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col selection:bg-white/20 relative">
+          {!isAuthRoute && <AtmosphericBackdrop />}
           {!isAuthRoute && <PublicHeader />}
-          <div className="flex-1 w-full flex flex-col">
+          <div className="flex-1 w-full flex flex-col relative z-10 page-transition-container">
             <Outlet />
           </div>
         </div>
