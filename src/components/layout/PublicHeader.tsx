@@ -25,15 +25,15 @@ export function PublicHeader() {
           </span>
         </Link>
 
-        {/* Navigation items — stable font-medium widths to eliminate twitch on navigation */}
-        <nav className="flex items-center gap-5 sm:gap-6 font-medium text-xs">
+        {/* Navigation items — stable font-medium widths with subtle pill highlights */}
+        <nav className="flex items-center gap-1 sm:gap-1.5 font-medium text-xs">
           <Link
             to="/"
             preload="intent"
-            className={`transition-colors duration-150 py-1 ${
+            className={`rounded-full px-3 py-1 transition-all duration-200 cursor-pointer ${
               pathname === "/"
-                ? "text-white"
-                : "text-neutral-400 hover:text-neutral-200"
+                ? "text-white bg-white/[0.08]"
+                : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
             Home
@@ -41,10 +41,10 @@ export function PublicHeader() {
           <Link
             to="/docs"
             preload="intent"
-            className={`transition-colors duration-150 py-1 ${
+            className={`rounded-full px-3 py-1 transition-all duration-200 cursor-pointer ${
               pathname === "/docs"
-                ? "text-white"
-                : "text-neutral-400 hover:text-neutral-200"
+                ? "text-white bg-white/[0.08]"
+                : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
             Docs
@@ -52,10 +52,10 @@ export function PublicHeader() {
           <Link
             to="/about"
             preload="intent"
-            className={`transition-colors duration-150 py-1 ${
+            className={`rounded-full px-3 py-1 transition-all duration-200 cursor-pointer ${
               pathname === "/about"
-                ? "text-white"
-                : "text-neutral-400 hover:text-neutral-200"
+                ? "text-white bg-white/[0.08]"
+                : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
             About
@@ -66,10 +66,10 @@ export function PublicHeader() {
         <Link
           to="/auth"
           preload="intent"
-          className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer ${
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97] cursor-pointer ${
             pathname === "/auth"
-              ? "bg-white text-black ring-2 ring-white/30"
-              : "bg-white text-black hover:bg-neutral-200"
+              ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)] ring-2 ring-white/30"
+              : "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_16px_rgba(255,255,255,0.15)]"
           }`}
         >
           Login

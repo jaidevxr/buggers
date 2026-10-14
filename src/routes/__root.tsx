@@ -168,7 +168,7 @@ function RootComponent() {
         <div className="min-h-screen w-full bg-[#08090a] text-slate-100 flex flex-col selection:bg-white/20 relative">
           {!isAuthRoute && <AtmosphericBackdrop />}
           {!isAuthRoute && <PublicHeader />}
-          <div className="flex-1 w-full flex flex-col relative z-10">
+          <div key={pathname} className="flex-1 w-full flex flex-col relative z-10 route-content-enter">
             <Outlet />
           </div>
         </div>
