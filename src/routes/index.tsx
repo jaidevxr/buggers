@@ -64,15 +64,6 @@ export function Landing() {
         id="hero"
         className="relative min-h-screen w-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-24 overflow-hidden"
       >
-        {/* Smooth, subtle feathered bottom fade into #000000 background */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-16 sm:h-28 pointer-events-none z-10"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.78) 12%, rgba(0, 0, 0, 0.58) 28%, rgba(0, 0, 0, 0.38) 46%, rgba(0, 0, 0, 0.20) 64%, rgba(0, 0, 0, 0.08) 80%, rgba(0, 0, 0, 0.02) 92%, transparent 100%)",
-          }}
-        />
-
         {/* Centered Hero Content */}
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           {/* Neutral Category Pill Badge */}
@@ -164,6 +155,8 @@ export function Landing() {
       {/* AUTHENTIC BUGGERS PRODUCT SHOWCASE (Linear-Style 2-Column Split) */}
       {/* ======================================================== */}
       <section id="showcase" className="relative z-10 bg-[#000000] pt-12 sm:pt-20 pb-24 sm:pb-36 scroll-mt-16">
+        {/* Subtle, smooth top gradient transition into black showcase on scroll */}
+        <div className="absolute inset-x-0 -top-20 sm:-top-28 h-20 sm:h-28 bg-gradient-to-b from-transparent to-[#000000] pointer-events-none z-10" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
 
           {/* Feature 1: Live Animated Code Detection & Remediation Simulator (Linear Style) */}

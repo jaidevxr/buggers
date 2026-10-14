@@ -62,9 +62,7 @@ export function AtmosphericBackdrop() {
     >
       {/* Background artwork with smooth parallax scroll translation at uncompressed 1:1 pixel fidelity */}
       <div
-        className={`absolute inset-x-0 -top-8 -bottom-36 will-change-transform ${
-          isAuth ? "transition-none" : "transition-transform duration-100 ease-out"
-        }`}
+        className="absolute inset-x-0 -top-8 -bottom-36 will-change-transform transition-transform duration-200 ease-out"
         style={{
           transform: `translate3d(0, ${-parallaxOffset}px, 0)`,
           backgroundImage: `url('/landing-bg.png')`,
@@ -79,23 +77,17 @@ export function AtmosphericBackdrop() {
 
       {/* Persistent warm ambient desk lamp breathing animation with parallax depth */}
       <div
-        className={`pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe will-change-transform ${
-          isAuth ? "transition-none" : "transition-transform duration-100 ease-out"
-        }`}
+        className="pointer-events-none absolute left-[38%] bottom-[28%] -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl animate-lamp-breathe will-change-transform transition-transform duration-200 ease-out"
         style={{ transform: `translate3d(0, ${-lampParallax}px, 0)` }}
       />
 
       {/* Persistent organic lakeside cottage twinkling lights with parallax */}
       <div
-        className={`pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1 will-change-transform ${
-          isAuth ? "transition-none" : "transition-transform duration-100 ease-out"
-        }`}
+        className="pointer-events-none absolute left-[49%] top-[48%] h-1.5 w-1.5 rounded-full bg-amber-200/60 blur-[0.5px] animate-soft-twinkle-1 will-change-transform transition-transform duration-200 ease-out"
         style={{ transform: `translate3d(0, ${-parallaxOffset}px, 0)` }}
       />
       <div
-        className={`pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2 will-change-transform ${
-          isAuth ? "transition-none" : "transition-transform duration-100 ease-out"
-        }`}
+        className="pointer-events-none absolute left-[53%] top-[50%] h-1 w-1 rounded-full bg-amber-100/70 blur-[0.5px] animate-soft-twinkle-2 will-change-transform transition-transform duration-200 ease-out"
         style={{ transform: `translate3d(0, ${-parallaxOffset}px, 0)` }}
       />
       <div
