@@ -280,8 +280,8 @@ export function AboutPage() {
 
           {/* Black fade gradients at borders to seamlessly dissolve into the canvas (Linear Edge Feathering) */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#08090a] to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
 
           {/* Interactive Top Tab Navigation & Simulation Controls */}
           <div className="border-b border-white/[0.08] px-4 sm:px-8 py-3 bg-[#0c0d10] flex flex-wrap items-center justify-between gap-4 relative z-10">
@@ -495,6 +495,10 @@ export function AboutPage() {
                 </div>
               )}
 
+              {/* Side black gradient fades for seamless soft edges */}
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#08090a] to-transparent z-20" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-16 bg-gradient-to-l from-[#08090a] to-transparent z-20" />
+
               <div className="space-y-5 relative z-10">
                 {/* PR Header Bar */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
@@ -528,7 +532,11 @@ export function AboutPage() {
                 {/* Special View: TAB 3 "Repository Churn +" (Animated Heatmap & Volatility Curve) */}
                 {/* ============================================================== */}
                 {activeTab === "churn" ? (
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                    {/* Inner side black gradient fades */}
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#0a0b0e] to-transparent z-10" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#0a0b0e] via-[#0a0b0e]/80 to-transparent z-10" />
+
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
                         <Activity className="h-3.5 w-3.5 text-rose-400" />
@@ -602,7 +610,11 @@ export function AboutPage() {
                   /* ============================================================== */
                   /* Special View: TAB 4 "AST Rules +" (Interactive AST Node Inspector) */
                   /* ============================================================== */
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                    {/* Inner side black gradient fades */}
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#0a0b0e] to-transparent z-10" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#0a0b0e] via-[#0a0b0e]/80 to-transparent z-10" />
+
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
                         <Code2 className="h-3.5 w-3.5 text-emerald-400" />
@@ -661,7 +673,11 @@ export function AboutPage() {
                   /* ============================================================== */
                   /* Special View: TAB 5 "Git automations +" (GitHub Action Status & 1-Click Patch) */
                   /* ============================================================== */
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] p-5 space-y-4 font-mono text-xs relative overflow-hidden">
+                    {/* Inner side black gradient fades */}
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#0a0b0e] to-transparent z-10" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#0a0b0e] via-[#0a0b0e]/80 to-transparent z-10" />
+
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-[11px] text-neutral-400">
                       <div className="flex items-center gap-2">
                         <GitPullRequest className="h-3.5 w-3.5 text-blue-400" />
@@ -714,8 +730,12 @@ export function AboutPage() {
                   /* Standard Views: TAB 1 ("Diffs +") & TAB 2 ("Guided reviews +") */
                   /* Floating Code Diff Window with Line-by-Line Transitions */
                   /* ============================================================== */
-                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] overflow-hidden font-mono text-xs leading-relaxed">
-                    <div className="bg-white/[0.02] border-b border-white/[0.06] px-4 py-2 flex items-center justify-between text-[11px] text-neutral-500">
+                  <div className="rounded-lg border border-white/[0.08] bg-[#0a0b0e] overflow-hidden font-mono text-xs leading-relaxed relative">
+                    {/* Inner Code Diff Side Black Gradient Fades */}
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-12 bg-gradient-to-r from-[#0a0b0e] to-transparent z-20" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-[#0a0b0e] via-[#0a0b0e]/90 to-transparent z-20" />
+
+                    <div className="bg-white/[0.02] border-b border-white/[0.06] px-4 py-2 flex items-center justify-between text-[11px] text-neutral-500 relative z-10">
                       <div className="flex items-center gap-2">
                         <span className={`h-2 w-2 rounded-full ${patchApplied ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
                         <span className="text-neutral-300">{current.file}</span>
@@ -764,7 +784,10 @@ export function AboutPage() {
                 )}
 
                 {/* Inline Grounded Finding Advisory with motion transition */}
-                <div className="border border-white/[0.08] rounded-lg p-4 bg-[#0c0d10] space-y-2">
+                <div className="border border-white/[0.08] rounded-lg p-4 bg-[#0c0d10] space-y-2 relative overflow-hidden">
+                  {/* Inner side black gradient fades */}
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0c0d10] to-transparent z-10" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-20 bg-gradient-to-l from-[#0c0d10] via-[#0c0d10]/90 to-transparent z-10" />
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-mono font-semibold text-white">
                       <Sparkles className="h-3.5 w-3.5 text-neutral-300" />

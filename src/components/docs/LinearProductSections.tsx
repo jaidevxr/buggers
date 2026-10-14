@@ -277,6 +277,10 @@ export function LinearProductSections() {
               {/* Dynamic Laser Scanning Line */}
               <div className="absolute inset-x-0 h-8 bg-gradient-to-b from-transparent via-emerald-400/15 to-transparent pointer-events-none animate-scanline z-20" />
 
+              {/* Side black gradient fades for seamless edge feathering */}
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#07080a] to-transparent z-20" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#07080a] via-[#07080a]/90 to-transparent z-20" />
+
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 text-xs font-mono">
                 <span className="text-neutral-300 flex items-center gap-1.5">
                   <FileCode className="h-3.5 w-3.5 text-neutral-400" />
