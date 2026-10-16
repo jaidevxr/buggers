@@ -1,7 +1,8 @@
-# Buggers — Deterministic Code Review & Pull Request Triage
+# [Buggers](https://buggers.vercel.app) — AI Code Review & Pull Request Security Scanner
 
-> Precision release intelligence for modern engineering teams. Buggers inspects raw unified diffs against historical repository fault lines to detect regressions, boundary flaws, security vulnerabilities, and state race conditions before code merges into production.
+> Precision release intelligence for modern engineering teams. [Buggers](https://buggers.vercel.app) inspects raw unified diffs against historical repository fault lines to detect regressions, boundary flaws, security vulnerabilities, and state race conditions before code merges into production.
 
+[![Live App](https://img.shields.io/badge/Live%20Application-buggers.vercel.app-000000?style=flat-square&logo=vercel)](https://buggers.vercel.app)
 [![License](https://img.shields.io/badge/License-Private-slate?style=flat-square)](LICENSE)
 [![Runtime](https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square)](https://nodejs.org)
 [![Framework](https://img.shields.io/badge/Framework-TanStack%20Start-blue?style=flat-square)](https://tanstack.com/start)
