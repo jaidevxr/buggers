@@ -1,0 +1,22 @@
+{
+  "name": "Buggers – AI Pull Request Review & Code Security Triage",
+  "short_name": "Buggers",
+  "description": "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -17,6 +17,9 @@ if (typeof window !== "undefined") {
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
   beforeLoad: async () => {
     const now = Date.now();
     // Fast path: Check local session first (<1ms synchronous check)

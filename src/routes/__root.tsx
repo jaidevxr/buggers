@@ -80,33 +80,80 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+import {
+  SITE_ORIGIN,
+  GOOGLE_SITE_VERIFICATION,
+  getWebSiteJsonLd,
+  getSoftwareApplicationJsonLd,
+  getOrganizationJsonLd,
+} from "@/lib/seo";
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
+  head: () => {
+    const meta: Array<Record<string, string>> = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Buggers – AI-assisted code review & bug triage" },
+      { title: "Buggers – AI Code Review, Bug Triage & Vulnerability Scanner" },
       {
         name: "description",
         content:
-          "Buggers analyzes your real GitHub pull requests for risk, historical signals, and AI-reviewed findings.",
+          "Buggers is an intelligent code security and review platform. Automatically analyze GitHub pull requests, detect vulnerabilities, track risk velocity, and eliminate developer review fatigue.",
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        name: "keywords",
+        content:
+          "Buggers, Buggers AI, code review, AI pull request review, vulnerability scanner, automated security triage, GitHub PR analysis, static analysis, DevSecOps, code risk velocity",
       },
-      { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
-      { rel: "icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon.ico?v=3", type: "image/x-icon" },
-    ],
-  }),
+      { name: "author", content: "Buggers" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+      { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+      { name: "theme-color", content: "#09090b" },
+      { property: "og:site_name", content: "Buggers" },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE_ORIGIN}/` },
+      { property: "og:title", content: "Buggers – AI Code Review & Pull Request Security Triage" },
+      {
+        property: "og:description",
+        content:
+          "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
+      },
+      { property: "og:image", content: `${SITE_ORIGIN}/landing-bg.png` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Buggers AI Code Review & Security Platform" },
+      { property: "og:locale", content: "en_US" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Buggers – AI Code Review & Pull Request Security Triage" },
+      {
+        name: "twitter:description",
+        content:
+          "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
+      },
+      { name: "twitter:image", content: `${SITE_ORIGIN}/landing-bg.png` },
+    ];
+
+    if (GOOGLE_SITE_VERIFICATION) {
+      meta.push({ name: "google-site-verification", content: GOOGLE_SITE_VERIFICATION });
+    }
+
+    return {
+      meta,
+      links: [
+        { rel: "canonical", href: `${SITE_ORIGIN}/` },
+        { rel: "manifest", href: "/site.webmanifest" },
+        { rel: "stylesheet", href: appCss },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        },
+        { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
+        { rel: "icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
+        { rel: "icon", href: "/favicon.ico?v=3", type: "image/x-icon" },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -114,6 +161,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const jsonLdWebSite = getWebSiteJsonLd();
+  const jsonLdSoftwareApp = getSoftwareApplicationJsonLd();
+  const jsonLdOrg = getOrganizationJsonLd();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -128,6 +179,18 @@ function RootShell({ children }: { children: ReactNode }) {
               } catch (e) {}
             `,
           }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSoftwareApp) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
         />
         <HeadContent />
       </head>

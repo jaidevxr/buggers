@@ -19,26 +19,25 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
+import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/how-it-works")({
-  head: () => ({
-    meta: [
-      { title: "How It Works – Buggers" },
-      {
-        name: "description",
-        content:
-          "See how Buggers ingests pull requests, detects regression risks using churn history, and suggests verified fixes.",
-      },
-      { property: "og:title", content: "How It Works – Buggers" },
-      {
-        property: "og:description",
-        content:
-          "End-to-end pull request triage powered by repository history and grounded AI models.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    createRouteSeo({
+      path: "/how-it-works",
+      title: "How It Works – Buggers | Automated PR Code Security & Analysis Architecture",
+      description:
+        "Discover how Buggers ingests GitHub pull requests, runs multi-stage risk triage, models code churn hotspots, and generates verifiable security remediation with zero hallucination.",
+      keywords: [
+        "how Buggers works",
+        "pull request review pipeline",
+        "code security architecture",
+        "automated code analysis",
+        "git churn analysis",
+        "LLM code review",
+        "risk score formula",
+      ],
+    }),
   component: HowItWorksPage,
 });
 

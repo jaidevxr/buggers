@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/oauth/github/return")({
   component: OAuthReturn,
   ssr: false,
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
 });
 
 function OAuthReturn() {

@@ -22,26 +22,24 @@ import {
   Code2,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
+import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About – Buggers" },
-      {
-        name: "description",
-        content:
-          "About Buggers: Precision AI pull request triage and automated code review that eliminates developer fatigue.",
-      },
-      { property: "og:title", content: "About – Buggers" },
-      {
-        property: "og:description",
-        content:
-          "Engineered to catch regression risks before production with zero hallucination and repository-grounded context.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    createRouteSeo({
+      path: "/about",
+      title: "About Buggers – Mission, Security Principles & Zero-Hallucination AI Code Review",
+      description:
+        "Learn about Buggers: Precision AI pull request triage and automated code review engineered to eliminate developer review fatigue with grounded AST analysis.",
+      keywords: [
+        "About Buggers",
+        "AI code review mission",
+        "software engineering intelligence",
+        "pull request triage principles",
+        "developer productivity tools",
+        "code security mission",
+      ],
+    }),
   component: AboutPage,
 });
 

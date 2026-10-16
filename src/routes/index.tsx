@@ -17,29 +17,36 @@ import {
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 import { AnimatedCodeScanner } from "@/components/home/AnimatedCodeScanner";
+import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Buggers – Catch critical issues before they reach production" },
-      {
-        name: "description",
-        content:
-          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues – so you can ship with confidence.",
-      },
-      { property: "og:title", content: "Buggers – Catch critical issues before they reach production" },
-      {
-        property: "og:description",
-        content:
-          "Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
-    ],
-  }),
+  head: () => {
+    const seo = createRouteSeo({
+      path: "/",
+      title: "Buggers – AI-Powered Pull Request Review & Vulnerability Scanner",
+      description:
+        "Buggers automatically reviews your GitHub pull requests, detects vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
+      keywords: [
+        "Buggers",
+        "AI code review",
+        "pull request analysis",
+        "vulnerability scanner",
+        "automated code review",
+        "GitHub PR security",
+        "static code analysis",
+        "DevSecOps",
+        "code triage",
+      ],
+    });
+
+    return {
+      meta: seo.meta,
+      links: [
+        ...seo.links,
+        { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
+      ],
+    };
+  },
   component: Landing,
 });
 

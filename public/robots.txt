@@ -1,8 +1,30 @@
+# robots.txt for Buggers (https://buggers.vercel.app)
+
 User-agent: Googlebot
 Allow: /
+Disallow: /dashboard
+Disallow: /repositories
+Disallow: /pull-requests
+Disallow: /findings
+Disallow: /analytics
+Disallow: /tickets
+Disallow: /settings
+Disallow: /analysis/
+Disallow: /api/
+Disallow: /oauth/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /dashboard
+Disallow: /repositories
+Disallow: /pull-requests
+Disallow: /findings
+Disallow: /analytics
+Disallow: /tickets
+Disallow: /settings
+Disallow: /analysis/
+Disallow: /api/
+Disallow: /oauth/
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +34,15 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /repositories
+Disallow: /pull-requests
+Disallow: /findings
+Disallow: /analytics
+Disallow: /tickets
+Disallow: /settings
+Disallow: /analysis/
+Disallow: /api/
+Disallow: /oauth/
+
+Sitemap: https://buggers.vercel.app/sitemap.xml

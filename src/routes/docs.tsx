@@ -32,26 +32,25 @@ import { LinearProductSections } from "@/components/docs/LinearProductSections";
 import { LinearWireframeGrid } from "@/components/docs/LinearWireframeGrid";
 import { LiveScannerPlayground } from "@/components/docs/LiveScannerPlayground";
 import { PipelineStageVisualizer } from "@/components/docs/PipelineStageVisualizer";
+import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/docs")({
-  head: () => ({
-    meta: [
-      { title: "Documentation – Buggers Engineering Specifications" },
-      {
-        name: "description",
-        content:
-          "Engineering documentation for Buggers: Deterministic risk scoring model 1.1.0, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and Nitro server functions.",
-      },
-      { property: "og:title", content: "Documentation – Buggers Engineering Specifications" },
-      {
-        property: "og:description",
-        content:
-          "Precision release intelligence and bug triage platform documentation, architecture specifications, API references, and deployment guides.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    createRouteSeo({
+      path: "/docs",
+      title: "Documentation – Buggers Engineering Specifications & Scanner Playground",
+      description:
+        "Engineering documentation for Buggers: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and live scanner playground.",
+      keywords: [
+        "Buggers documentation",
+        "AST triage pipeline",
+        "SAST scanner playground",
+        "GitHub webhook security",
+        "risk scoring formula",
+        "code vulnerability docs",
+        "OWASP scanning",
+      ],
+    }),
   component: DocsPage,
 });
 

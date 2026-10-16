@@ -15,6 +15,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { BugMark } from "@/components/brand/BugMark";
 
+import { createRouteSeo } from "@/lib/seo";
+
 export const Route = createFileRoute("/auth")({
   beforeLoad: async () => {
     if (typeof window !== "undefined") {
@@ -28,25 +30,21 @@ export const Route = createFileRoute("/auth")({
       throw redirect({ to: "/dashboard" });
     }
   },
-  head: () => ({
-    meta: [
-      { title: "Buggers – Sign in & Sign up" },
-      {
-        name: "description",
-        content: "Sign in or create your Buggers account to analyze pull requests.",
-      },
-      { property: "og:title", content: "Buggers – Sign in & Sign up" },
-      {
-        property: "og:description",
-        content: "Continue with GitHub, Google, or Email to start reviewing code with AI.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
-    ],
-  }),
+  head: () => {
+    const seo = createRouteSeo({
+      path: "/auth",
+      title: "Sign In – Buggers AI Code Review",
+      description: "Sign in or register your Buggers account to connect GitHub repositories.",
+      noindex: true,
+    });
+    return {
+      meta: seo.meta,
+      links: [
+        ...seo.links,
+        { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
+      ],
+    };
+  },
   component: AuthPage,
 });
 
