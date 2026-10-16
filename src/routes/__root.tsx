@@ -117,7 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
       },
-      { property: "og:image", content: `${SITE_ORIGIN}/landing-bg.png` },
+      { property: "og:image", content: `${SITE_ORIGIN}/og-image.png` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Buggers AI Code Review & Security Platform" },
@@ -129,7 +129,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
       },
-      { name: "twitter:image", content: `${SITE_ORIGIN}/landing-bg.png` },
+      { name: "twitter:image", content: `${SITE_ORIGIN}/og-image.png` },
     ];
 
     if (GOOGLE_SITE_VERIFICATION) {

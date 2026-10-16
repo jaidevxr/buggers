@@ -53,7 +53,7 @@ describe("Technical SEO: Architecture & Canonical Domain", () => {
     expect(ogUrl?.["content"]).toBe(`${SITE_ORIGIN}/docs`);
 
     const ogImage = seo.meta.find((m) => m["property"] === "og:image");
-    expect(ogImage?.["content"]).toContain(`${SITE_ORIGIN}/landing-bg.png`);
+    expect(ogImage?.["content"]).toContain(`${SITE_ORIGIN}/og-image.png`);
 
     const twitterCard = seo.meta.find((m) => m["name"] === "twitter:card");
     expect(twitterCard?.["content"]).toBe("summary_large_image");
@@ -144,11 +144,11 @@ describe("Technical SEO: Static Crawl Assets", () => {
     expect(parsed.icons.length).toBeGreaterThan(0);
   });
 
-  it("verifies public Open Graph social preview image exists", () => {
-    const ogImagePath = path.join(publicDir, "landing-bg.png");
+  it("verifies public Open Graph social preview image exists and is high resolution", () => {
+    const ogImagePath = path.join(publicDir, "og-image.png");
     expect(fs.existsSync(ogImagePath)).toBe(true);
     const stats = fs.statSync(ogImagePath);
-    expect(stats.size).toBeGreaterThan(1000);
+    expect(stats.size).toBeGreaterThan(10000);
   });
 
   it("verifies Google Search Console HTML verification file exists with exact required content", () => {

@@ -28,7 +28,7 @@ function resolveBaseUrl(): string {
 
 export const SITE_ORIGIN = resolveBaseUrl();
 export const SITE_NAME = "Buggers";
-export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/landing-bg.png`;
+export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og-image.png`;
 
 export const GOOGLE_SITE_VERIFICATION =
   (typeof import.meta !== "undefined" && import.meta.env?.["VITE_GOOGLE_SITE_VERIFICATION"]) ||
