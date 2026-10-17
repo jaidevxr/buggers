@@ -41,7 +41,7 @@ export const Route = createFileRoute("/auth")({
       meta: seo.meta,
       links: [
         ...seo.links,
-        { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
+        { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp", fetchPriority: "high" },
       ],
     };
   },

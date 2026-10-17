@@ -15,16 +15,23 @@ export function AtmosphericBackdrop() {
   const currentScrollY = useRef(0);
   const rafId = useRef<number | null>(null);
 
-  // Pre-decode original artwork in memory to eliminate partial/striped progressive loading
+  // Pre-decode high-performance WebP artwork in memory for instant, seamless rendering
   useEffect(() => {
     if (!isAtmospheric) return;
     const img = new Image();
-    img.src = "/landing-bg.png";
+    img.src = "/landing-bg.webp";
     if (img.complete) {
       setIsLoaded(true);
     } else {
-      img.onload = () => setIsLoaded(true);
-      img.onerror = () => setIsLoaded(true); // Graceful fallback
+      if ("decode" in img) {
+        img
+          .decode()
+          .then(() => setIsLoaded(true))
+          .catch(() => setIsLoaded(true));
+      } else {
+        img.onload = () => setIsLoaded(true);
+        img.onerror = () => setIsLoaded(true);
+      }
     }
   }, [isAtmospheric]);
 
@@ -102,7 +109,7 @@ export function AtmosphericBackdrop() {
         className="absolute inset-x-0 -top-8 -bottom-36 will-change-transform"
         style={{
           transform: "translate3d(0, 0px, 0)",
-          backgroundImage: `url('/landing-bg.png')`,
+          backgroundImage: `url('/landing-bg.webp')`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           backgroundRepeat: "no-repeat",
