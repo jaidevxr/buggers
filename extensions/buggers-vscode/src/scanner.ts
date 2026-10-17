@@ -22,8 +22,12 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
     if (!rawLine) continue;
     const lineNumber = lineIdx + 1;
 
+    const prevLine = lineIdx > 0 ? lines[lineIdx - 1] : "";
+    const hasIgnore = rawLine.includes("buggers-ignore") || prevLine.includes("buggers-ignore");
+
     // 1. Check Secret Rules
     for (const rule of SECRET_RULES) {
+      if (hasIgnore) continue;
       rule.pattern.lastIndex = 0;
       const match = rule.pattern.exec(rawLine);
       if (match && match[0]) {
@@ -48,6 +52,8 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
           title: `Exposed Secret: ${rule.name}`,
           severity: rule.severity,
           category: rule.category,
+          cwe: rule.cwe,
+          owasp: rule.owasp,
           confidence: isMock ? 0.8 : 0.99,
           ruleId: rule.id,
           problem: rule.description,
@@ -67,6 +73,7 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
 
     // 2. Check SAST Rules
     for (const rule of SAST_RULES) {
+      if (hasIgnore) continue;
       rule.pattern.lastIndex = 0;
       const match = rule.pattern.exec(rawLine);
       if (match && match[0]) {
@@ -84,6 +91,8 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
           title: `SAST Flaw: ${rule.name}`,
           severity: rule.severity,
           category: rule.category,
+          cwe: rule.cwe,
+          owasp: rule.owasp,
           confidence: isMock ? 0.75 : 0.95,
           ruleId: rule.id,
           problem: rule.description,

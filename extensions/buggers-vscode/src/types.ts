@@ -12,6 +12,8 @@ export interface BuggersFinding {
   category: Category;
   confidence: number;
   ruleId: string;
+  cwe?: string;
+  owasp?: string;
   problem: string;
   whyItMatters: string;
   evidence: string;
@@ -25,6 +27,8 @@ export interface ScanRule {
   name: string;
   severity: Severity;
   category: Category;
+  cwe?: string;
+  owasp?: string;
   pattern: RegExp;
   description: string;
   whyItMatters: string;

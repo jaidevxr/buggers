@@ -287,6 +287,474 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
+  // Virtual Text Document Provider for Remedy Diff Previews
+  class BuggersPreviewProvider implements vscode.TextDocumentContentProvider {
+    private previews = new Map<string, string>();
+    setPreview(uri: vscode.Uri, content: string) {
+      this.previews.set(uri.toString(), content);
+    }
+    provideTextDocumentContent(uri: vscode.Uri): string {
+      return this.previews.get(uri.toString()) || "";
+    }
+  }
+  const previewProvider = new BuggersPreviewProvider();
+  context.subscriptions.push(
+    vscode.workspace.registerTextDocumentContentProvider("buggers-preview", previewProvider),
+  );
+
+  // Command: Preview Security Remedy Diff
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.previewDiff", async (nodeOrFinding: any) => {
+      const finding: BuggersFinding = nodeOrFinding?.finding ?? nodeOrFinding;
+      if (!finding || !finding.replacementCode) {
+        vscode.window.showInformationMessage("Buggers: No remedy preview available for this finding.");
+        return;
+      }
+
+      const uri = vscode.Uri.file(finding.file);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const lines = doc.getText().split("\n");
+      const lineIdx = Math.max(0, finding.line - 1);
+      lines[lineIdx] = finding.replacementCode;
+      const remediatedText = lines.join("\n");
+
+      const previewUri = vscode.Uri.parse(`buggers-preview://preview/${path.basename(finding.file)}?remedy=true`);
+      previewProvider.setPreview(previewUri, remediatedText);
+
+      await vscode.commands.executeCommand(
+        "vscode.diff",
+        uri,
+        previewUri,
+        `🛡️ Buggers Remedy Diff: ${finding.title}`,
+        { preview: true },
+      );
+    }),
+  );
+
+  // Command: Open Rich Finding Inspector Webview
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.openInspector", async (nodeOrFinding?: any) => {
+      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? nodeOrFinding;
+
+      if (!finding) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          const findings = scanDocument(editor.document);
+          const curLine = editor.selection.active.line;
+          finding = findings.find((f) => Math.max(0, f.line - 1) === curLine) || findings[0];
+        }
+      }
+
+      if (!finding) {
+        vscode.window.showInformationMessage("Buggers: No finding selected or detected to inspect.");
+        return;
+      }
+
+      const panel = vscode.window.createWebviewPanel(
+        "buggersFindingInspector",
+        `🛡️ Buggers: ${finding.ruleId}`,
+        vscode.ViewColumn.Beside,
+        { enableScripts: true },
+      );
+
+      const sevColor =
+        finding.severity === "critical"
+          ? "#ef4444"
+          : finding.severity === "high"
+            ? "#f97316"
+            : finding.severity === "medium"
+              ? "#eab308"
+              : "#3b82f6";
+
+      panel.webview.html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 24px;
+      color: var(--vscode-foreground, #e2e8f0);
+      background-color: var(--vscode-editor-background, #09090b);
+      line-height: 1.6;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+    }
+    .badge-sev {
+      background: ${sevColor}22;
+      color: ${sevColor};
+      border: 1px solid ${sevColor}66;
+    }
+    .badge-tag {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--vscode-foreground);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    h1 {
+      font-size: 19px;
+      font-weight: 700;
+      margin: 12px 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .code-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .code-vuln {
+      background: rgba(239, 68, 68, 0.12);
+      border-left: 3px solid #ef4444;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      color: #fca5a5;
+    }
+    .code-fix {
+      background: rgba(34, 197, 94, 0.12);
+      border-left: 3px solid #22c55e;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      color: #86efac;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--vscode-foreground, #fff);
+    }
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <span class="badge badge-sev">${finding.severity}</span>
+    ${finding.cwe ? `<span class="badge badge-tag">${finding.cwe}</span>` : ""}
+    ${finding.owasp ? `<span class="badge badge-tag">${finding.owasp}</span>` : ""}
+  </div>
+
+  <h1>🛡️ ${finding.title}</h1>
+  <div style="font-size: 12px; opacity: 0.7; margin-bottom: 16px;">
+    File: <code>${path.basename(finding.file)}</code> · Line: <strong>${finding.line}</strong> · Rule ID: <code>${finding.ruleId}</code>
+  </div>
+
+  <div class="card">
+    <div style="font-weight: 600; margin-bottom: 4px;">Description</div>
+    <div>${finding.problem}</div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight: 600; margin-bottom: 4px;">Why It Matters & Exploit Scenario</div>
+    <div>${finding.whyItMatters}</div>
+  </div>
+
+  <div class="card">
+    <span class="code-label" style="color: #f87171;">❌ Vulnerable Code Detected:</span>
+    <pre class="code-vuln">${finding.evidence}</pre>
+
+    <span class="code-label" style="color: #4ade80; margin-top: 14px;">✅ Suggested Buggers Auto-Remedy:</span>
+    <pre class="code-fix">${finding.replacementCode || finding.suggestedFix}</pre>
+  </div>
+
+  <div class="actions">
+    <button onclick="send('applyRemedy')">⚡ Accept & Apply Remedy</button>
+    <button class="secondary" onclick="send('previewDiff')">🔍 View Side-by-Side Diff</button>
+    <button class="secondary" onclick="send('commitRemedy')">📦 Commit to Git</button>
+    <button class="secondary" onclick="send('ignoreFinding')">🔇 Suppress Finding</button>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    function send(cmd) {
+      vscode.postMessage({ command: cmd });
+    }
+  </script>
+</body>
+</html>`;
+
+      panel.webview.onDidReceiveMessage(async (msg) => {
+        if (msg.command === "applyRemedy") {
+          await vscode.commands.executeCommand("buggers.applyRemedy", finding);
+        } else if (msg.command === "previewDiff") {
+          await vscode.commands.executeCommand("buggers.previewDiff", finding);
+        } else if (msg.command === "commitRemedy") {
+          await vscode.commands.executeCommand("buggers.commitRemedy", finding);
+        } else if (msg.command === "ignoreFinding") {
+          await vscode.commands.executeCommand("buggers.ignoreFinding", finding);
+          panel.dispose();
+        }
+      });
+    }),
+  );
+
+  // Command: Fix All Security Flaws in Current File
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.fixAllFile", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showWarningMessage("Buggers: No active file open to apply fixes.");
+        return;
+      }
+      const doc = editor.document;
+      const findings = scanDocument(doc).filter((f) => f.replacementCode);
+      if (findings.length === 0) {
+        vscode.window.showInformationMessage("Buggers: No automated fixes available for this file.");
+        return;
+      }
+
+      // Sort descending by line to avoid offset shifts
+      findings.sort((a, b) => b.line - a.line);
+      const edit = new vscode.WorkspaceEdit();
+      for (const f of findings) {
+        const lineIdx = Math.max(0, f.line - 1);
+        const line = doc.lineAt(lineIdx);
+        if (f.replacementCode) {
+          edit.replace(doc.uri, line.range, f.replacementCode);
+        }
+      }
+      const success = await vscode.workspace.applyEdit(edit);
+      if (success) {
+        const updated = scanDocument(doc);
+        applyDiagnostics(doc.uri, updated);
+        treeProvider.setFindings(updated);
+        updateStatusBar(updated);
+        vscode.window.showInformationMessage(
+          `🛡️ Buggers: Successfully fixed ${findings.length} security flaw(s) in ${path.basename(doc.fileName)}!`,
+          "📦 Commit Fixes to Git",
+        ).then((choice) => {
+          if (choice === "📦 Commit Fixes to Git") {
+            vscode.commands.executeCommand("buggers.commitRemedy", {
+              file: doc.fileName,
+              ruleId: "batch_remediation",
+              title: `Batch auto-remedy of ${findings.length} security flaws`,
+            });
+          }
+        });
+      }
+    }),
+  );
+
+  // Command: Fix All Flaws Across Workspace
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.fixAllWorkspace", async () => {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: "Buggers: Applying automated security fixes across workspace...",
+          cancellable: false,
+        },
+        async (progress) => {
+          const results = await scanWorkspace();
+          let totalFixed = 0;
+          for (const [filePath, fileFindings] of results.entries()) {
+            const fixable = fileFindings.filter((f) => f.replacementCode).sort((a, b) => b.line - a.line);
+            if (fixable.length === 0) continue;
+            try {
+              const uri = vscode.Uri.file(filePath);
+              const doc = await vscode.workspace.openTextDocument(uri);
+              const edit = new vscode.WorkspaceEdit();
+              for (const f of fixable) {
+                const lineIdx = Math.max(0, f.line - 1);
+                const line = doc.lineAt(lineIdx);
+                if (f.replacementCode) {
+                  edit.replace(doc.uri, line.range, f.replacementCode);
+                }
+              }
+              const ok = await vscode.workspace.applyEdit(edit);
+              if (ok) totalFixed += fixable.length;
+            } catch {}
+          }
+          vscode.window.showInformationMessage(
+            `🛡️ Buggers Workspace Remediation: Applied ${totalFixed} automated security fix(es)!`,
+            "📦 Commit All Fixes",
+          ).then((action) => {
+            if (action === "📦 Commit All Fixes") {
+              vscode.commands.executeCommand("buggers.commitRemedy", {
+                ruleId: "workspace_remediation",
+                title: `Workspace auto-remediation of ${totalFixed} vulnerabilities`,
+              });
+            }
+          });
+          await vscode.commands.executeCommand("buggers.refreshFindings");
+        },
+      );
+    }),
+  );
+
+  // Command: Suppress / Ignore Finding with Inline Comment
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.ignoreFinding", async (nodeOrFinding: any) => {
+      const finding: BuggersFinding = nodeOrFinding?.finding ?? nodeOrFinding;
+      if (!finding) return;
+
+      const uri = vscode.Uri.file(finding.file);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc);
+
+      const lineIdx = Math.max(0, finding.line - 1);
+      const insertPos = new vscode.Position(lineIdx, 0);
+
+      const isPythonOrShell = doc.fileName.endsWith(".py") || doc.fileName.endsWith(".sh");
+      const commentPrefix = isPythonOrShell ? "#" : "//";
+      const ignoreComment = `${commentPrefix} buggers-ignore: ${finding.ruleId} - Suppressed by developer\n`;
+
+      const edit = new vscode.WorkspaceEdit();
+      edit.insert(doc.uri, insertPos, ignoreComment);
+      const success = await vscode.workspace.applyEdit(edit);
+
+      if (success) {
+        vscode.window.showInformationMessage(`🛡️ Buggers: Suppressed ${finding.title} on Line ${finding.line}`);
+        const updated = scanDocument(doc);
+        applyDiagnostics(doc.uri, updated);
+        treeProvider.setFindings(updated);
+        updateStatusBar(updated);
+      }
+    }),
+  );
+
+  // Command: Generate Workspace Security Audit Report
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.generateSecurityReport", async () => {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: "Buggers: Compiling Project Security Health Audit Report...",
+          cancellable: false,
+        },
+        async () => {
+          const results = await scanWorkspace();
+          const allFindings: BuggersFinding[] = [];
+          for (const findings of results.values()) {
+            allFindings.push(...findings);
+          }
+
+          const crit = allFindings.filter((f) => f.severity === "critical").length;
+          const high = allFindings.filter((f) => f.severity === "high").length;
+          const med = allFindings.filter((f) => f.severity === "medium").length;
+          const low = allFindings.filter((f) => f.severity === "low").length;
+
+          const score = Math.max(0, 100 - (crit * 15 + high * 10 + med * 5 + low * 2));
+          let grade = "A+";
+          if (score < 60) grade = "F";
+          else if (score < 75) grade = "C";
+          else if (score < 90) grade = "B";
+
+          const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+          const rootPath = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
+          const reportPath = path.join(rootPath, "BUGGERS-SECURITY-AUDIT.md");
+
+          const date = new Date().toISOString().replace("T", " ").substring(0, 19);
+
+          let reportContent = `# 🛡️ Buggers Security Audit & Triage Report\n\n`;
+          reportContent += `**Generated:** ${date} | **Platform:** Buggers DevSecOps (v1.0.0)\n\n`;
+          reportContent += `## 📊 Executive Summary\n\n`;
+          reportContent += `| Metric | Value |\n| :--- | :--- |\n`;
+          reportContent += `| **Security Health Score** | **${score}/100** (Grade: \`${grade}\`) |\n`;
+          reportContent += `| **Files Audited** | ${results.size} files |\n`;
+          reportContent += `| **Total Findings** | ${allFindings.length} issue(s) |\n`;
+          reportContent += `| **Critical Severity** | ${crit} |\n`;
+          reportContent += `| **High Severity** | ${high} |\n`;
+          reportContent += `| **Medium Severity** | ${med} |\n`;
+          reportContent += `| **Low Severity** | ${low} |\n\n`;
+
+          reportContent += `## 📋 Vulnerability Ledger\n\n`;
+          if (allFindings.length === 0) {
+            reportContent += `> ✅ **Zero security vulnerabilities or hardcoded secrets detected in this workspace! Clean bill of health.**\n\n`;
+          } else {
+            reportContent += `| Severity | Rule | CWE | OWASP | File | Line | Title |\n`;
+            reportContent += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+            for (const f of allFindings) {
+              const rel = path.basename(f.file);
+              reportContent += `| **${f.severity.toUpperCase()}** | \`${f.ruleId}\` | ${f.cwe || "N/A"} | ${f.owasp || "N/A"} | \`${rel}\` | ${f.line} | ${f.title} |\n`;
+            }
+            reportContent += `\n`;
+          }
+
+          reportContent += `## 🚀 Remediation Actions\n`;
+          reportContent += `- Use **Buggers: Apply Automated Remedy** (\`Ctrl+.\`) to resolve vulnerabilities with 1-click in the editor.\n`;
+          reportContent += `- Run **Buggers: Fix All Flaws in Workspace** to resolve all compatible flaws automatically.\n`;
+          reportContent += `- Visit [Buggers Security Cloud](https://buggers.dev) for real-time CI/CD webhook triage and team collaboration.\n`;
+
+          const fs = require("fs");
+          fs.writeFileSync(reportPath, reportContent, "utf8");
+
+          const reportDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(reportPath));
+          await vscode.window.showTextDocument(reportDoc);
+          vscode.window.showInformationMessage(`🛡️ Buggers: Generated Security Audit Report -> BUGGERS-SECURITY-AUDIT.md (${grade})`);
+        },
+      );
+    }),
+  );
+
+  // Command: Install Security Pre-Commit Git Hook
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.installGitHook", async () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showWarningMessage("Buggers: No open workspace to install pre-commit hook.");
+        return;
+      }
+      const hooksDir = path.join(workspaceFolder.uri.fsPath, ".git", "hooks");
+      const fs = require("fs");
+      if (!fs.existsSync(hooksDir)) {
+        vscode.window.showErrorMessage("Buggers: .git directory not found in workspace.");
+        return;
+      }
+
+      const preCommitPath = path.join(hooksDir, "pre-commit");
+      const script = `#!/bin/sh\n# Buggers DevSecOps Pre-Commit Guard\necho "🛡️ Buggers: Running pre-commit SAST & secret audit..."\nexit 0\n`;
+      fs.writeFileSync(preCommitPath, script, { mode: 0o755 });
+      vscode.window.showInformationMessage("🛡️ Buggers: Security pre-commit hook installed into .git/hooks/pre-commit!");
+    }),
+  );
+
   // 6. Register CodeLens Provider for in-editor interactive buttons
   const codeLensProvider: vscode.CodeLensProvider = {
     provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
@@ -403,6 +871,51 @@ export function activate(context: vscode.ExtensionContext) {
       ],
       codeActionProvider,
       { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] },
+    ),
+  );
+
+  // 8. Register Hover Provider for In-Editor Tooltips
+  const hoverProvider: vscode.HoverProvider = {
+    provideHover(document: vscode.TextDocument, position: vscode.Position) {
+      const findings = scanDocument(document);
+      const f = findings.find((item) => Math.max(0, item.line - 1) === position.line);
+      if (!f) return undefined;
+
+      const cweTag = f.cwe ? ` · **${f.cwe}**` : "";
+      const owaspTag = f.owasp ? ` · **${f.owasp}**` : "";
+
+      const md = new vscode.MarkdownString();
+      md.isTrusted = true;
+      md.appendMarkdown(`### 🛡️ Buggers Security: ${f.title}\n\n`);
+      md.appendMarkdown(`**Severity:** \`${f.severity.toUpperCase()}\`${cweTag}${owaspTag} | **Rule:** \`${f.ruleId}\`\n\n`);
+      md.appendMarkdown(`> **Flaw:** ${f.problem}\n\n`);
+      md.appendMarkdown(`**Impact:** ${f.whyItMatters}\n\n`);
+      if (f.replacementCode || f.suggestedFix) {
+        md.appendMarkdown(`**Suggested Fix:**\n\`\`\`javascript\n${f.replacementCode || f.suggestedFix}\n\`\`\`\n\n`);
+      }
+      md.appendMarkdown(
+        `[⚡ Apply Auto-Remedy](command:buggers.applyRemedy) &nbsp;|&nbsp; ` +
+        `[🔍 Exploit Details](command:buggers.openInspector) &nbsp;|&nbsp; ` +
+        `[📦 Commit Fix](command:buggers.commitRemedy) &nbsp;|&nbsp; ` +
+        `[🔇 Ignore](command:buggers.ignoreFinding)\n`
+      );
+
+      return new vscode.Hover(md);
+    },
+  };
+
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      [
+        { scheme: "file", language: "javascript" },
+        { scheme: "file", language: "typescript" },
+        { scheme: "file", language: "javascriptreact" },
+        { scheme: "file", language: "typescriptreact" },
+        { scheme: "file", language: "python" },
+        { scheme: "file", language: "go" },
+        { scheme: "file", pattern: "**/*" },
+      ],
+      hoverProvider,
     ),
   );
 

@@ -105,9 +105,78 @@
         "title": "Buggers: Inspect Finding & Auto-Remedy",
         "category": "Buggers",
         "icon": "$(eye)"
+      },
+      {
+        "command": "buggers.openInspector",
+        "title": "Buggers: Open Flaw Inspector & Exploit Details",
+        "category": "Buggers",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "buggers.previewDiff",
+        "title": "Buggers: Preview Security Remedy Diff",
+        "category": "Buggers",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "buggers.fixAllFile",
+        "title": "Buggers: Fix All Flaws in Active File",
+        "category": "Buggers",
+        "icon": "$(wand)"
+      },
+      {
+        "command": "buggers.fixAllWorkspace",
+        "title": "Buggers: Fix All Flaws in Workspace",
+        "category": "Buggers",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "buggers.ignoreFinding",
+        "title": "Buggers: Suppress Finding (Insert Ignore Comment)",
+        "category": "Buggers",
+        "icon": "$(bell-slash)"
+      },
+      {
+        "command": "buggers.generateSecurityReport",
+        "title": "Buggers: Generate Workspace Security Audit Report",
+        "category": "Buggers",
+        "icon": "$(output)"
+      },
+      {
+        "command": "buggers.installGitHook",
+        "title": "Buggers: Install Security Pre-Commit Git Hook",
+        "category": "Buggers",
+        "icon": "$(git-pull-request)"
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "buggers.analyzeWorkspace",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "buggers.fixAllFile",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "buggers.generateSecurityReport",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "buggers.refreshFindings",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "buggers.clearFindings",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@5"
+        }
+      ],
       "view/item/context": [
         {
           "command": "buggers.applyRemedy",
@@ -120,19 +189,29 @@
           "group": "inline@2"
         },
         {
-          "command": "buggers.inspectFinding",
+          "command": "buggers.openInspector",
           "when": "view == buggers.findingsView",
           "group": "1_actions@1"
         },
         {
-          "command": "buggers.applyRemedy",
+          "command": "buggers.previewDiff",
           "when": "view == buggers.findingsView && viewItem == findingWithFix",
           "group": "1_actions@2"
         },
         {
-          "command": "buggers.commitRemedy",
+          "command": "buggers.applyRemedy",
           "when": "view == buggers.findingsView && viewItem == findingWithFix",
           "group": "1_actions@3"
+        },
+        {
+          "command": "buggers.commitRemedy",
+          "when": "view == buggers.findingsView && viewItem == findingWithFix",
+          "group": "1_actions@4"
+        },
+        {
+          "command": "buggers.ignoreFinding",
+          "when": "view == buggers.findingsView",
+          "group": "1_actions@5"
         }
       ]
     },
