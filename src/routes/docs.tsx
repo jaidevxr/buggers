@@ -42,7 +42,7 @@ export const Route = createFileRoute("/docs")({
       path: "/docs",
       title: "Documentation – Buggers AI Engineering Specifications & Scanner Playground",
       description:
-        "Engineering documentation for Buggers AI: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, VS Code Extension v1.1.0, and live scanner playground.",
+        "Engineering documentation for Buggers AI: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, VS Code Extension v1.2.0, and live scanner playground.",
       keywords: [
         "Buggers AI",
         "Buggers documentation",
@@ -107,7 +107,7 @@ const SPEC_SEARCH_INDEX: SpecSearchItem[] = [
   {
     id: "vscode-extension",
     category: "Tooling",
-    title: "Buggers VS Code & IDE Extension · v1.1.0",
+    title: "Buggers VS Code & IDE Extension · v1.2.0",
     description: "In-editor AST vulnerability scanning, Webview Flaw Inspector, side-by-side split diff remediation, 1-click batch fixing, and pre-commit Git hooks.",
     targetId: "vscode-extension",
     keywords: ["extension", "vscode", "vsix", "download", "ide", "inspector", "diff", "remediation", "git hook", "codelens", "batch", "offline", "antigravity", "cursor"],
@@ -311,7 +311,7 @@ export function DocsPage() {
             >
               <Download className="h-3.5 w-3.5 text-emerald-400" />
               <span>VS Code Extension</span>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded font-semibold">v1.1.0</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded font-semibold">v1.2.0</span>
             </a>
           </div>
 
@@ -857,8 +857,8 @@ export function DocsPage() {
               <span>GitHub Repository (jaidevxr/buggers)</span>
             </a>
             <a
-              href="/downloads/buggers-vscode-1.1.0.vsix"
-              download="buggers-vscode-1.1.0.vsix"
+              href="/downloads/buggers-vscode-1.2.0.vsix"
+              download="buggers-vscode-1.2.0.vsix"
               className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />

@@ -412,12 +412,12 @@ export function HowItWorksPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <a
-              href="/downloads/buggers-vscode-1.1.0.vsix"
-              download="buggers-vscode-1.1.0.vsix"
+              href="/downloads/buggers-vscode-1.2.0.vsix"
+              download="buggers-vscode-1.2.0.vsix"
               className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/50 px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-150 inline-flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="h-4 w-4 text-emerald-400" />
-              <span>VS Code Extension (v1.1.0)</span>
+              <span>VS Code Extension (v1.2.0)</span>
             </a>
             <Link
               to="/docs"

@@ -18,7 +18,7 @@ import { BugMark } from "@/components/brand/BugMark";
 
 export function VsCodeExtensionHeroSection() {
   const [copied, setCopied] = useState(false);
-  const cliCommand = "code --install-extension buggers-vscode-1.1.0.vsix";
+  const cliCommand = "code --install-extension buggers-vscode-1.2.0.vsix";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cliCommand);
@@ -40,7 +40,7 @@ export function VsCodeExtensionHeroSection() {
           <div className="lg:col-span-7 space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/30 px-3.5 py-1 text-[11px] font-mono tracking-wider text-emerald-400 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="uppercase font-semibold">Official Extension · v1.1.0 Stable</span>
+              <span className="uppercase font-semibold">Official Extension · v1.2.0 Stable</span>
             </div>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white leading-[1.12]">
               Debug, remediate, and secure <br />
@@ -80,11 +80,11 @@ export function VsCodeExtensionHeroSection() {
                   </div>
                   <div>
                     <span className="text-xs font-mono font-semibold text-white block">Buggers for VS Code</span>
-                    <span className="text-[10px] font-mono text-emerald-400">Release 1.1.0 · Standalone VSIX</span>
+                    <span className="text-[10px] font-mono text-emerald-400">Release 1.2.0 · Standalone VSIX</span>
                   </div>
                 </div>
                 <span className="text-[11px] font-mono text-emerald-300 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25">
-                  73.3 KB
+                  73.6 KB
                 </span>
               </div>
 
@@ -118,12 +118,12 @@ export function VsCodeExtensionHeroSection() {
             {/* Direct Download Button */}
             <div className="space-y-2 relative z-10 pt-2">
               <a
-                href="/downloads/buggers-vscode-1.1.0.vsix"
-                download="buggers-vscode-1.1.0.vsix"
+                href="/downloads/buggers-vscode-1.2.0.vsix"
+                download="buggers-vscode-1.2.0.vsix"
                 className="w-full py-3 px-5 rounded-xl bg-white text-black font-semibold text-xs flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-[0_4px_25px_rgba(255,255,255,0.18)] cursor-pointer group/btn"
               >
                 <Download className="h-4 w-4 transition-transform group-hover/btn:-translate-y-0.5" />
-                <span>Download Extension .VSIX (v1.1.0)</span>
+                <span>Download Extension .VSIX (v1.2.0)</span>
               </a>
               <div className="flex items-center justify-center gap-4 text-[10px] font-mono text-neutral-500 pt-1">
                 <span>VS Code</span>

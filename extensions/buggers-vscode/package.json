@@ -2,7 +2,7 @@
   "name": "buggers-vscode",
   "displayName": "Buggers",
   "description": "Automated Pull Request Code Review, OWASP SAST Flaw Detection & Bug Triage",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publisher": "buggers",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "resources/icon.png",
