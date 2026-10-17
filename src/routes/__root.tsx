@@ -134,7 +134,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
     const googleVerificationCode = GOOGLE_SITE_VERIFICATION || "googlee2c4489e515e7c89.html";
     meta.push({ name: "google-site-verification", content: googleVerificationCode });
-    meta.push({ name: "google-site-verification", content: "google2bd01b49369e896d.html" });
+    meta.push({ name: "google-site-verification", content: "google74ee40ccde796f62" });
+    meta.push({ name: "google-site-verification", content: "google74ee40ccde796f62.html" });
 
     return {
       meta,
