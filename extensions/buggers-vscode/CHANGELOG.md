@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-10-17
+
+### Added
+- **Rich Flaw Inspector Webview** (`buggers.openInspector`): Modern dark-mode interface with glowing severity indicators, CWE/OWASP mapping, technical exploit impact, and interactive remediation controls.
+- **Side-by-Side Visual Diff Preview** (`buggers.previewDiff`): Native side-by-side diff view of proposed security remedies before accepting changes.
+- **Interactive In-Editor CodeLens & Hover Tooltip**: Clickable remedy and Git commit buttons right above vulnerable lines and in rich Markdown hover cards.
+- **Batch Auto-Remediation**:
+  - `buggers.fixAllFile`: 1-click batch fix for all detected vulnerabilities in the active file.
+  - `buggers.fixAllWorkspace`: Batch auto-remediation across the entire project.
+- **Inline Finding Suppression** (`buggers.ignoreFinding`): Instant insertion of `// buggers-ignore: <ruleId>` to manage false positives.
+- **Security Audit Report Generator** (`buggers.generateSecurityReport`): Computes project Security Health Score (0–100%, Grade A+–F) and compiles `BUGGERS-SECURITY-AUDIT.md`.
+- **Pre-Commit Git Hook Guard** (`buggers.installGitHook`): Prevents committing vulnerable code or plaintext secrets into Git branches.
+- **Automated Git Commit Tracking** (`buggers.commitRemedy`): Stages and creates conventional security commits automatically.
+
+---
+
 ## [1.0.0] - 2026-10-17
 
 ### Added
