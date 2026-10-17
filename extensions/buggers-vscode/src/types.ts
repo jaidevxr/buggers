@@ -1,5 +1,5 @@
 export type Severity = "critical" | "high" | "medium" | "low";
-export type Category = "security" | "dependency" | "quality";
+export type Category = "security" | "dependency" | "quality" | "logical_bug";
 
 export interface BuggersFinding {
   id: string;
@@ -20,6 +20,7 @@ export interface BuggersFinding {
   suggestedFix: string;
   replacementCode?: string;
   replacementRange?: { startLine: number; startCol: number; endLine: number; endCol: number };
+  regressionTest?: string;
 }
 
 export interface ScanRule {
@@ -34,4 +35,14 @@ export interface ScanRule {
   whyItMatters: string;
   suggestedFixTemplate: (matched: string) => string;
   autoRemedyTemplate?: (matched: string, rawLine: string) => string;
+  regressionTestTemplate?: (matched: string, rawLine: string) => string;
+}
+
+export type AiProviderType = "openai" | "anthropic" | "gemini" | "ollama" | "custom";
+
+export interface AiConfig {
+  provider: AiProviderType;
+  model: string;
+  customEndpoint?: string;
+  timeoutMs?: number;
 }

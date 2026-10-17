@@ -1,0 +1,57 @@
+# CodeRabbit Configuration for Buggers
+# https://coderabbit.ai/docs/configure-coderabbit
+
+version: "2"
+language: "en-US"
+early_access: false
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  auto_title: true
+  poem: false
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+      - "master"
+      - "develop"
+
+  path_filters:
+    - "!**/*.min.js"
+    - "!**/*.lock"
+    - "!package-lock.json"
+    - "!dist/**"
+    - "!.output/**"
+    - "!.vercel/**"
+    - "!.tanstack/**"
+    - "!**/*.svg"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.webp"
+
+  path_instructions:
+    - path: "src/server/**"
+      instructions: |
+        Pay strict attention to:
+        - HMAC webhook signature verification (GITHUB_WEBHOOK_SECRET)
+        - Safe token encryption/decryption (APP_USER_CONNECTION_KEY_SECRET)
+        - SSRF protection against private network / localhost fetches
+        - AI review prompt injection and structured output validation
+        - Zero exposure of API keys, cron secrets, or database service role keys
+
+    - path: "src/lib/risk-engine.ts"
+      instructions: |
+        Verify that mathematical risk scoring remains deterministic, normalized [0, 100], and handles edge cases like zero churn gracefully.
+
+    - path: "src/routes/**"
+      instructions: |
+        Verify that:
+        - Authenticated routes are protected by beforeLoad auth checks
+        - SEO metadata and canonical links remain valid
+        - No private user data or secrets are exposed in client-side code
+
+chat:
+  auto_reply: true

@@ -19,7 +19,7 @@ export function PublicHeader() {
           preload="intent"
           className="flex items-center gap-1.5 sm:gap-2 font-semibold text-white transition-opacity duration-150 hover:opacity-80 shrink-0"
         >
-          <BugMark className="h-4 w-4 text-white fill-white shrink-0" />
+          <BugMark className="h-4.5 w-4.5 text-white shrink-0" />
           <span className="tracking-tight text-xs sm:text-sm font-semibold text-white">
             Buggers
           </span>

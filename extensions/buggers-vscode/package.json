@@ -147,6 +147,48 @@
         "title": "Buggers: Install Security Pre-Commit Git Hook",
         "category": "Buggers",
         "icon": "$(git-pull-request)"
+      },
+      {
+        "command": "buggers.explainFinding",
+        "title": "Buggers: Explain Finding & Root Cause",
+        "category": "Buggers",
+        "icon": "$(book)"
+      },
+      {
+        "command": "buggers.suggestFix",
+        "title": "Buggers: Review Fix Diff & Apply",
+        "category": "Buggers",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "buggers.debugSelection",
+        "title": "Buggers: Debug Selected Code with AI",
+        "category": "Buggers",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "buggers.generateRegressionTest",
+        "title": "Buggers: Generate Regression Test",
+        "category": "Buggers",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "buggers.findLogicalBugs",
+        "title": "Buggers: Scan for Logical Bugs",
+        "category": "Buggers",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "buggers.configureAiProvider",
+        "title": "Buggers: Configure AI Provider",
+        "category": "Buggers",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "buggers.clearAiCredentials",
+        "title": "Buggers: Clear Stored AI Credentials",
+        "category": "Buggers",
+        "icon": "$(key)"
       }
     ],
     "menus": {
@@ -255,6 +297,33 @@
           ],
           "default": "low",
           "description": "Minimum vulnerability severity displayed in the VS Code Problems panel"
+        },
+        "buggers.ai.provider": {
+          "type": "string",
+          "enum": [
+            "openai",
+            "anthropic",
+            "gemini",
+            "ollama",
+            "custom"
+          ],
+          "default": "openai",
+          "description": "AI provider for automated bug explanation, diff generation, and test generation"
+        },
+        "buggers.ai.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "Model identifier used for AI debugging and explanation requests"
+        },
+        "buggers.ai.customEndpoint": {
+          "type": "string",
+          "default": "",
+          "description": "Custom endpoint URL for local or self-hosted LLM services (e.g., http://localhost:11434)"
+        },
+        "buggers.ai.timeoutMs": {
+          "type": "number",
+          "default": 30000,
+          "description": "Maximum timeout in milliseconds for AI requests"
         }
       }
     }

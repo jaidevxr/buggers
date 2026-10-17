@@ -1,0 +1,20 @@
+# Buggers – Roo Code / Cline System Rules & Engineering Guidelines
+
+## Architecture Overview
+- **Framework**: TanStack Start with React 19, Vinxi, Nitro server engine.
+- **Routing**: File-based routing in `src/routes/`. The single root layout is `src/routes/__root.tsx`.
+- **Database**: Supabase PostgreSQL with RLS and schema migrations in `supabase/migrations/`.
+- **Styling**: Tailwind CSS v4 and custom design tokens in `src/styles.css`.
+- **Testing**: Vitest for unit, integration, and security test suites.
+
+## Engineering Invariants
+1. **Security & Secrets**:
+   - Never commit `.env` or production secrets.
+   - Always verify GitHub Webhook HMAC SHA256 signatures (`GITHUB_WEBHOOK_SECRET`).
+   - Store GitHub user connection tokens encrypted using `APP_USER_CONNECTION_KEY_SECRET`.
+   - Never bypass row-level security (RLS) in client-side queries.
+2. **SEO & Routing**:
+   - All public indexable pages (`/`, `/how-it-works`, `/docs`, `/about`) use `@/lib/seo` for metadata, canonical URLs, and schema.
+   - All authenticated routes in `src/routes/_authenticated/` must emit `robots: noindex, nofollow` and have `ssr: false`.
+3. **Build & Quality Gates**:
+   - Always verify changes with `npm run typecheck` and `npm test`.
