@@ -1,12 +1,23 @@
-# [Buggers](https://buggers.vercel.app) — AI Code Review & Pull Request Security Scanner
+<p align="center">
+  <a href="https://buggers.vercel.app">
+    <img src="https://buggers.vercel.app/icon-192.png" width="96" height="96" alt="Buggers AI Logo" style="border-radius: 20px;" />
+  </a>
+</p>
 
-> Precision release intelligence for modern engineering teams. [Buggers](https://buggers.vercel.app) inspects raw unified diffs against historical repository fault lines to detect regressions, boundary flaws, security vulnerabilities, and state race conditions before code merges into production.
+<h1 align="center">Buggers AI — Pull Request Security Reviewer & Vulnerability Scanner</h1>
 
-[![Live App](https://img.shields.io/badge/Live%20Application-buggers.vercel.app-000000?style=flat-square&logo=vercel)](https://buggers.vercel.app)
-[![License](https://img.shields.io/badge/License-Private-slate?style=flat-square)](LICENSE)
-[![Runtime](https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square)](https://nodejs.org)
-[![Framework](https://img.shields.io/badge/Framework-TanStack%20Start-blue?style=flat-square)](https://tanstack.com/start)
-[![Engine](https://img.shields.io/badge/Engine-Deterministic%20Triage-amber?style=flat-square)](#core-architecture)
+<p align="center">
+  <b>Precision release intelligence & deterministic PR triage for modern engineering teams.</b><br />
+  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> · Live Platform: <a href="https://buggers.vercel.app">https://buggers.vercel.app</a>
+</p>
+
+<p align="center">
+  <a href="https://buggers.vercel.app"><img src="https://img.shields.io/badge/Live%20Platform-buggers.vercel.app-000000?style=flat-square&logo=vercel" alt="Live App" /></a>
+  <a href="extensions/buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code%20Extension-v1.0.0-007acc?style=flat-square&logo=visual-studio-code" alt="VS Code Extension" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-slate?style=flat-square" alt="License" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square" alt="Runtime" /></a>
+  <a href="https://tanstack.com/start"><img src="https://img.shields.io/badge/Framework-TanStack%20Start-blue?style=flat-square" alt="Framework" /></a>
+</p>
 
 ---
 

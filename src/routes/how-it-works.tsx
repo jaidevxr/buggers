@@ -25,16 +25,18 @@ export const Route = createFileRoute("/how-it-works")({
   head: () =>
     createRouteSeo({
       path: "/how-it-works",
-      title: "How It Works – Buggers | Automated PR Code Security & Analysis Architecture",
+      title: "How It Works – Buggers AI | Automated PR Code Security & Analysis Architecture",
       description:
-        "Discover how Buggers ingests GitHub pull requests, runs multi-stage risk triage, models code churn hotspots, and generates verifiable security remediation with zero hallucination.",
+        "Discover how Buggers AI ingests GitHub pull requests, runs multi-stage risk triage, models code churn hotspots, and generates verifiable security remediation with zero hallucination.",
       keywords: [
+        "Buggers AI",
         "how Buggers works",
+        "jaidevxr",
+        "buggers github",
         "pull request review pipeline",
         "code security architecture",
         "automated code analysis",
         "git churn analysis",
-        "LLM code review",
         "risk score formula",
       ],
     }),

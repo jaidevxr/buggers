@@ -93,25 +93,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const meta: Array<Record<string, string>> = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Buggers – AI Code Review, Bug Triage & Vulnerability Scanner" },
+      { title: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
       {
         name: "description",
         content:
-          "Buggers is an intelligent code security and review platform. Automatically analyze GitHub pull requests, detect vulnerabilities, track risk velocity, and eliminate developer review fatigue.",
+          "Buggers AI is an intelligent code security and review platform by jaidevxr. Automatically analyze GitHub pull requests, detect OWASP vulnerabilities, track risk velocity, and eliminate review fatigue.",
       },
       {
         name: "keywords",
         content:
-          "Buggers, Buggers AI, code review, AI pull request review, vulnerability scanner, automated security triage, GitHub PR analysis, static analysis, DevSecOps, code risk velocity",
+          "Buggers, Buggers AI, buggers github, jaidevxr, AI code review, pull request security scanner, automated PR review, vulnerability scanner, DevSecOps, AST static analysis, code risk velocity",
       },
-      { name: "author", content: "Buggers" },
+      { name: "author", content: "Jaidev Yadav (jaidevxr)" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       { name: "theme-color", content: "#09090b" },
-      { property: "og:site_name", content: "Buggers" },
+      { property: "og:site_name", content: "Buggers AI" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_ORIGIN}/` },
-      { property: "og:title", content: "Buggers – AI Code Review & Pull Request Security Triage" },
+      { property: "og:title", content: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
       {
         property: "og:description",
         content:
@@ -123,7 +123,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image:alt", content: "Buggers AI Code Review & Security Platform" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Buggers – AI Code Review & Pull Request Security Triage" },
+      { name: "twitter:title", content: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
       {
         name: "twitter:description",
         content:
@@ -132,9 +132,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: `${SITE_ORIGIN}/og-image.png` },
     ];
 
-    if (GOOGLE_SITE_VERIFICATION) {
-      meta.push({ name: "google-site-verification", content: GOOGLE_SITE_VERIFICATION });
-    }
+    const googleVerificationCode = GOOGLE_SITE_VERIFICATION || "googlee2c4489e515e7c89.html";
+    meta.push({ name: "google-site-verification", content: googleVerificationCode });
 
     return {
       meta,
@@ -149,8 +148,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
         },
         { rel: "preload", href: "/landing-bg.png", as: "image", type: "image/png" },
-        { rel: "icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
-        { rel: "icon", href: "/favicon.ico?v=3", type: "image/x-icon" },
+        { rel: "icon", href: "/favicon.ico", sizes: "48x48 32x32 16x16" },
+        { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+        { rel: "icon", href: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+        { rel: "icon", href: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+        { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
+        { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+        { rel: "shortcut icon", href: "/favicon.ico" },
       ],
     };
   },

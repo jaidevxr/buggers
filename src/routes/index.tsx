@@ -23,11 +23,14 @@ export const Route = createFileRoute("/")({
   head: () => {
     const seo = createRouteSeo({
       path: "/",
-      title: "Buggers – AI-Powered Pull Request Review & Vulnerability Scanner",
+      title: "Buggers AI – Automated Pull Request Code Review & Security Scanner",
       description:
-        "Buggers automatically reviews your GitHub pull requests, detects vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
+        "Buggers AI by jaidevxr automatically reviews your GitHub pull requests, detects OWASP vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
       keywords: [
+        "Buggers AI",
         "Buggers",
+        "buggers github",
+        "jaidevxr",
         "AI code review",
         "pull request analysis",
         "vulnerability scanner",
@@ -76,12 +79,12 @@ export function Landing() {
           {/* Neutral Category Pill Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-black/60 px-4 py-1 text-[11px] font-mono tracking-wider text-slate-300 shadow-sm backdrop-blur-md mb-6">
             <span className="h-1.5 w-1.5 rounded-full bg-white/70 inline-block animate-pulse" />
-            <span className="uppercase text-[10px] tracking-widest text-[#8a8f98]">Automated Code Review</span>
+            <span className="uppercase text-[10px] tracking-widest text-[#8a8f98]">Buggers AI · Automated Code Review</span>
           </div>
 
           {/* Main Headline with Linear's neutral editorial contrast */}
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
-            Catch critical issues <br />
+            <span className="sr-only">Buggers AI — </span>Catch critical issues <br />
             <span className="font-serif italic font-normal text-white tracking-wide px-1">
               before
             </span>{" "}
@@ -90,7 +93,7 @@ export function Landing() {
 
           {/* Subtitle in Linear's muted reference gray #8a8f98 */}
           <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-[#8a8f98] font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
-            Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.
+            Buggers AI automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.
           </p>
 
           {/* Action Buttons with silky smooth micro-interactions */}
@@ -441,6 +444,14 @@ ignore:
             >
               Docs
             </Link>
+            <a
+              href="https://github.com/jaidevxr/buggers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors duration-200"
+            >
+              GitHub
+            </a>
             <Link
               to="/auth"
               className="hover:text-white transition-colors duration-200"

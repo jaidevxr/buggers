@@ -38,11 +38,14 @@ export const Route = createFileRoute("/docs")({
   head: () =>
     createRouteSeo({
       path: "/docs",
-      title: "Documentation – Buggers Engineering Specifications & Scanner Playground",
+      title: "Documentation – Buggers AI Engineering Specifications & Scanner Playground",
       description:
-        "Engineering documentation for Buggers: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and live scanner playground.",
+        "Engineering documentation for Buggers AI: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and live scanner playground.",
       keywords: [
+        "Buggers AI",
         "Buggers documentation",
+        "jaidevxr",
+        "buggers github",
         "AST triage pipeline",
         "SAST scanner playground",
         "GitHub webhook security",
@@ -391,6 +394,30 @@ export function DocsPage() {
                 )}
               </div>
             </div>
+
+            {/* Mobile Horizontal Quick-Jump Pills (< lg) */}
+            <nav className="flex lg:hidden overflow-x-auto gap-1.5 py-1 text-xs font-medium no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0">
+              {NAV_TABS.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const matchesSearch = searchQuery.trim().length > 0 && searchResults.some((r) => r.targetId === tab.targetId);
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => scrollToSection(tab)}
+                    className={`whitespace-nowrap px-3 py-1 rounded-full transition-all shrink-0 cursor-pointer ${
+                      isActive
+                        ? "bg-white text-black font-semibold shadow-sm"
+                        : matchesSearch
+                        ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                        : "text-[#8a8f98] hover:text-white hover:bg-white/[0.05] border border-white/[0.04]"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
 
             {/* Desktop Category Filter Pills (flex-wrap: zero horizontal scrolling, all pills visible) */}
             <nav className="hidden lg:flex flex-wrap items-center gap-1.5 text-xs font-medium">

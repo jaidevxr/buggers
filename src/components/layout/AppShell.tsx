@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
   Bell,
@@ -16,6 +16,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  X,
 } from "lucide-react";
 import { BuggersWordmark } from "@/components/brand/BugMark";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,20 @@ export function AppShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLoading = useRouterState({ select: (s) => s.isLoading });
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [mobileOpen]);
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-150">
       {isLoading && (
@@ -55,13 +70,26 @@ export function AppShell() {
           <div className="h-full bg-primary animate-indeterminate-bar w-2/5" />
         </div>
       )}
-      <TopBar onToggleMenu={() => setMobileOpen((v) => !v)} />
+      <TopBar onToggleMenu={() => setMobileOpen((v) => !v)} mobileOpen={mobileOpen} />
       <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
+        {/* Mobile backdrop overlay with touch dismissal */}
+        <div
+          className={cn(
+            "fixed inset-0 top-14 z-30 bg-black/60 backdrop-blur-xs transition-opacity duration-200 md:hidden",
+            mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+          )}
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+
         <aside
           className={cn(
             "w-64 shrink-0 border-r border-sidebar-border bg-sidebar px-3 py-5 md:block",
-            mobileOpen ? "fixed inset-y-14 left-0 z-40 block overflow-y-auto" : "hidden",
+            mobileOpen ? "fixed inset-y-14 left-0 z-40 block overflow-y-auto shadow-2xl" : "hidden",
           )}
+          role={mobileOpen ? "dialog" : undefined}
+          aria-modal={mobileOpen ? true : undefined}
+          aria-label="Navigation drawer"
         >
           <nav className="space-y-1">
             {nav.map((item) => {
@@ -87,7 +115,7 @@ export function AppShell() {
             })}
           </nav>
         </aside>
-        <main className="min-w-0 flex-1 px-6 py-6 lg:px-8 xl:px-10">
+        <main className="min-w-0 flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
           <ErrorBoundary>
             <div key={pathname} className="page-container page-transition w-full">
               <Outlet />
@@ -99,7 +127,7 @@ export function AppShell() {
   );
 }
 
-function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
+function TopBar({ onToggleMenu, mobileOpen }: { onToggleMenu: () => void; mobileOpen?: boolean }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
@@ -118,8 +146,15 @@ function TopBar({ onToggleMenu }: { onToggleMenu: () => void }) {
 
   return (
     <header className="sticky top-0 z-50 flex h-14 w-full items-center gap-2 sm:gap-3 border-b border-border bg-background/95 px-3 sm:px-4 lg:px-6 backdrop-blur">
-      <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleMenu} aria-label="Toggle navigation">
-        <Menu className="h-5 w-5" />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden"
+        onClick={onToggleMenu}
+        aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+        aria-expanded={mobileOpen}
+      >
+        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </Button>
       <Link to="/dashboard" className="shrink-0 flex items-center">
         <BuggersWordmark />

@@ -28,11 +28,14 @@ export const Route = createFileRoute("/about")({
   head: () =>
     createRouteSeo({
       path: "/about",
-      title: "About Buggers – Mission, Security Principles & Zero-Hallucination AI Code Review",
+      title: "About Buggers AI – Mission, Security Principles & Zero-Hallucination AI Code Review",
       description:
-        "Learn about Buggers: Precision AI pull request triage and automated code review engineered to eliminate developer review fatigue with grounded AST analysis.",
+        "Learn about Buggers AI by jaidevxr: Precision AI pull request triage and automated code review engineered to eliminate developer review fatigue with grounded AST analysis.",
       keywords: [
+        "Buggers AI",
         "About Buggers",
+        "jaidevxr",
+        "buggers github",
         "AI code review mission",
         "software engineering intelligence",
         "pull request triage principles",
