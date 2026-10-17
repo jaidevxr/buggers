@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://buggers.vercel.app">
-    <img src="https://buggers.vercel.app/icon-192.png" width="96" height="96" alt="Buggers Logo" style="border-radius: 20px;" />
+  <a href="https://buggers.dev">
+    <img src="https://buggers.dev/icon-192.png" width="96" height="96" alt="Buggers Logo" style="border-radius: 20px;" />
   </a>
 </p>
 
@@ -8,11 +8,11 @@
 
 <p align="center">
   <b>Precision release intelligence & deterministic PR triage for modern engineering teams.</b><br />
-  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> · Live Platform: <a href="https://buggers.vercel.app">https://buggers.vercel.app</a>
+  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> · Live Platform: <a href="https://buggers.dev">https://buggers.dev</a>
 </p>
 
 <p align="center">
-  <a href="https://buggers.vercel.app"><img src="https://img.shields.io/badge/Live%20Platform-buggers.vercel.app-000000?style=flat-square&logo=vercel" alt="Live App" /></a>
+  <a href="https://buggers.dev"><img src="https://img.shields.io/badge/Live%20Platform-buggers.dev-000000?style=flat-square&logo=vercel" alt="Live App" /></a>
   <a href="extensions/buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code%20Extension-v1.0.0-007acc?style=flat-square&logo=visual-studio-code" alt="VS Code Extension" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-slate?style=flat-square" alt="License" /></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square" alt="Runtime" /></a>
