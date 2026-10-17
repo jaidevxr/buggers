@@ -97,14 +97,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Buggers is an intelligent code security and review platform by jaidevxr. Real-time AST vulnerability scanning in VS Code, automated GitHub PR risk triage, and deterministic OWASP remediation.",
+          "Buggers is an intelligent code security and review platform. Real-time AST vulnerability scanning in VS Code, automated GitHub PR risk triage, and deterministic OWASP remediation.",
       },
       {
         name: "keywords",
         content:
-          "Buggers, Buggers AI, buggers github, jaidevxr, AI code review, pull request security scanner, automated PR review, vulnerability scanner, DevSecOps, AST static analysis, code risk velocity, VS Code extension, vsix download, in-editor security scanner",
+          "Buggers, Buggers AI, buggers github, AI code review, pull request security scanner, automated PR review, vulnerability scanner, DevSecOps, AST static analysis, code risk velocity, VS Code extension, vsix download, in-editor security scanner",
       },
-      { name: "author", content: "Jaidev Yadav (jaidevxr)" },
+      { name: "author", content: "Buggers Team" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       { name: "theme-color", content: "#09090b" },

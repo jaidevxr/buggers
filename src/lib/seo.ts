@@ -112,10 +112,10 @@ export function getWebSiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Buggers",
-    alternateName: ["Buggers", "buggers", "Buggers Dev", "buggers.dev", "Buggers AI", "jaidevxr/buggers"],
+    alternateName: ["Buggers", "buggers", "Buggers Dev", "buggers.dev", "Buggers AI"],
     url: `${SITE_ORIGIN}/`,
     description:
-      "Buggers is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform by jaidevxr.",
+      "Buggers is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -141,9 +141,9 @@ export function getSoftwareApplicationJsonLd() {
     url: `${SITE_ORIGIN}/`,
     image: `${SITE_ORIGIN}/icon-512.png`,
     author: {
-      "@type": "Person",
-      name: "Jaidev Yadav",
-      url: "https://github.com/jaidevxr",
+      "@type": "Organization",
+      name: "Buggers Team",
+      url: `${SITE_ORIGIN}/`,
     },
     description:
       "Buggers automatically scans GitHub pull requests for security flaws, tracks risk velocity across repositories, and triages bugs using deterministic AST analysis.",
@@ -176,7 +176,6 @@ export function getOrganizationJsonLd() {
     logo: `${SITE_ORIGIN}/icon-512.png`,
     sameAs: [
       "https://github.com/jaidevxr/buggers",
-      "https://github.com/jaidevxr",
     ],
   };
 }
