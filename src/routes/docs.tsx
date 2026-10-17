@@ -25,6 +25,7 @@ import {
   Terminal,
   Zap,
   ExternalLink,
+  Download,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 import { CodeBlock, Callout, AccordionItem } from "@/components/docs/DocsComponents";
@@ -32,6 +33,7 @@ import { LinearProductSections } from "@/components/docs/LinearProductSections";
 import { LinearWireframeGrid } from "@/components/docs/LinearWireframeGrid";
 import { LiveScannerPlayground } from "@/components/docs/LiveScannerPlayground";
 import { PipelineStageVisualizer } from "@/components/docs/PipelineStageVisualizer";
+import { VsCodeExtensionSection } from "@/components/docs/VsCodeExtensionSection";
 import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/docs")({
@@ -40,7 +42,7 @@ export const Route = createFileRoute("/docs")({
       path: "/docs",
       title: "Documentation – Buggers AI Engineering Specifications & Scanner Playground",
       description:
-        "Engineering documentation for Buggers AI: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, and live scanner playground.",
+        "Engineering documentation for Buggers AI: Deterministic risk scoring model, 9-stage AST triage pipeline, OWASP SAST & secret scanners, GitHub OAuth & webhooks, VS Code Extension v1.1.0, and live scanner playground.",
       keywords: [
         "Buggers AI",
         "Buggers documentation",
@@ -48,6 +50,8 @@ export const Route = createFileRoute("/docs")({
         "buggers github",
         "AST triage pipeline",
         "SAST scanner playground",
+        "VS Code Extension",
+        "vsix download",
         "GitHub webhook security",
         "risk scoring formula",
         "code vulnerability docs",
@@ -59,6 +63,7 @@ export const Route = createFileRoute("/docs")({
 
 type SectionId =
   | "all"
+  | "vscode-extension"
   | "build-review-ship"
   | "ai-automations"
   | "risk-engine"
@@ -77,6 +82,7 @@ interface NavTab {
 
 const NAV_TABS: NavTab[] = [
   { id: "all", label: "All Specifications", targetId: "hero" },
+  { id: "vscode-extension", label: "VS Code Extension", targetId: "vscode-extension" },
   { id: "build-review-ship", label: "Review & Diffs", targetId: "build-review-ship" },
   { id: "ai-automations", label: "AI Engine", targetId: "ai-automations" },
   { id: "risk-engine", label: "Risk Model 1.1.0", targetId: "risk-engine" },
@@ -98,6 +104,14 @@ interface SpecSearchItem {
 }
 
 const SPEC_SEARCH_INDEX: SpecSearchItem[] = [
+  {
+    id: "vscode-extension",
+    category: "Tooling",
+    title: "Buggers VS Code & IDE Extension · v1.1.0",
+    description: "In-editor AST vulnerability scanning, Webview Flaw Inspector, side-by-side split diff remediation, 1-click batch fixing, and pre-commit Git hooks.",
+    targetId: "vscode-extension",
+    keywords: ["extension", "vscode", "vsix", "download", "ide", "inspector", "diff", "remediation", "git hook", "codelens", "batch", "offline", "antigravity", "cursor"],
+  },
   {
     id: "diff-triage",
     category: "Spec 01",
@@ -270,6 +284,37 @@ export function DocsPage() {
             Deterministic release intelligence, mathematical risk models, automated OWASP AST vulnerability scanners, and production deployment specifications grounded in verified pull request diffs.
           </p>
 
+          {/* Prominent Quick Actions: GitHub Repository & VS Code Extension */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <a
+              href="https://github.com/jaidevxr/buggers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.12] text-xs font-medium text-white hover:bg-white/[0.1] hover:border-white/25 transition-all shadow-sm group cursor-pointer"
+            >
+              <svg className="h-3.5 w-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              <span>GitHub Repository</span>
+              <span className="text-[10px] font-mono text-neutral-400 bg-white/10 px-1.5 py-0.5 rounded">jaidevxr/buggers</span>
+              <ExternalLink className="h-3 w-3 text-neutral-400 group-hover:text-white transition-colors" />
+            </a>
+
+            <a
+              href="#vscode-extension"
+              onClick={(e) => {
+                e.preventDefault();
+                const tab = NAV_TABS.find((t) => t.id === "vscode-extension");
+                if (tab) scrollToSection(tab);
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all shadow-sm cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5 text-emerald-400" />
+              <span>VS Code Extension</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded font-semibold">v1.1.0</span>
+            </a>
+          </div>
+
           {/* Sticky, Frosted Category Filter Bar & Live Search (Zero Horizontal Overflow) */}
           <div className="pt-6 pb-4 border-b border-white/[0.08] sticky top-16 bg-[#000000]/90 backdrop-blur-md z-30 space-y-3.5">
             {/* Top row: Section status indicator & Live Search */}
@@ -299,7 +344,7 @@ export function DocsPage() {
               {/* Desktop Section Count Indicator */}
               <div className="hidden lg:flex items-center gap-2 text-xs font-mono text-neutral-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                <span>10 SPECIFICATION MODULES</span>
+                <span>11 SPECIFICATION MODULES</span>
               </div>
 
               {/* Clean Integrated Search Bar with Live Results Drawer */}
@@ -449,6 +494,11 @@ export function DocsPage() {
         {/* 1. Linear 3-Column Isometric Wireframe Grid */}
         {/* ============================================================== */}
         <LinearWireframeGrid />
+
+        {/* ============================================================== */}
+        {/* 1.5. Official VS Code & IDE Extension (v1.1.0) */}
+        {/* ============================================================== */}
+        <VsCodeExtensionSection />
 
         {/* ============================================================== */}
         {/* 2. Flagship Linear Product Chapters (Chapters 1 - 4) */}
@@ -781,6 +831,46 @@ export function DocsPage() {
             </AccordionItem>
           </div>
         </section>
+
+        {/* ============================================================== */}
+        {/* Editorial Footer / Repository & Tooling Navigation */}
+        {/* ============================================================== */}
+        <div className="mt-20 pt-10 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-neutral-400">
+          <div className="flex items-center gap-3">
+            <BugMark className="h-4 w-4 text-white fill-white shrink-0" />
+            <span className="text-white font-medium">Buggers Engineering Specs</span>
+            <span className="text-neutral-600">·</span>
+            <span>Version 1.1.0</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-5">
+            <a
+              href="https://github.com/jaidevxr/buggers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-neutral-300 hover:text-white transition-colors cursor-pointer"
+            >
+              <svg className="h-3.5 w-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              <span>GitHub Repository (jaidevxr/buggers)</span>
+            </a>
+            <a
+              href="/downloads/buggers-vscode-1.1.0.vsix"
+              download="buggers-vscode-1.1.0.vsix"
+              className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Download Extension (.vsix)</span>
+            </a>
+            <Link
+              to="/"
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
 
       </main>
     </div>
