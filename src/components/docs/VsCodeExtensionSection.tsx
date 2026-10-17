@@ -32,7 +32,7 @@ export function VsCodeExtensionSection() {
   const [isScanning, setIsScanning] = useState(false);
   const [selectedFinding, setSelectedFinding] = useState<number>(0);
 
-  const cliCommand = "code --install-extension buggers-vscode-1.1.0.vsix";
+  const cliCommand = "code --install-extension buggers-vscode-1.2.0.vsix";
   const gitHookCommand = "npx buggers install-hook";
 
   const handleCopy = (text: string, type: "cli" | "hook") => {
@@ -108,7 +108,7 @@ export function VsCodeExtensionSection() {
                 SPECIFICATION 09 · OFFICIAL VS CODE EXTENSION
               </span>
               <span className="text-[11px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-full">
-                v1.1.0 STABLE · DIRECT INSTALL
+                v1.2.0 STABLE · DIRECT INSTALL
               </span>
             </div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.08]">
@@ -121,12 +121,12 @@ export function VsCodeExtensionSection() {
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <a
-                href="https://github.com/jaidevxr/buggers/releases/tag/v1.1.0"
+                href="https://github.com/jaidevxr/buggers/releases/tag/v1.2.0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors group cursor-pointer"
               >
-                <span>GitHub Release v1.1.0</span>
+                <span>GitHub Release v1.2.0</span>
                 <ExternalLink className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </a>
               <span className="text-neutral-600">·</span>
@@ -157,13 +157,13 @@ export function VsCodeExtensionSection() {
                   <Download className="h-5 w-5" />
                 </span>
                 <span className="text-[11px] font-mono text-emerald-300 font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25">
-                  73.3 KB VSIX
+                  73.6 KB VSIX
                 </span>
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-white tracking-tight flex items-center gap-2">
                   <span>Direct VSIX Package</span>
-                  <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-mono font-normal">v1.1.0</span>
+                  <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-mono font-normal">v1.2.0</span>
                 </h3>
                 <p className="text-xs text-neutral-400 leading-relaxed mt-2 font-normal">
                   Production binary packaged with native assets, 21 OWASP rules, 7 secret scanners, and offline AST engine. Compatible with VS Code, Cursor, Antigravity IDE, and VSCodium.
@@ -173,12 +173,12 @@ export function VsCodeExtensionSection() {
 
             <div className="space-y-2.5 relative z-10 pt-2">
               <a
-                href="/downloads/buggers-vscode-1.1.0.vsix"
-                download="buggers-vscode-1.1.0.vsix"
+                href="/downloads/buggers-vscode-1.2.0.vsix"
+                download="buggers-vscode-1.2.0.vsix"
                 className="w-full py-3 px-4 rounded-xl bg-white text-black font-semibold text-xs flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] cursor-pointer group/btn"
               >
                 <Download className="h-4 w-4 transition-transform group-hover/btn:-translate-y-0.5" />
-                <span>Download .VSIX (v1.1.0)</span>
+                <span>Download .VSIX (v1.2.0)</span>
               </a>
               <p className="text-[10px] text-center font-mono text-neutral-500">
                 Offline AST engine · Zero telemetry tracking
@@ -616,7 +616,7 @@ export function VsCodeExtensionSection() {
                 <span>Download .VSIX</span>
               </div>
               <p className="text-neutral-400 leading-relaxed font-sans">
-                Click the <a href="/downloads/buggers-vscode-1.1.0.vsix" download className="text-emerald-400 underline font-medium">Download .VSIX (v1.1.0)</a> button above to save the package to your machine.
+                Click the <a href="/downloads/buggers-vscode-1.2.0.vsix" download className="text-emerald-400 underline font-medium">Download .VSIX (v1.2.0)</a> button above to save the package to your machine.
               </p>
             </div>
 

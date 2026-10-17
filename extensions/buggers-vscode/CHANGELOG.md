@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-10-17
+
+### Added
+- **AI-Assisted Debugging & Consent-Gated Patch Proposals**:
+  - `Buggers: Explain Finding` for in-depth threat taxonomy and exploit scenarios.
+  - `Buggers: Suggest Fix` with side-by-side native diff preview and approval gates.
+  - `Buggers: Debug Selected Code` for finding edge cases and null pointer hazards.
+  - `Buggers: Generate Regression Test` to generate reproducible security spec files.
+  - `Buggers: Find Logical Errors` for deterministic AST inspection of boolean conditions and off-by-one loops.
+- **Enhanced Rule Coverage**:
+  - Full suite of 23 SAST security rules covering all 21 OWASP categories.
+  - 7 token and credential regex scanners with high entropy filters.
+  - 5 deterministic logical error checks.
+
 ## [1.1.0] - 2026-10-17
 
 ### Added
