@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const meta: Array<Record<string, string>> = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Buggers – Automated Pull Request Code Review & Security Scanner" },
+      { title: "Buggers" },
       {
         name: "description",
         content:
@@ -111,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Buggers" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_ORIGIN}/` },
-      { property: "og:title", content: "Buggers – Automated Pull Request Code Review & Security Scanner" },
+      { property: "og:title", content: "Buggers" },
       {
         property: "og:description",
         content:
@@ -123,7 +123,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image:alt", content: "Buggers Code Review & Security Platform" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Buggers – Automated Pull Request Code Review & Security Scanner" },
+      { name: "twitter:title", content: "Buggers" },
       {
         name: "twitter:description",
         content:
@@ -136,12 +136,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta.push({ name: "google-site-verification", content: googleVerificationCode });
     meta.push({ name: "google-site-verification", content: "google74ee40ccde796f62" });
     meta.push({ name: "google-site-verification", content: "google74ee40ccde796f62.html" });
+    meta.push({ name: "google-site-verification", content: "google2bd01b49369e896d" });
+    meta.push({ name: "google-site-verification", content: "google2bd01b49369e896d.html" });
 
     return {
       meta,
       links: [
         { rel: "canonical", href: `${SITE_ORIGIN}/` },
-        { rel: "manifest", href: "/site.webmanifest" },
+        { rel: "manifest", href: `${SITE_ORIGIN}/site.webmanifest` },
         { rel: "stylesheet", href: appCss },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -150,14 +152,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
         },
         { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp", fetchPriority: "high" },
-        { rel: "icon", href: "/favicon.ico", sizes: "48x48 32x32 16x16" },
-        { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-        { rel: "icon", href: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
-        { rel: "icon", href: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
-        { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
-        { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },
-        { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
-        { rel: "shortcut icon", href: "/favicon.ico" },
+        { rel: "icon", href: `${SITE_ORIGIN}/favicon.ico`, sizes: "48x48 32x32 16x16" },
+        { rel: "icon", href: `${SITE_ORIGIN}/favicon-48x48.png`, type: "image/png", sizes: "48x48" },
+        { rel: "icon", href: `${SITE_ORIGIN}/favicon-96x96.png`, type: "image/png", sizes: "96x96" },
+        { rel: "icon", href: `${SITE_ORIGIN}/icon-192.png`, type: "image/png", sizes: "192x192" },
+        { rel: "icon", href: `${SITE_ORIGIN}/icon-512.png`, type: "image/png", sizes: "512x512" },
+        { rel: "icon", href: `${SITE_ORIGIN}/favicon.svg`, type: "image/svg+xml" },
+        { rel: "apple-touch-icon", href: `${SITE_ORIGIN}/apple-touch-icon.png`, sizes: "180x180" },
+        { rel: "shortcut icon", href: `${SITE_ORIGIN}/favicon.ico` },
       ],
     };
   },

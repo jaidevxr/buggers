@@ -1,4 +1,14 @@
-# robots.txt for Buggers (https://buggers.dev)
+# robots.txt for Buggers (https://www.buggers.dev)
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /favicon-48x48.png
+Allow: /favicon-96x96.png
+Allow: /icon-192.png
+Allow: /icon-512.png
+Allow: /apple-touch-icon.png
 
 User-agent: Googlebot
 Allow: /
@@ -45,4 +55,4 @@ Disallow: /analysis/
 Disallow: /api/
 Disallow: /oauth/
 
-Sitemap: https://buggers.dev/sitemap.xml
+Sitemap: https://www.buggers.dev/sitemap.xml
