@@ -8,7 +8,7 @@
 
 <p align="center">
   <b>Deterministic In-Editor SAST, Secret Leak Prevention, and Pull Request Triage for Visual Studio Code.</b><br />
-  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> with the help of team <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
+  Built by <b>Jaidev Yadav</b>, <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
   Official Extension · Platform: <a href="https://buggers.dev">https://buggers.dev</a> · Documentation: <a href="https://buggers.dev/docs">https://buggers.dev/docs</a>
 </p>
 
@@ -157,9 +157,10 @@ npm run package
 
 ---
 
-## 👥 Team & Acknowledgments
+## 👥 Team & Credits
 
-Buggers for VS Code was designed and engineered by **[Jaidev Yadav (@jaidevxr)](https://github.com/jaidevxr)** with the help and contributions of team:
+Buggers for VS Code was designed and engineered by:
+- **Jaidev Yadav**
 - **Khushi Sharma**
 - **Madhvi Mishra**
 - **Kumkum**
@@ -169,4 +170,4 @@ Buggers for VS Code was designed and engineered by **[Jaidev Yadav (@jaidevxr)](
 ## 📄 License
 
 Proprietary & All Rights Reserved. See [LICENSE](LICENSE) for details.
-Copyright © 2026 Jaidev Yadav. All Rights Reserved.
+Copyright © 2026 Buggers Engineering. All Rights Reserved.

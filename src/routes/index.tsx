@@ -26,12 +26,11 @@ export const Route = createFileRoute("/")({
       path: "/",
       title: "Buggers",
       description:
-        "Buggers by jaidevxr automatically reviews your GitHub pull requests, detects OWASP vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
+        "Buggers automatically reviews your GitHub pull requests, detects OWASP vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
       keywords: [
         "Buggers",
         "Buggers AI",
         "buggers github",
-        "jaidevxr",
         "AI code review",
         "pull request analysis",
         "vulnerability scanner",

@@ -31,11 +31,10 @@ export const Route = createFileRoute("/about")({
       path: "/about",
       title: "About Buggers AI – Mission, Security Principles & Zero-Hallucination AI Code Review",
       description:
-        "Learn about Buggers AI by jaidevxr: Precision AI pull request triage and automated code review engineered to eliminate developer review fatigue with grounded AST analysis.",
+        "Learn about Buggers AI: Precision AI pull request triage and automated code review engineered to eliminate developer review fatigue with grounded AST analysis.",
       keywords: [
         "Buggers AI",
         "About Buggers",
-        "jaidevxr",
         "buggers github",
         "AI code review mission",
         "software engineering intelligence",

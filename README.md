@@ -8,7 +8,7 @@
 
 <p align="center">
   <b>Precision release intelligence & deterministic PR triage for modern engineering teams.</b><br />
-  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> with the help of team <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
+  Built by <b>Jaidev Yadav</b>, <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
   Live Platform: <a href="https://buggers.dev">https://buggers.dev</a>
 </p>
 
@@ -168,9 +168,10 @@ Refer to [`docs/SETUP.md`](docs/SETUP.md) for complete production secrets and we
 
 ---
 
-## Team & Acknowledgments
+## Team & Credits
 
-Buggers was designed and engineered by **[Jaidev Yadav (@jaidevxr)](https://github.com/jaidevxr)** with the help and contributions of team:
+Buggers was designed and developed by:
+- **Jaidev Yadav**
 - **Khushi Sharma**
 - **Madhvi Mishra**
 - **Kumkum**

@@ -465,7 +465,7 @@ function FindingDetail() {
                 type="text"
                 value={ticketAssignee}
                 onChange={(e) => setTicketAssignee(e.target.value)}
-                placeholder="e.g. security-lead or jaidevxr"
+                placeholder="e.g. security-lead or reviewer"
                 className="w-full max-w-sm rounded-md border border-border bg-background px-3 py-1.5 text-xs focus:border-primary focus:outline-none"
               />
             </div>

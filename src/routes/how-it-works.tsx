@@ -32,7 +32,6 @@ export const Route = createFileRoute("/how-it-works")({
       keywords: [
         "Buggers AI",
         "how Buggers works",
-        "jaidevxr",
         "buggers github",
         "pull request review pipeline",
         "code security architecture",
