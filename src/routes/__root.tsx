@@ -97,12 +97,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Buggers is an intelligent code security and review platform by jaidevxr. Automatically analyze GitHub pull requests, detect OWASP vulnerabilities, track risk velocity, and eliminate review fatigue.",
+          "Buggers is an intelligent code security and review platform by jaidevxr. Real-time AST vulnerability scanning in VS Code, automated GitHub PR risk triage, and deterministic OWASP remediation.",
       },
       {
         name: "keywords",
         content:
-          "Buggers, Buggers AI, buggers github, jaidevxr, AI code review, pull request security scanner, automated PR review, vulnerability scanner, DevSecOps, AST static analysis, code risk velocity",
+          "Buggers, Buggers AI, buggers github, jaidevxr, AI code review, pull request security scanner, automated PR review, vulnerability scanner, DevSecOps, AST static analysis, code risk velocity, VS Code extension, vsix download, in-editor security scanner",
       },
       { name: "author", content: "Jaidev Yadav (jaidevxr)" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
@@ -115,19 +115,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
+          "Continuous AI-assisted code review, in-editor VS Code vulnerability detection, and pull request risk triage for modern engineering teams.",
       },
       { property: "og:image", content: `${SITE_ORIGIN}/og-image.png` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Buggers Code Review & Security Platform" },
+      { property: "og:image:alt", content: "Buggers Code Review & Security Platform with VS Code Extension" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Buggers" },
       {
         name: "twitter:description",
         content:
-          "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
+          "Continuous AI-assisted code review, in-editor VS Code vulnerability detection, and pull request risk triage for modern engineering teams.",
       },
       { name: "twitter:image", content: `${SITE_ORIGIN}/og-image.png` },
     ];

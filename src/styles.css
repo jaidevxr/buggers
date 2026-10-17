@@ -881,5 +881,48 @@ select {
   will-change: top, opacity;
 }
 
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
 
+.animate-subtle-float {
+  animation: subtleFloat 4.5s ease-in-out infinite;
+}
 
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3.2s ease-in-out infinite;
+}
+
+@keyframes beamScan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-beam-scan {
+  animation: beamScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.black-fade-edges {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+}
