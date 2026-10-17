@@ -51,7 +51,7 @@ Configure in VS Code Settings (`Ctrl+,` / `Cmd+,`) under **Extensions > Buggers*
 |---|---|---|---|
 | `buggers.autoAnalyzeOnSave` | `boolean` | `true` | Automatically run SAST and secret analysis whenever an active file is saved. |
 | `buggers.minimumSeverity` | `string` (`enum`) | `"low"` | Minimum vulnerability severity displayed in the VS Code Problems panel (`critical`, `high`, `medium`, `low`). |
-| `buggers.serverUrl` | `string` | `"https://buggers.vercel.app"` | Buggers dashboard and platform URL. |
+| `buggers.serverUrl` | `string` | `"https://buggers.dev"` | Buggers dashboard and platform URL. |
 
 ---
 

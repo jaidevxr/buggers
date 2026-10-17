@@ -148,7 +148,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.openDashboard", async () => {
       const config = vscode.workspace.getConfiguration("buggers");
-      const url = config.get<string>("serverUrl") || "https://buggers.vercel.app";
+      const url = config.get<string>("serverUrl") || "https://buggers.dev";
       await vscode.env.openExternal(vscode.Uri.parse(url));
     }),
   );
