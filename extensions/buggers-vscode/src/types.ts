@@ -16,6 +16,8 @@ export interface BuggersFinding {
   whyItMatters: string;
   evidence: string;
   suggestedFix: string;
+  replacementCode?: string;
+  replacementRange?: { startLine: number; startCol: number; endLine: number; endCol: number };
 }
 
 export interface ScanRule {
@@ -27,4 +29,5 @@ export interface ScanRule {
   description: string;
   whyItMatters: string;
   suggestedFixTemplate: (matched: string) => string;
+  autoRemedyTemplate?: (matched: string, rawLine: string) => string;
 }

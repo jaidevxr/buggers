@@ -36,6 +36,9 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
         const evidenceSnippet = rawLine.replace(rawSecret, masked).trim();
         const col = match.index;
 
+        const fixSnippet = rule.suggestedFixTemplate(rawSecret);
+        const autoFixCode = rawLine.replace(rawSecret, fixSnippet);
+
         findings.push({
           id: `${rule.id}-${filePath}-${lineNumber}`,
           file: filePath,
@@ -50,7 +53,14 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
           problem: rule.description,
           whyItMatters: rule.whyItMatters,
           evidence: evidenceSnippet,
-          suggestedFix: rule.suggestedFixTemplate(rawSecret),
+          suggestedFix: fixSnippet,
+          replacementCode: autoFixCode,
+          replacementRange: {
+            startLine: lineNumber,
+            startCol: 0,
+            endLine: lineNumber,
+            endCol: rawLine.length,
+          },
         });
       }
     }
@@ -62,6 +72,8 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
       if (match && match[0]) {
         const matchedSnippet = match[0];
         const col = match.index;
+
+        const autoFixCode = rule.autoRemedyTemplate ? rule.autoRemedyTemplate(matchedSnippet, rawLine) : undefined;
 
         findings.push({
           id: `${rule.id}-${filePath}-${lineNumber}`,
@@ -78,6 +90,13 @@ export function scanText(content: string, filePath: string): BuggersFinding[] {
           whyItMatters: rule.whyItMatters,
           evidence: rawLine.trim(),
           suggestedFix: rule.suggestedFixTemplate(matchedSnippet),
+          replacementCode: autoFixCode,
+          replacementRange: {
+            startLine: lineNumber,
+            startCol: 0,
+            endLine: lineNumber,
+            endCol: rawLine.length,
+          },
         });
       }
     }

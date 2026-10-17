@@ -77,6 +77,10 @@ Module._load = function (request, parent, isMain) {
         registerTreeDataProvider: (viewId, provider) => {
           currentTreeDataProvider = provider;
         },
+        createTerminal: (name) => ({
+          show: () => {},
+          sendText: (text) => {},
+        }),
         withProgress: async (opts, task) => {
           const progressReports = [];
           return await task({
@@ -104,6 +108,8 @@ Module._load = function (request, parent, isMain) {
           fileName: uri.fsPath || uri.path,
           getText: () => "",
         }),
+        getWorkspaceFolder: (uri) => ({ uri: { fsPath: "/workspace" } }),
+        applyEdit: async (edit) => true,
         onDidSaveTextDocument: (callback) => {
           saveDocumentListeners.push(callback);
           return {
@@ -134,6 +140,24 @@ Module._load = function (request, parent, isMain) {
           };
           return collection;
         },
+        registerCodeActionsProvider: () => ({ dispose: () => {} }),
+        registerCodeLensProvider: () => ({ dispose: () => {} }),
+      },
+      CodeLens: class {
+        constructor(range, command) {
+          this.range = range;
+          this.command = command;
+        }
+      },
+      CodeActionKind: { QuickFix: "QuickFix" },
+      CodeAction: class {
+        constructor(title, kind) {
+          this.title = title;
+          this.kind = kind;
+        }
+      },
+      WorkspaceEdit: class {
+        replace() {}
       },
       StatusBarAlignment: { Left: 1, Right: 2 },
       DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
@@ -521,6 +545,8 @@ async function runAsyncTest(name, fn) {
       "buggers.refreshFindings",
       "buggers.clearFindings",
       "buggers.openDashboard",
+      "buggers.applyRemedy",
+      "buggers.commitRemedy",
     ];
 
     for (const cmdId of requiredCommands) {

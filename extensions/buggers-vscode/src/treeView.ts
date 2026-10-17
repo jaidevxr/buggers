@@ -63,6 +63,8 @@ export class FindingNode extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon("search", new vscode.ThemeColor("problemsInfoIcon.foreground"));
     }
 
+    this.contextValue = finding.replacementCode ? "findingWithFix" : "finding";
+
     const startPos = new vscode.Position(
       Math.max(0, finding.line - 1),
       finding.column ?? 0,

