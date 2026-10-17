@@ -6,7 +6,7 @@
   "publisher": "buggers-security",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "resources/icon.png",
-  "homepage": "https://buggers.vercel.app",
+  "homepage": "https://buggers.dev",
   "bugs": {
     "url": "https://github.com/jaidevxr/buggers/issues"
   },
@@ -101,7 +101,7 @@
       "properties": {
         "buggers.serverUrl": {
           "type": "string",
-          "default": "https://buggers.vercel.app",
+          "default": "https://buggers.dev",
           "description": "Buggers dashboard and API server endpoint URL"
         },
         "buggers.autoAnalyzeOnSave": {
