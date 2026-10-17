@@ -55,7 +55,8 @@ function Findings() {
             </select>
           </div>
           <div className="surface-card overflow-x-auto">
-            <table className="w-full text-sm">
+            {/* Desktop Table (md and up) */}
+            <table className="hidden md:table w-full text-sm">
               <thead className="border-b border-border text-left text-xs text-muted-foreground">
                 <tr><th className="p-3">Finding</th><th className="p-3">Repository</th><th className="p-3">PR</th><th className="p-3">File</th><th className="p-3">Severity</th><th className="p-3">Confidence</th><th className="p-3">Status</th></tr>
               </thead>
@@ -81,6 +82,45 @@ function Findings() {
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile Touch Card List (below md) */}
+            <div className="divide-y divide-border md:hidden">
+              {rows.map((f) => (
+                <Link
+                  key={f.id}
+                  to="/findings/$id"
+                  params={{ id: f.id }}
+                  className="block p-4 space-y-2.5 hover:bg-muted/40 transition-colors active:scale-[0.99]"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-medium text-sm text-foreground line-clamp-2">
+                      {f.title}
+                    </span>
+                    <SeverityBadge severity={f.severity} />
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground">{f.repo_full_name}</span>
+                    <span>·</span>
+                    <span>PR #{f.pr_number}</span>
+                    <span>·</span>
+                    <code className="font-mono text-[11px] truncate max-w-[180px] bg-muted px-1 rounded">
+                      {f.file_path}{f.line_number ? `:${f.line_number}` : ""}
+                    </code>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <StatusPill
+                      status={
+                        f.status === "fixed" && f.source === "automated_fix"
+                          ? "automated_fix"
+                          : f.status
+                      }
+                    />
+                    <ConfidenceMeter value={Number(f.confidence ?? 0.8)} />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
             {rows.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">No findings match these filters.</p>}
           </div>
         </>

@@ -111,11 +111,11 @@ export function getWebSiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: SITE_NAME,
-    alternateName: ["Buggers AI", "Buggers Code Review", "Buggers Security"],
+    name: "Buggers AI",
+    alternateName: ["Buggers", "Buggers AI Code Review", "Buggers Security", "jaidevxr/buggers"],
     url: `${SITE_ORIGIN}/`,
     description:
-      "Automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform.",
+      "Buggers AI is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform by jaidevxr.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -134,13 +134,19 @@ export function getSoftwareApplicationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: SITE_NAME,
+    name: "Buggers AI",
+    alternateName: ["Buggers", "Buggers Security Scanner"],
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Cloud, GitHub",
     url: `${SITE_ORIGIN}/`,
-    image: DEFAULT_OG_IMAGE,
+    image: `${SITE_ORIGIN}/icon-512.png`,
+    author: {
+      "@type": "Person",
+      name: "Jaidev Yadav",
+      url: "https://github.com/jaidevxr",
+    },
     description:
-      "Buggers automatically scans GitHub pull requests for code vulnerabilities, tracks risk velocity across repositories, and triages bugs using AST analysis.",
+      "Buggers AI automatically scans GitHub pull requests for security flaws, tracks risk velocity across repositories, and triages bugs using deterministic AST analysis.",
     offers: {
       "@type": "Offer",
       price: "0",
@@ -165,10 +171,13 @@ export function getOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: SITE_NAME,
+    name: "Buggers AI",
     url: `${SITE_ORIGIN}/`,
     logo: `${SITE_ORIGIN}/favicon.svg`,
-    sameAs: ["https://github.com/jaidevxr/buggers"],
+    sameAs: [
+      "https://github.com/jaidevxr/buggers",
+      "https://github.com/jaidevxr",
+    ],
   };
 }
 

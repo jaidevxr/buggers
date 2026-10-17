@@ -1,0 +1,140 @@
+{
+  "name": "buggers-vscode",
+  "displayName": "Buggers - Security & Bug Triage",
+  "description": "Deterministic AST code review, OWASP SAST flaw detection, and PR triage inside VS Code",
+  "version": "1.0.0",
+  "publisher": "buggers-security",
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "resources/icon.png",
+  "homepage": "https://buggers.vercel.app",
+  "bugs": {
+    "url": "https://github.com/jaidevxr/buggers/issues"
+  },
+  "qna": "marketplace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaidevxr/buggers.git",
+    "directory": "extensions/buggers-vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "security",
+    "sast",
+    "code review",
+    "bug triage",
+    "vulnerability scanner",
+    "secrets"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "buggers.signIn",
+        "title": "Buggers: Sign In",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.signOut",
+        "title": "Buggers: Sign Out",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.analyzeFile",
+        "title": "Buggers: Analyze Current File",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.analyzeWorkspace",
+        "title": "Buggers: Analyze Workspace",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.showFindings",
+        "title": "Buggers: Show Findings",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.refreshFindings",
+        "title": "Buggers: Refresh Findings",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.clearFindings",
+        "title": "Buggers: Clear Findings",
+        "category": "Buggers"
+      },
+      {
+        "command": "buggers.openDashboard",
+        "title": "Buggers: Open Buggers Dashboard",
+        "category": "Buggers"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "buggers-sidebar",
+          "title": "Buggers",
+          "icon": "resources/bugmark.svg"
+        }
+      ]
+    },
+    "views": {
+      "buggers-sidebar": [
+        {
+          "id": "buggers.findingsView",
+          "name": "Security & Triage Findings"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Buggers",
+      "properties": {
+        "buggers.serverUrl": {
+          "type": "string",
+          "default": "https://buggers.vercel.app",
+          "description": "Buggers dashboard and API server endpoint URL"
+        },
+        "buggers.autoAnalyzeOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically run SAST and secret analysis whenever an active file is saved"
+        },
+        "buggers.minimumSeverity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ],
+          "default": "low",
+          "description": "Minimum vulnerability severity displayed in the VS Code Problems panel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "build": "node esbuild.js",
+    "package": "npx @vscode/vsce package --no-dependencies",
+    "test": "node test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}

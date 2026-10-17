@@ -307,7 +307,7 @@ export function AnimatedCodeScanner() {
               )}
 
               {/* Code Lines Rendering */}
-              <div className="space-y-1.5 font-mono text-xs">
+              <div className="space-y-1.5 font-mono text-xs overflow-x-auto py-1">
                 {activeScenario.initialLines.map((line, idx) => {
                   const isTargetLine = idx === activeScenario.vulnerableLineIdx;
 
