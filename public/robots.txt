@@ -1,4 +1,4 @@
-# robots.txt for Buggers (https://www.buggers.dev)
+# robots.txt for Buggers (https://buggers.dev)
 
 User-agent: Googlebot-Image
 Allow: /
@@ -55,4 +55,4 @@ Disallow: /analysis/
 Disallow: /api/
 Disallow: /oauth/
 
-Sitemap: https://www.buggers.dev/sitemap.xml
+Sitemap: https://buggers.dev/sitemap.xml
