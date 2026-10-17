@@ -1,4 +1,4 @@
-# robots.txt for Buggers (https://buggers.vercel.app)
+# robots.txt for Buggers (https://buggers.dev)
 
 User-agent: Googlebot
 Allow: /
@@ -45,4 +45,4 @@ Disallow: /analysis/
 Disallow: /api/
 Disallow: /oauth/
 
-Sitemap: https://buggers.vercel.app/sitemap.xml
+Sitemap: https://buggers.dev/sitemap.xml

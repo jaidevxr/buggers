@@ -628,7 +628,7 @@ export function DocsPage() {
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => handleCopyCurl('curl -X POST https://buggers.vercel.app/api/webhooks/github -H "X-Hub-Signature-256: sha256=..." -d \'{"action":"opened"}\'', "webhook")}
+                          onClick={() => handleCopyCurl('curl -X POST https://buggers.dev/api/webhooks/github -H "X-Hub-Signature-256: sha256=..." -d \'{"action":"opened"}\'', "webhook")}
                           className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "webhook" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
@@ -643,7 +643,7 @@ export function DocsPage() {
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => handleCopyCurl('curl -X GET https://buggers.vercel.app/api/cron/worker -H "Authorization: Bearer YOUR_CRON_SECRET"', "cron")}
+                          onClick={() => handleCopyCurl('curl -X GET https://buggers.dev/api/cron/worker -H "Authorization: Bearer YOUR_CRON_SECRET"', "cron")}
                           className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "cron" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
@@ -658,7 +658,7 @@ export function DocsPage() {
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => handleCopyCurl("curl -X GET https://buggers.vercel.app/api/health", "health")}
+                          onClick={() => handleCopyCurl("curl -X GET https://buggers.dev/api/health", "health")}
                           className="inline-flex items-center gap-1 text-[11px] text-neutral-400 hover:text-white font-sans cursor-pointer transition-colors"
                         >
                           {copiedCurl === "health" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}

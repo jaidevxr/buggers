@@ -104,7 +104,7 @@ describe("Technical SEO: Static Crawl Assets", () => {
     expect(robotsContent).toContain("Disallow: /settings");
     expect(robotsContent).toContain("Disallow: /api/");
     expect(robotsContent).toContain("Disallow: /oauth/");
-    expect(robotsContent).toContain("Sitemap: https://buggers.vercel.app/sitemap.xml");
+    expect(robotsContent).toContain("Sitemap: https://buggers.dev/sitemap.xml");
   });
 
   it("ensures sitemap.xml exists, is valid XML, and contains only indexable public URLs", () => {
@@ -114,10 +114,10 @@ describe("Technical SEO: Static Crawl Assets", () => {
     const sitemapContent = fs.readFileSync(sitemapPath, "utf-8");
     expect(sitemapContent.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
     expect(sitemapContent).toContain("<urlset");
-    expect(sitemapContent).toContain("<loc>https://buggers.vercel.app/</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.vercel.app/how-it-works</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.vercel.app/docs</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.vercel.app/about</loc>");
+    expect(sitemapContent).toContain("<loc>https://buggers.dev/</loc>");
+    expect(sitemapContent).toContain("<loc>https://buggers.dev/how-it-works</loc>");
+    expect(sitemapContent).toContain("<loc>https://buggers.dev/docs</loc>");
+    expect(sitemapContent).toContain("<loc>https://buggers.dev/about</loc>");
 
     // Ensure NO private, auth, or authenticated routes are exposed in the sitemap
     expect(sitemapContent).not.toContain("/auth");

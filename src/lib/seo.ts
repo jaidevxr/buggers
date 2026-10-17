@@ -9,7 +9,7 @@
  */
 
 // Production domain fallback (configurable via VITE_SITE_URL / SITE_URL in .env)
-const DEFAULT_SITE_URL = "https://buggers.vercel.app";
+const DEFAULT_SITE_URL = "https://buggers.dev";
 
 function resolveBaseUrl(): string {
   let url = DEFAULT_SITE_URL;
