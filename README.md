@@ -8,12 +8,13 @@
 
 <p align="center">
   <b>Precision release intelligence & deterministic PR triage for modern engineering teams.</b><br />
-  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> · Live Platform: <a href="https://buggers.dev">https://buggers.dev</a>
+  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> with the help of team <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
+  Live Platform: <a href="https://buggers.dev">https://buggers.dev</a>
 </p>
 
 <p align="center">
   <a href="https://buggers.dev"><img src="https://img.shields.io/badge/Live%20Platform-buggers.dev-000000?style=flat-square&logo=vercel" alt="Live App" /></a>
-  <a href="extensions/buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code%20Extension-v1.0.0-007acc?style=flat-square&logo=visual-studio-code" alt="VS Code Extension" /></a>
+  <a href="extensions/buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code%20Extension-v1.2.0-007acc?style=flat-square&logo=visual-studio-code" alt="VS Code Extension" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-slate?style=flat-square" alt="License" /></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Runtime-Node.js%2022-emerald?style=flat-square" alt="Runtime" /></a>
   <a href="https://tanstack.com/start"><img src="https://img.shields.io/badge/Framework-TanStack%20Start-blue?style=flat-square" alt="Framework" /></a>
@@ -164,6 +165,15 @@ npx vercel deploy --prebuilt --prod
 ```
 
 Refer to [`docs/SETUP.md`](docs/SETUP.md) for complete production secrets and webhook configuration.
+
+---
+
+## Team & Acknowledgments
+
+Buggers was designed and engineered by **[Jaidev Yadav (@jaidevxr)](https://github.com/jaidevxr)** with the help and contributions of team:
+- **Khushi Sharma**
+- **Madhvi Mishra**
+- **Kumkum**
 
 ---
 

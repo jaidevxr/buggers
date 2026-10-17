@@ -8,12 +8,13 @@
 
 <p align="center">
   <b>Deterministic In-Editor SAST, Secret Leak Prevention, and Pull Request Triage for Visual Studio Code.</b><br />
+  Built by <a href="https://github.com/jaidevxr">Jaidev Yadav (@jaidevxr)</a> with the help of team <b>Khushi Sharma</b>, <b>Madhvi Mishra</b>, and <b>Kumkum</b>.<br />
   Official Extension · Platform: <a href="https://buggers.dev">https://buggers.dev</a> · Documentation: <a href="https://buggers.dev/docs">https://buggers.dev/docs</a>
 </p>
 
 <p align="center">
   <a href="https://buggers.dev"><img src="https://img.shields.io/badge/Platform-buggers.dev-000000?style=flat-square&logo=vercel" alt="Platform" /></a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=buggers.buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code-v1.0.0-007acc?style=flat-square&logo=visual-studio-code" alt="Marketplace" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=buggers.buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code-v1.2.0-007acc?style=flat-square&logo=visual-studio-code" alt="Marketplace" /></a>
   <a href="https://github.com/jaidevxr/buggers"><img src="https://img.shields.io/badge/GitHub-jaidevxr%2Fbuggers-181717?style=flat-square&logo=github" alt="GitHub" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-slate?style=flat-square" alt="License" /></a>
 </p>
@@ -153,6 +154,15 @@ npm test
 # Package VSIX archive
 npm run package
 ```
+
+---
+
+## 👥 Team & Acknowledgments
+
+Buggers for VS Code was designed and engineered by **[Jaidev Yadav (@jaidevxr)](https://github.com/jaidevxr)** with the help and contributions of team:
+- **Khushi Sharma**
+- **Madhvi Mishra**
+- **Kumkum**
 
 ---
 
