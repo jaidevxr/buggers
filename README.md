@@ -1,10 +1,10 @@
 <p align="center">
   <a href="https://buggers.vercel.app">
-    <img src="https://buggers.vercel.app/icon-192.png" width="96" height="96" alt="Buggers AI Logo" style="border-radius: 20px;" />
+    <img src="https://buggers.vercel.app/icon-192.png" width="96" height="96" alt="Buggers Logo" style="border-radius: 20px;" />
   </a>
 </p>
 
-<h1 align="center">Buggers AI — Pull Request Security Reviewer & Vulnerability Scanner</h1>
+<h1 align="center">Buggers — Pull Request Security Reviewer & Vulnerability Scanner</h1>
 
 <p align="center">
   <b>Precision release intelligence & deterministic PR triage for modern engineering teams.</b><br />

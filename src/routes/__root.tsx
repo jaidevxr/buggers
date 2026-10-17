@@ -93,11 +93,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const meta: Array<Record<string, string>> = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
+      { title: "Buggers – Automated Pull Request Code Review & Security Scanner" },
       {
         name: "description",
         content:
-          "Buggers AI is an intelligent code security and review platform by jaidevxr. Automatically analyze GitHub pull requests, detect OWASP vulnerabilities, track risk velocity, and eliminate review fatigue.",
+          "Buggers is an intelligent code security and review platform by jaidevxr. Automatically analyze GitHub pull requests, detect OWASP vulnerabilities, track risk velocity, and eliminate review fatigue.",
       },
       {
         name: "keywords",
@@ -108,10 +108,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       { name: "theme-color", content: "#09090b" },
-      { property: "og:site_name", content: "Buggers AI" },
+      { property: "og:site_name", content: "Buggers" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_ORIGIN}/` },
-      { property: "og:title", content: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
+      { property: "og:title", content: "Buggers – Automated Pull Request Code Review & Security Scanner" },
       {
         property: "og:description",
         content:
@@ -120,10 +120,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: `${SITE_ORIGIN}/og-image.png` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Buggers AI Code Review & Security Platform" },
+      { property: "og:image:alt", content: "Buggers Code Review & Security Platform" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Buggers AI – Automated Pull Request Code Review & Security Scanner" },
+      { name: "twitter:title", content: "Buggers – Automated Pull Request Code Review & Security Scanner" },
       {
         name: "twitter:description",
         content:
