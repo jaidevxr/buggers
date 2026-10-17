@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 import { AnimatedCodeScanner } from "@/components/home/AnimatedCodeScanner";
+import { VsCodeExtensionHeroSection } from "@/components/home/VsCodeExtensionHeroSection";
 import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
@@ -39,6 +40,10 @@ export const Route = createFileRoute("/")({
         "static code analysis",
         "DevSecOps",
         "code triage",
+        "VS Code extension",
+        "vsix download",
+        "in-editor security scanner",
+        "IDE vulnerability detection",
       ],
     });
 
@@ -388,6 +393,9 @@ ignore:
               </p>
             </div>
           </div>
+
+          {/* Section 4.5: Official VS Code Extension Showcase (Black Fade Gradient & Motions) */}
+          <VsCodeExtensionHeroSection />
 
           {/* Section 5: Bottom CTA (Open Linear Hairline) */}
           <div className="border-t border-white/[0.08] pt-16 pb-8 text-center space-y-4">

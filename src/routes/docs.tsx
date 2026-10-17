@@ -82,7 +82,6 @@ interface NavTab {
 
 const NAV_TABS: NavTab[] = [
   { id: "all", label: "All Specifications", targetId: "hero" },
-  { id: "vscode-extension", label: "VS Code Extension", targetId: "vscode-extension" },
   { id: "build-review-ship", label: "Review & Diffs", targetId: "build-review-ship" },
   { id: "ai-automations", label: "AI Engine", targetId: "ai-automations" },
   { id: "risk-engine", label: "Risk Model 1.1.0", targetId: "risk-engine" },
@@ -92,6 +91,7 @@ const NAV_TABS: NavTab[] = [
   { id: "architecture", label: "Architecture", targetId: "architecture" },
   { id: "api", label: "API Reference", targetId: "api" },
   { id: "deployment", label: "Deployment & Ops", targetId: "deployment" },
+  { id: "vscode-extension", label: "VS Code Extension", targetId: "vscode-extension" },
 ];
 
 interface SpecSearchItem {
@@ -495,10 +495,6 @@ export function DocsPage() {
         {/* ============================================================== */}
         <LinearWireframeGrid />
 
-        {/* ============================================================== */}
-        {/* 1.5. Official VS Code & IDE Extension (v1.1.0) */}
-        {/* ============================================================== */}
-        <VsCodeExtensionSection />
 
         {/* ============================================================== */}
         {/* 2. Flagship Linear Product Chapters (Chapters 1 - 4) */}
@@ -831,6 +827,11 @@ export function DocsPage() {
             </AccordionItem>
           </div>
         </section>
+
+        {/* ============================================================== */}
+        {/* CHAPTER 9: Official VS Code & IDE Extension (v1.1.0) */}
+        {/* ============================================================== */}
+        <VsCodeExtensionSection />
 
         {/* ============================================================== */}
         {/* Editorial Footer / Repository & Tooling Navigation */}

@@ -17,6 +17,7 @@ import {
   Play,
   Pause,
   RotateCcw,
+  Download,
 } from "lucide-react";
 import { BugMark } from "@/components/brand/BugMark";
 import { createRouteSeo } from "@/lib/seo";
@@ -401,7 +402,7 @@ export function HowItWorksPage() {
             </p>
           </div>
 
-          <div className="flex justify-center items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-4">
             <Link
               to="/auth"
               preload="intent"
@@ -410,6 +411,14 @@ export function HowItWorksPage() {
               <span>Get Started with GitHub</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
+            <a
+              href="/downloads/buggers-vscode-1.1.0.vsix"
+              download="buggers-vscode-1.1.0.vsix"
+              className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/50 px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-150 inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download className="h-4 w-4 text-emerald-400" />
+              <span>VS Code Extension (v1.1.0)</span>
+            </a>
             <Link
               to="/docs"
               className="rounded-full border border-white/[0.12] bg-white/[0.02] text-neutral-300 hover:text-white hover:border-white/25 px-6 py-2.5 text-xs sm:text-sm font-medium transition-all duration-150 cursor-pointer"
