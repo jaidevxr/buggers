@@ -81,6 +81,27 @@ Module._load = function (request, parent, isMain) {
           show: () => {},
           sendText: (text) => {},
         }),
+        createWebviewPanel: (viewType, title, showOptions, options) => ({
+          webview: {
+            html: "",
+            onDidReceiveMessage: () => ({ dispose: () => {} }),
+            postMessage: async () => true,
+          },
+          reveal: () => {},
+          dispose: () => {},
+        }),
+        createTextEditorDecorationType: () => ({ dispose: () => {} }),
+        visibleTextEditors: [],
+        showTextDocument: async (doc) => ({
+          document: doc,
+          selection: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+          revealRange: () => {},
+          setDecorations: () => {},
+          edit: async (cb) => {
+            cb({ replace: () => {} });
+            return true;
+          },
+        }),
         withProgress: async (opts, task) => {
           const progressReports = [];
           return await task({
@@ -89,6 +110,7 @@ Module._load = function (request, parent, isMain) {
         },
       },
       workspace: {
+        registerTextDocumentContentProvider: () => ({ dispose: () => {} }),
         getConfiguration: (section) => ({
           get: (key, defaultValue) => {
             if (section === "buggers") {
@@ -142,6 +164,7 @@ Module._load = function (request, parent, isMain) {
         },
         registerCodeActionsProvider: () => ({ dispose: () => {} }),
         registerCodeLensProvider: () => ({ dispose: () => {} }),
+        registerHoverProvider: () => ({ dispose: () => {} }),
       },
       CodeLens: class {
         constructor(range, command) {
@@ -149,6 +172,15 @@ Module._load = function (request, parent, isMain) {
           this.command = command;
         }
       },
+      Hover: class {
+        constructor(contents, range) {
+          this.contents = contents;
+          this.range = range;
+        }
+      },
+      ViewColumn: { One: 1, Two: 2, Beside: -2 },
+      OverviewRulerLane: { Right: 4 },
+      TextEditorRevealType: { Default: 0, InCenter: 1, InCenterIfOutsideViewport: 2, AtTop: 3 },
       CodeActionKind: { QuickFix: "QuickFix" },
       CodeAction: class {
         constructor(title, kind) {
@@ -158,6 +190,7 @@ Module._load = function (request, parent, isMain) {
       },
       WorkspaceEdit: class {
         replace() {}
+        insert() {}
       },
       StatusBarAlignment: { Left: 1, Right: 2 },
       DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
@@ -547,6 +580,14 @@ async function runAsyncTest(name, fn) {
       "buggers.openDashboard",
       "buggers.applyRemedy",
       "buggers.commitRemedy",
+      "buggers.inspectFinding",
+      "buggers.openInspector",
+      "buggers.previewDiff",
+      "buggers.fixAllFile",
+      "buggers.fixAllWorkspace",
+      "buggers.ignoreFinding",
+      "buggers.generateSecurityReport",
+      "buggers.installGitHook",
     ];
 
     for (const cmdId of requiredCommands) {
@@ -557,6 +598,16 @@ async function runAsyncTest(name, fn) {
     assert.ok(currentStatusBarItem.text.includes("Buggers"), "Status bar contains Buggers branding");
     assert.ok(currentTreeDataProvider !== null, "Tree view data provider must be registered");
     assert.strictEqual(saveDocumentListeners.length, 1, "Save listener must be registered");
+  });
+
+  runTest("Inline suppression comment '// buggers-ignore' prevents finding reporting", () => {
+    const codeWithIgnore = `
+      // buggers-ignore: sql_injection
+      const query = \`SELECT * FROM users WHERE id = \${req.body.id}\`;
+      eval(userInput); // buggers-ignore: eval
+    `;
+    const findings = scanText(codeWithIgnore, "src/service.ts");
+    assert.strictEqual(findings.length, 0, "Suppressed lines must not produce findings");
   });
 
   await runAsyncTest("Command 'buggers.clearFindings' clears diagnostics and resets status bar", async () => {

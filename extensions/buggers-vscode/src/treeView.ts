@@ -51,8 +51,10 @@ export class FindingNode extends vscode.TreeItem {
   constructor(public readonly finding: BuggersFinding) {
     super(finding.title, vscode.TreeItemCollapsibleState.None);
     this.description = `Line ${finding.line} · ${path.basename(finding.file)}`;
+    const cweInfo = finding.cwe ? ` | **CWE:** \`${finding.cwe}\`` : "";
+    const owaspInfo = finding.owasp ? ` | **OWASP:** \`${finding.owasp}\`` : "";
     this.tooltip = new vscode.MarkdownString(
-      `### ${finding.title}\n\n**Severity:** \`${finding.severity.toUpperCase()}\` | **Rule:** \`${finding.ruleId}\`\n\n${finding.problem}\n\n**Why it matters:**\n${finding.whyItMatters}\n\n**Evidence:**\n\`\`\`\n${finding.evidence}\n\`\`\`\n\n**Remediation:**\n\`\`\`\n${finding.suggestedFix}\n\`\`\``,
+      `### 🛡️ ${finding.title}\n\n**Severity:** \`${finding.severity.toUpperCase()}\` | **Rule:** \`${finding.ruleId}\`${cweInfo}${owaspInfo}\n\n${finding.problem}\n\n**Why it matters:**\n${finding.whyItMatters}\n\n**Evidence:**\n\`\`\`\n${finding.evidence}\n\`\`\`\n\n**Remediation:**\n\`\`\`\n${finding.suggestedFix}\n\`\`\``,
     );
 
     if (finding.severity === "critical" || finding.severity === "high") {
