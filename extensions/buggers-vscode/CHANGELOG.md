@@ -10,16 +10,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-10-17
 
 ### Added
-- **Rich Flaw Inspector Webview** (`buggers.openInspector`): Modern dark-mode interface with glowing severity indicators, CWE/OWASP mapping, technical exploit impact, and interactive remediation controls.
-- **Side-by-Side Visual Diff Preview** (`buggers.previewDiff`): Native side-by-side diff view of proposed security remedies before accepting changes.
-- **Interactive In-Editor CodeLens & Hover Tooltip**: Clickable remedy and Git commit buttons right above vulnerable lines and in rich Markdown hover cards.
-- **Batch Auto-Remediation**:
-  - `buggers.fixAllFile`: 1-click batch fix for all detected vulnerabilities in the active file.
-  - `buggers.fixAllWorkspace`: Batch auto-remediation across the entire project.
-- **Inline Finding Suppression** (`buggers.ignoreFinding`): Instant insertion of `// buggers-ignore: <ruleId>` to manage false positives.
-- **Security Audit Report Generator** (`buggers.generateSecurityReport`): Computes project Security Health Score (0–100%, Grade A+–F) and compiles `BUGGERS-SECURITY-AUDIT.md`.
-- **Pre-Commit Git Hook Guard** (`buggers.installGitHook`): Prevents committing vulnerable code or plaintext secrets into Git branches.
-- **Automated Git Commit Tracking** (`buggers.commitRemedy`): Stages and creates conventional security commits automatically.
+- **21+ Security Vulnerability Categories (OWASP & CWE Covered)**:
+  - SQL Injection (`sql_injection`, CWE-89)
+  - Command Injection (`command_injection`, CWE-78)
+  - Path Traversal (`path_traversal`, CWE-22)
+  - Weak Cryptography (`weak_cryptography`, CWE-327)
+  - Insecure Randomness (`insecure_randomness`, CWE-338)
+  - Cross-Site Scripting (`cross_site_scripting`, CWE-79)
+  - Unsafe Redirect (`unsafe_redirect`, CWE-601)
+  - Disabled TLS Verification (`disabled_tls`, CWE-295)
+  - Insecure HTTP Endpoints (`insecure_http`, CWE-319)
+  - Dynamic Code Execution (`dynamic_code_execution`, CWE-95)
+  - Sensitive Data Logging (`sensitive_logging`, CWE-532)
+  - Insecure File Permissions (`insecure_file_permissions`, CWE-732)
+  - Unsafe Temporary Files (`unsafe_temp_files`, CWE-377)
+  - Weak Security Comparisons (`weak_comparisons`, CWE-697)
+  - Unsafe Regular Expressions / ReDoS (`unsafe_regex`, CWE-1333)
+  - Insecure Cookie Attributes (`insecure_cookies`, CWE-614)
+  - Error Information Disclosure (`error_disclosure`, CWE-209)
+  - Unsafe File Deletion (`unsafe_file_deletion`, CWE-73)
+  - Prototype Pollution Risks (`prototype_pollution`, CWE-1321)
+  - Missing Async Error Handling (`missing_async_error_handling`, CWE-703)
+  - Side-Channel Timing Attacks (`timing_attack`, CWE-208)
+  - Insecure CORS Configuration (`insecure_cors`, CWE-942)
+  - Server-Side Request Forgery (`ssrf`, CWE-918)
+- **Deterministic Logical Bug Detection** (`buggers.findLogicalBugs`):
+  - Accidental assignment in conditional expression (`bug_accidental_assignment_in_condition`, CWE-480)
+  - Tautological and self-comparing conditions (`bug_tautological_condition`, CWE-571)
+  - Direct equality comparison with NaN (`bug_nan_comparison`, CWE-697)
+  - Off-by-one boundary indexing in loops (`bug_off_by_one_index`, CWE-193)
+  - Unreachable dead code after return (`bug_unreachable_code`, CWE-561)
+- **Root Cause Explanation** (`buggers.explainFinding`): Deep causal analysis explaining vulnerability mechanism and impact.
+- **Reviewable Side-by-Side Diff Fix Workflow** (`buggers.suggestFix`): Proposed fixes are shown in native `vscode.diff` allowing review before Accept or Reject.
+- **Regression Test Generation** (`buggers.generateRegressionTest`): Automatically generates unit test assertions verifying that the vulnerability cannot regress.
+- **AI-Assisted Debugging Support**:
+  - Multi-provider architecture supporting OpenAI, Anthropic, Gemini, Ollama, and custom OpenAI-compatible endpoints.
+  - Strict privacy gate: Requires explicit modal user confirmation before transmitting any code snippet.
+  - 100% functional offline without AI keys using deterministic rules and remediation templates.
+  - Secure credential storage in VS Code `context.secrets`.
+- **UI Simplification & Professional Polish**: Clean, native VS Code styling adhering strictly to VS Code Codicons and theme guidelines.
 
 ---
 
