@@ -111,11 +111,11 @@ export function getWebSiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Buggers AI",
-    alternateName: ["Buggers", "Buggers AI Code Review", "Buggers Security", "jaidevxr/buggers"],
+    name: "Buggers",
+    alternateName: ["Buggers AI", "Buggers Code Review", "Buggers Security", "jaidevxr/buggers"],
     url: `${SITE_ORIGIN}/`,
     description:
-      "Buggers AI is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform by jaidevxr.",
+      "Buggers is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform by jaidevxr.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -134,8 +134,8 @@ export function getSoftwareApplicationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Buggers AI",
-    alternateName: ["Buggers", "Buggers Security Scanner"],
+    name: "Buggers",
+    alternateName: ["Buggers AI", "Buggers Security Scanner"],
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Cloud, GitHub",
     url: `${SITE_ORIGIN}/`,
@@ -146,7 +146,7 @@ export function getSoftwareApplicationJsonLd() {
       url: "https://github.com/jaidevxr",
     },
     description:
-      "Buggers AI automatically scans GitHub pull requests for security flaws, tracks risk velocity across repositories, and triages bugs using deterministic AST analysis.",
+      "Buggers automatically scans GitHub pull requests for security flaws, tracks risk velocity across repositories, and triages bugs using deterministic AST analysis.",
     offers: {
       "@type": "Offer",
       price: "0",
@@ -171,7 +171,7 @@ export function getOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Buggers AI",
+    name: "Buggers",
     url: `${SITE_ORIGIN}/`,
     logo: `${SITE_ORIGIN}/favicon.svg`,
     sameAs: [
