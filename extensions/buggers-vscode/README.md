@@ -1,6 +1,30 @@
-# Buggers — Security & Bug Triage (VS Code Extension)
+<p align="center">
+  <a href="https://buggers.dev">
+    <img src="https://buggers.dev/icon-192.png" width="96" height="96" alt="Buggers Logo" style="border-radius: 20px;" />
+  </a>
+</p>
 
-Official Visual Studio Code extension bringing Buggers' deterministic SAST code review, secret leak prevention, and vulnerability triage directly into your local editor.
+<h1 align="center">Buggers — Security & Code Review</h1>
+
+<p align="center">
+  <b>Deterministic In-Editor SAST, Secret Leak Prevention, and Pull Request Triage for Visual Studio Code.</b><br />
+  Official Extension · Platform: <a href="https://buggers.dev">https://buggers.dev</a> · Documentation: <a href="https://buggers.dev/docs">https://buggers.dev/docs</a>
+</p>
+
+<p align="center">
+  <a href="https://buggers.dev"><img src="https://img.shields.io/badge/Platform-buggers.dev-000000?style=flat-square&logo=vercel" alt="Platform" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=buggers.buggers-vscode"><img src="https://img.shields.io/badge/VS%20Code-v1.0.0-007acc?style=flat-square&logo=visual-studio-code" alt="Marketplace" /></a>
+  <a href="https://github.com/jaidevxr/buggers"><img src="https://img.shields.io/badge/GitHub-jaidevxr%2Fbuggers-181717?style=flat-square&logo=github" alt="GitHub" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-slate?style=flat-square" alt="License" /></a>
+</p>
+
+---
+
+## 📖 Overview
+
+**Buggers for VS Code** brings the precision of Buggers' cloud release intelligence directly into your everyday developer workflow. It continuously inspects your code locally in-process to catch OWASP Top 10 vulnerabilities, code quality risks, and accidental secret exposures before you ever commit or open a pull request.
+
+Whether you're developing backend APIs, smart contracts, microservices, or frontend web applications, Buggers provides deterministic security audits with zero telemetry and zero code exfiltration.
 
 ---
 
@@ -12,6 +36,18 @@ Official Visual Studio Code extension bringing Buggers' deterministic SAST code 
 - 🌳 **Buggers Activity Bar View:** Dedicated sidebar view container grouping findings by Severity (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) with 1-click jump to file and line.
 - 🔒 **Zero-Trust Privacy & Data Isolation:** Scans files locally in-process without transmitting source code to external servers. Credentials and tokens are stored securely in the OS keychain via `vscode.ExtensionContext.secrets`.
 - ⚡ **Auto-Scan on Save:** Automatically verifies open documents upon saving, giving you continuous security feedback while you code.
+
+---
+
+## ⚡ Quick Start
+
+1. Install **Buggers** from the VS Code Extensions panel (`Ctrl+Shift+X` ➔ search `Buggers`).
+2. Open any project workspace containing JavaScript, TypeScript, Python, Go, or configuration files.
+3. Save any file or press `Ctrl+Shift+P` and run:
+   ```text
+   Buggers: Analyze Current File
+   ```
+4. View detected security issues and masked secrets directly in the **Problems** tab or open the **Buggers** shield icon on the Activity Bar.
 
 ---
 
