@@ -1,9 +1,9 @@
 {
   "name": "buggers-vscode",
-  "displayName": "Buggers - Security & Bug Triage",
-  "description": "Deterministic AST code review, OWASP SAST flaw detection, and PR triage inside VS Code",
+  "displayName": "Buggers",
+  "description": "Automated Pull Request Code Review, OWASP SAST Flaw Detection & Bug Triage",
   "version": "1.0.0",
-  "publisher": "buggers-security",
+  "publisher": "buggers",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "resources/icon.png",
   "homepage": "https://buggers.dev",
