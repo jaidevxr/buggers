@@ -19,18 +19,28 @@
   "engines": {
     "vscode": "^1.85.0"
   },
+  "pricing": "Free",
+  "galleryBanner": {
+    "color": "#09090b",
+    "theme": "dark"
+  },
   "categories": [
     "Linters",
     "Programming Languages",
-    "Other"
+    "Other",
+    "Testing"
   ],
   "keywords": [
+    "buggers",
     "security",
     "sast",
     "code review",
-    "bug triage",
+    "pull request",
     "vulnerability scanner",
-    "secrets"
+    "secret scanning",
+    "owasp",
+    "devsecops",
+    "code security"
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
