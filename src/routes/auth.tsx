@@ -33,9 +33,9 @@ export const Route = createFileRoute("/auth")({
   head: () => {
     const seo = createRouteSeo({
       path: "/auth",
-      title: "Sign In – Buggers AI Code Review",
-      description: "Sign in or register your Buggers account to connect GitHub repositories.",
-      noindex: true,
+      title: "Log in or Sign up – Buggers",
+      description: "Log in to your Buggers account or create a new one to connect your GitHub repositories and start automated security code reviews.",
+      keywords: ["Buggers login", "Buggers sign in", "Buggers sign up", "Buggers create account"],
     });
     return {
       meta: seo.meta,

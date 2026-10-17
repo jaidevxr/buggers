@@ -118,9 +118,9 @@ describe("Technical SEO: Static Crawl Assets", () => {
     expect(sitemapContent).toContain("<loc>https://buggers.dev/how-it-works</loc>");
     expect(sitemapContent).toContain("<loc>https://buggers.dev/docs</loc>");
     expect(sitemapContent).toContain("<loc>https://buggers.dev/about</loc>");
+    expect(sitemapContent).toContain("<loc>https://buggers.dev/auth</loc>");
 
-    // Ensure NO private, auth, or authenticated routes are exposed in the sitemap
-    expect(sitemapContent).not.toContain("/auth");
+    // Ensure NO private authenticated routes are exposed in the sitemap
     expect(sitemapContent).not.toContain("/dashboard");
     expect(sitemapContent).not.toContain("/settings");
     expect(sitemapContent).not.toContain("/pull-requests");
