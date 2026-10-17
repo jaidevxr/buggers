@@ -8,8 +8,8 @@
  * - Safe preview/staging isolation to prevent indexing pollution
  */
 
-// Production domain fallback (configurable via VITE_SITE_URL / SITE_URL in .env)
-const DEFAULT_SITE_URL = "https://buggers.dev";
+// Production domain fallback (strictly matching verified Google Search domain)
+const DEFAULT_SITE_URL = "https://www.buggers.dev";
 
 function resolveBaseUrl(): string {
   let url = DEFAULT_SITE_URL;
@@ -112,7 +112,7 @@ export function getWebSiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Buggers",
-    alternateName: ["Buggers AI", "Buggers Code Review", "Buggers Security", "jaidevxr/buggers"],
+    alternateName: ["Buggers", "buggers", "Buggers Dev", "buggers.dev", "Buggers AI", "jaidevxr/buggers"],
     url: `${SITE_ORIGIN}/`,
     description:
       "Buggers is an automated GitHub pull request code review, security vulnerability scanner, and continuous risk triage platform by jaidevxr.",
@@ -173,7 +173,7 @@ export function getOrganizationJsonLd() {
     "@type": "Organization",
     name: "Buggers",
     url: `${SITE_ORIGIN}/`,
-    logo: `${SITE_ORIGIN}/favicon.svg`,
+    logo: `${SITE_ORIGIN}/icon-512.png`,
     sameAs: [
       "https://github.com/jaidevxr/buggers",
       "https://github.com/jaidevxr",

@@ -1,5 +1,5 @@
 {
-  "name": "Buggers – Automated Pull Request Code Review & Security Scanner",
+  "name": "Buggers",
   "short_name": "Buggers",
   "description": "Continuous AI-assisted code review, vulnerability detection, and pull request risk triage for modern engineering teams.",
   "start_url": "/",

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   head: () => {
     const seo = createRouteSeo({
       path: "/",
-      title: "Buggers – Automated Pull Request Code Review & Security Scanner",
+      title: "Buggers",
       description:
         "Buggers by jaidevxr automatically reviews your GitHub pull requests, detects OWASP vulnerabilities, flags security regressions, and predicts risk velocity before code reaches production.",
       keywords: [
