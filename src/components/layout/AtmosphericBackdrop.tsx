@@ -23,14 +23,15 @@ export function AtmosphericBackdrop() {
     if (img.complete) {
       setIsLoaded(true);
     } else {
-      if ("decode" in img) {
-        img
+      const htmlImg = img as HTMLImageElement;
+      if (typeof htmlImg.decode === "function") {
+        htmlImg
           .decode()
           .then(() => setIsLoaded(true))
           .catch(() => setIsLoaded(true));
       } else {
-        img.onload = () => setIsLoaded(true);
-        img.onerror = () => setIsLoaded(true);
+        htmlImg.onload = () => setIsLoaded(true);
+        htmlImg.onerror = () => setIsLoaded(true);
       }
     }
   }, [isAtmospheric]);
@@ -99,14 +100,25 @@ export function AtmosphericBackdrop() {
     <div
       aria-hidden="true"
       style={{ viewTransitionName: "none" }}
-      className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-500 ease-out overflow-hidden ${
-        isAtmospheric && isLoaded ? "opacity-100" : "opacity-0"
+      className={`fixed inset-0 pointer-events-none z-0 overflow-hidden ${
+        isAtmospheric ? "opacity-100" : "opacity-0"
       }`}
     >
-      {/* Background artwork with buttery smooth RAF parallax scroll translation */}
+      {/* Instant Frame-0 Ambient Gradient Layer (Renders immediately without network wait) */}
+      <div
+        className="absolute inset-0 will-change-transform"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 38% 65%, rgba(245, 158, 11, 0.18), transparent 70%), linear-gradient(180deg, #040407 0%, #0a0a14 45%, #09090b 100%)",
+        }}
+      />
+
+      {/* High-Resolution Artwork Layer with buttery smooth RAF parallax scroll translation */}
       <div
         ref={bgRef}
-        className="absolute inset-x-0 -top-8 -bottom-36 will-change-transform"
+        className={`absolute inset-x-0 -top-8 -bottom-36 will-change-transform transition-opacity duration-700 ease-out ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
         style={{
           transform: "translate3d(0, 0px, 0)",
           backgroundImage: `url('/landing-bg.webp')`,
