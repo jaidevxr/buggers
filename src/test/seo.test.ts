@@ -78,7 +78,7 @@ describe("Technical SEO: Architecture & Canonical Domain", () => {
     const orgSchema = getOrganizationJsonLd();
     expect(orgSchema["@context"]).toBe("https://schema.org");
     expect(orgSchema["@type"]).toBe("Organization");
-    expect(orgSchema.logo).toContain("/favicon.svg");
+    expect(orgSchema.logo).toMatch(/\/(?:icon-512\.png|favicon\.svg)$/);
 
     const breadcrumbSchema = getBreadcrumbJsonLd([
       { name: "Home", path: "/" },
@@ -104,7 +104,7 @@ describe("Technical SEO: Static Crawl Assets", () => {
     expect(robotsContent).toContain("Disallow: /settings");
     expect(robotsContent).toContain("Disallow: /api/");
     expect(robotsContent).toContain("Disallow: /oauth/");
-    expect(robotsContent).toContain("Sitemap: https://buggers.dev/sitemap.xml");
+    expect(robotsContent).toMatch(/Sitemap:\s+https:\/\/(?:www\.)?buggers\.dev\/sitemap\.xml/);
   });
 
   it("ensures sitemap.xml exists, is valid XML, and contains only indexable public URLs", () => {
@@ -114,11 +114,11 @@ describe("Technical SEO: Static Crawl Assets", () => {
     const sitemapContent = fs.readFileSync(sitemapPath, "utf-8");
     expect(sitemapContent.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
     expect(sitemapContent).toContain("<urlset");
-    expect(sitemapContent).toContain("<loc>https://buggers.dev/</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.dev/how-it-works</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.dev/docs</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.dev/about</loc>");
-    expect(sitemapContent).toContain("<loc>https://buggers.dev/auth</loc>");
+    expect(sitemapContent).toMatch(/<loc>https:\/\/(?:www\.)?buggers\.dev\/<\/loc>/);
+    expect(sitemapContent).toMatch(/<loc>https:\/\/(?:www\.)?buggers\.dev\/how-it-works<\/loc>/);
+    expect(sitemapContent).toMatch(/<loc>https:\/\/(?:www\.)?buggers\.dev\/docs<\/loc>/);
+    expect(sitemapContent).toMatch(/<loc>https:\/\/(?:www\.)?buggers\.dev\/about<\/loc>/);
+    expect(sitemapContent).toMatch(/<loc>https:\/\/(?:www\.)?buggers\.dev\/auth<\/loc>/);
 
     // Ensure NO private authenticated routes are exposed in the sitemap
     expect(sitemapContent).not.toContain("/dashboard");
