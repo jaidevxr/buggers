@@ -1,0 +1,29 @@
+{
+  "name": "buggers",
+  "version": "1.0.1",
+  "description": "Buggers CLI — Automated PR Code Review, OWASP SAST Flaw Detection & Bug Triage",
+  "main": "index.js",
+  "bin": {
+    "buggers": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "node bin/cli.js --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaidevxr/buggers.git"
+  },
+  "keywords": [
+    "buggers",
+    "security",
+    "sast",
+    "code-review",
+    "vulnerability-scanner",
+    "secret-scanning",
+    "owasp",
+    "devsecops"
+  ],
+  "author": "Jaidev Yadav <jaiy9956@gmail.com>",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://buggers.dev"
+}

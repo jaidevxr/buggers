@@ -111,14 +111,20 @@ export function activate(context: vscode.ExtensionContext) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
-          title: "Buggers: Scanning workspace for security flaws & secrets...",
-          cancellable: false,
+          title: "Buggers: Scanning workspace for security flaws & defects...",
+          cancellable: true,
         },
-        async (progress) => {
+        async (progress, token) => {
+          const startTime = Date.now();
           diagnosticCollection.clear();
           const results = await scanWorkspace((msg, inc) => {
             progress.report({ message: msg, increment: inc });
           });
+
+          if (token.isCancellationRequested) {
+            vscode.window.showInformationMessage("Buggers: Workspace analysis cancelled by user.");
+            return;
+          }
 
           const allFindings: BuggersFinding[] = [];
           for (const [filePath, findings] of results.entries()) {
@@ -126,14 +132,24 @@ export function activate(context: vscode.ExtensionContext) {
             allFindings.push(...findings);
           }
 
-          treeProvider.setFindings(allFindings);
+          const scanDuration = Date.now() - startTime;
+          const overview = {
+            totalFiles: results.size,
+            totalFindings: allFindings.length,
+            criticalCount: allFindings.filter((f) => f.severity === "critical").length,
+            highCount: allFindings.filter((f) => f.severity === "high").length,
+            mediumCount: allFindings.filter((f) => f.severity === "medium").length,
+            lowCount: allFindings.filter((f) => f.severity === "low").length,
+            scanTimeMs: scanDuration,
+            timestamp: new Date().toLocaleTimeString(),
+          };
+
+          treeProvider.setFindings(allFindings, overview);
           updateStatusBar(allFindings);
 
           if (allFindings.length > 0) {
-            const crit = allFindings.filter((f) => f.severity === "critical").length;
-            const high = allFindings.filter((f) => f.severity === "high").length;
             vscode.window.showWarningMessage(
-              `Buggers Workspace Audit: Detected ${allFindings.length} issue(s) across ${results.size} file(s) (${crit} critical, ${high} high).`,
+              `Buggers Workspace Audit: Detected ${allFindings.length} issue(s) across ${results.size} file(s) (${overview.criticalCount} critical, ${overview.highCount} high).`,
             );
           } else {
             vscode.window.showInformationMessage(
@@ -171,6 +187,118 @@ export function activate(context: vscode.ExtensionContext) {
       treeProvider.clear();
       updateStatusBar([]);
       vscode.window.showInformationMessage("Buggers: Findings cleared.");
+    }),
+  );
+
+  // Command: Toggle Findings Grouping Mode
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.toggleGrouping", async () => {
+      const current = treeProvider.getGroupingMode();
+      const nextMode = current === "category" ? "severity" : current === "severity" ? "file" : "category";
+      treeProvider.setGroupingMode(nextMode);
+      vscode.window.showInformationMessage(`Buggers: Findings grouped by ${nextMode.toUpperCase()}`);
+    }),
+  );
+
+  // Command: Filter Findings by Severity
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.filterFindings", async () => {
+      const choice = await vscode.window.showQuickPick(
+        [
+          { label: "All Severities", id: "all" },
+          { label: "Critical Only", id: "critical" },
+          { label: "High Only", id: "high" },
+          { label: "Medium Only", id: "medium" },
+          { label: "Low Only", id: "low" },
+        ],
+        { placeHolder: "Select severity filter" },
+      );
+      if (choice) {
+        treeProvider.setFilterSeverity(choice.id as any);
+      }
+    }),
+  );
+
+  // Command: Export Findings to SARIF or JSON
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.exportFindings", async () => {
+      const findings = treeProvider.getFindings();
+      if (findings.length === 0) {
+        vscode.window.showInformationMessage("Buggers: No findings to export.");
+        return;
+      }
+
+      const formatPick = await vscode.window.showQuickPick(
+        [
+          { label: "SARIF 2.1.0 (.sarif)", description: "Standard Static Analysis Results Interchange Format", id: "sarif" },
+          { label: "JSON Audit Report (.json)", description: "Raw structured JSON finding list", id: "json" },
+        ],
+        { placeHolder: "Select export format" },
+      );
+      if (!formatPick) return;
+
+      const uri = await vscode.window.showSaveDialog({
+        defaultUri: vscode.Uri.file(`buggers-audit.${formatPick.id}`),
+        filters: formatPick.id === "sarif" ? { "SARIF Files": ["sarif", "json"] } : { "JSON Files": ["json"] },
+      });
+      if (!uri) return;
+
+      let content = "";
+      if (formatPick.id === "sarif") {
+        const sarif = {
+          $schema: "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+          version: "2.1.0",
+          runs: [
+            {
+              tool: {
+                driver: {
+                  name: "Buggers",
+                  version: "1.3.0",
+                  informationUri: "https://buggers.dev",
+                  rules: Array.from(new Set(findings.map((f) => f.ruleId))).map((ruleId) => {
+                    const f = findings.find((item) => item.ruleId === ruleId)!;
+                    return {
+                      id: ruleId,
+                      name: f.title,
+                      shortDescription: { text: f.problem },
+                      fullDescription: { text: f.whyItMatters },
+                      help: { text: f.suggestedFix },
+                      properties: {
+                        cwe: f.cwe,
+                        owasp: f.owasp,
+                        precision: "high",
+                      },
+                    };
+                  }),
+                },
+              },
+              results: findings.map((f) => ({
+                ruleId: f.ruleId,
+                level: f.severity === "critical" || f.severity === "high" ? "error" : f.severity === "medium" ? "warning" : "note",
+                message: { text: `${f.title}: ${f.problem}` },
+                locations: [
+                  {
+                    physicalLocation: {
+                      artifactLocation: { uri: path.relative(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || "", f.file) },
+                      region: {
+                        startLine: f.line,
+                        startColumn: (f.column || 0) + 1,
+                        endColumn: (f.column || 0) + (f.length || 1) + 1,
+                      },
+                    },
+                  },
+                ],
+              })),
+            },
+          ],
+        };
+        content = JSON.stringify(sarif, null, 2);
+      } else {
+        content = JSON.stringify({ generatedAt: new Date().toISOString(), total: findings.length, findings }, null, 2);
+      }
+
+      fs.writeFileSync(uri.fsPath, content, "utf8");
+      vscode.window.showInformationMessage(`Buggers: Exported ${findings.length} findings to ${path.basename(uri.fsPath)}`);
     }),
   );
 

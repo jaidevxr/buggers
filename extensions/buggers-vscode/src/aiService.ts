@@ -359,10 +359,27 @@ describe("Regression: ${finding.ruleId}", () => {
       `Buggers: Review proposed fix for "${title}". Accept and apply to file?`,
       { modal: true },
       "Accept & Apply",
+      "Copy Patch",
       "Reject",
     );
 
+    if (choice === "Copy Patch") {
+      await vscode.env.clipboard.writeText(replacementText);
+      vscode.window.showInformationMessage(`Buggers: Patch copied to clipboard.`);
+      return false;
+    }
+
     if (choice === "Accept & Apply") {
+      // Verify source line has not changed unexpectedly underfoot
+      const currentDoc = await vscode.workspace.openTextDocument(document.uri);
+      const currentLineText = currentDoc.getText(range);
+      if (currentLineText !== originalLineText) {
+        vscode.window.showErrorMessage(
+          "Buggers: File has changed since scan was performed. Please re-analyze the file before applying patches.",
+        );
+        return false;
+      }
+
       const edit = new vscode.WorkspaceEdit();
       edit.replace(document.uri, range, replacementText);
       const applied = await vscode.workspace.applyEdit(edit);

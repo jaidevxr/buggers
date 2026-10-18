@@ -440,6 +440,62 @@ export const SAST_RULES: ScanRule[] = [
     regressionTestTemplate: () =>
       `test("blocks requests to internal loopback and metadata addresses", () => {\n  expect(isSafeUrl("http://169.254.169.254/latest")).toBe(false);\n});`,
   },
+
+  // 24. Unsafe Deserialization
+  {
+    id: "unsafe_deserialization",
+    name: "Unsafe Object Deserialization",
+    severity: "critical",
+    category: "security",
+    cwe: "CWE-502",
+    owasp: "A08:2021-Software and Data Integrity Failures",
+    pattern: /\b(?:node-serialize|serialize-javascript|serialize)\.unserialize\s*\(|\bjs-yaml\.load\s*\(\s*(?!.*?schema:\s*SAFE_SCHEMA)[^)]+\)|\byaml\.load\s*\([^)]+\)|\bpickle\.loads\s*\(/g,
+    description: "Deserialization of untrusted data without schema or type validation.",
+    whyItMatters: "Allows attackers to instantiate arbitrary object prototypes, leading to remote code execution (RCE) or denial of service.",
+    suggestedFixTemplate: () => `JSON.parse(untrustedData);`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/\b(?:node-serialize|serialize-javascript)\.unserialize/, "JSON.parse"),
+    regressionTestTemplate: () =>
+      `test("rejects executable payloads during deserialization", () => {\n  const payload = '{\"rce\":\"_\$\$ND_FUNC\$\$_function(){}\"}';\n  expect(() => safeDeserialize(payload)).not.toThrow();\n});`,
+  },
+
+  // 25. Zip Slip Path Traversal
+  {
+    id: "zip_slip_traversal",
+    name: "Zip Slip Path Traversal during Archive Extraction",
+    severity: "high",
+    category: "security",
+    cwe: "CWE-29",
+    owasp: "A01:2021-Broken Access Control",
+    pattern: /\b(?:unzipper|adm-zip|tar|decompress)\b[^\n]*?\b(?:extractAllTo|extractEntryTo|pipe\s*\(\s*fs\.createWriteStream)\s*\([^)]*(?:entry\.path|entry\.name|header\.name)/g,
+    description: "Archive entries extracted to disk without validating relative path prefixes.",
+    whyItMatters: "Malicious archives containing filenames like '../../etc/cron.d/evil' can overwrite arbitrary files outside the target directory.",
+    suggestedFixTemplate: () =>
+      `const targetPath = path.resolve(destDir, entry.path);\nif (!targetPath.startsWith(path.resolve(destDir) + path.sep)) throw new Error("Zip Slip attempt blocked");`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      `const safeDest = path.resolve(destDir, path.basename(entry.path));\n  ${rawLine}`,
+    regressionTestTemplate: () =>
+      `test("prevents zip slip directory escape", () => {\n  expect(() => extractEntry("../../evil.sh", "/tmp/dest")).toThrow(/escape/i);\n});`,
+  },
+
+  // 26. NoSQL Injection
+  {
+    id: "nosql_injection",
+    name: "NoSQL Injection via Unsanitized Query Object or $where",
+    severity: "high",
+    category: "security",
+    cwe: "CWE-943",
+    owasp: "A03:2021-Injection",
+    pattern: /\b(?:find|findOne|updateMany|deleteMany)\s*\(\s*\{[^\}]*\$where\s*:\s*(?:["'`]|req\.)|\b(?:find|findOne)\s*\(\s*req\.(?:body|query|params)\b/g,
+    description: "MongoDB query constructs $where clause from string input or accepts unvalidated query objects directly from request.",
+    whyItMatters: "Attackers can pass operator objects like { $ne: null } or arbitrary JS expressions to bypass authentication or dump database documents.",
+    suggestedFixTemplate: () =>
+      `User.findOne({ username: String(req.body.username) });`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/req\.(body|query)\.([a-zA-Z0-9_]+)/g, `String(req.$1.$2)`),
+    regressionTestTemplate: () =>
+      `test("sanitizes object operator injection in queries", async () => {\n  const malicious = { $gt: "" };\n  const result = await findUser(malicious);\n  expect(result).toBeNull();\n});`,
+  },
 ];
 
 export const SECRET_RULES: ScanRule[] = [
@@ -610,5 +666,89 @@ export const LOGICAL_BUG_RULES: ScanRule[] = [
     autoRemedyTemplate: (matched, rawLine) => rawLine,
     regressionTestTemplate: () =>
       `test("executes intended logic prior to termination", () => {\n  expect(calculateResult()).toBeDefined();\n});`,
+  },
+
+  // 6. Async Callback in Array.forEach (Unhandled Concurrency)
+  {
+    id: "bug_async_foreach",
+    name: "Asynchronous Callback in Array.forEach()",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-696",
+    pattern: /\b[a-zA-Z0-9_\.]+\.forEach\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_]+)\s*=>/g,
+    description: "Array.forEach() does not wait for async promises returned by its callback.",
+    whyItMatters: "Async operations inside forEach run concurrently without awaiting completion, causing race conditions or missing error handling.",
+    suggestedFixTemplate: () => `await Promise.all(items.map(async (item) => { ... })) or use for (const item of items)`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/\b([a-zA-Z0-9_\.]+)\.forEach\s*\(\s*async/, "await Promise.all($1.map(async"),
+    regressionTestTemplate: () =>
+      `test("properly awaits all asynchronous iterations", async () => {\n  const results: number[] = [];\n  await processAll([1, 2, 3]);\n  expect(results).toHaveLength(3);\n});`,
+  },
+
+  // 7. Invalid typeof Comparison
+  {
+    id: "bug_invalid_typeof",
+    name: "Invalid typeof Comparison (Always False)",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-697",
+    pattern: /\btypeof\s+([a-zA-Z0-9_\.]+)\s*===?\s*["'](?:null|array|regexp)["']/g,
+    description: "Comparing typeof against 'null' or 'array'. In JavaScript, typeof null and typeof [] are 'object'.",
+    whyItMatters: "Comparisons like `typeof x === 'null'` or `typeof x === 'array'` will always evaluate to false.",
+    suggestedFixTemplate: () => `val === null or Array.isArray(val)`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/typeof\s+([a-zA-Z0-9_\.]+)\s*===?\s*["']null["']/, "$1 === null")
+             .replace(/typeof\s+([a-zA-Z0-9_\.]+)\s*===?\s*["']array["']/, "Array.isArray($1)"),
+    regressionTestTemplate: () =>
+      `test("correctly checks for null or array type", () => {\n  expect(checkType(null)).toBe(true);\n  expect(checkType([])).toBe(true);\n});`,
+  },
+
+  // 8. Missing Await in Boolean Condition
+  {
+    id: "bug_missing_await_promise",
+    name: "Missing Await on Async Function in Condition",
+    severity: "high",
+    category: "logical_bug",
+    cwe: "CWE-252",
+    pattern: /\bif\s*\(\s*(?:validate[A-Za-z0-9_]*|check[A-Za-z0-9_]*|is[A-Za-z0-9_]*Async|verify[A-Za-z0-9_]*)\s*\([^)]*\)\s*\)/g,
+    description: "Calling an async function inside an `if (...)` condition without `await`.",
+    whyItMatters: "Async functions return a Promise object, which is always truthy, causing the if-branch to execute even if the check returns false.",
+    suggestedFixTemplate: () => `if (await checkAsync())`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/(\bif\s*\(\s*)([a-zA-Z0-9_]+\s*\([^)]*\))/, "$1await $2"),
+    regressionTestTemplate: () =>
+      `test("correctly evaluates resolved promise value", async () => {\n  expect(await runCheck(false)).toBe(false);\n});`,
+  },
+
+  // 9. Infinite Loop Counter Direction
+  {
+    id: "bug_infinite_loop_counter",
+    name: "Loop Counter Direction Contradicts Termination Condition",
+    severity: "high",
+    category: "logical_bug",
+    cwe: "CWE-835",
+    pattern: /for\s*\(\s*let\s+([a-zA-Z0-9_]+)\s*=\s*0\s*;\s*\1\s*<\s*[^;]+;\s*\1--\s*\)/g,
+    description: "For-loop initialized to 0 with condition `< length`, but counter decrements (`i--`).",
+    whyItMatters: "Counter moves further away from termination, resulting in an infinite loop that freezes the process or browser tab.",
+    suggestedFixTemplate: () => `for (let i = 0; i < length; i++)`,
+    autoRemedyTemplate: (matched, rawLine) => rawLine.replace(/--\s*\)/, "++)"),
+    regressionTestTemplate: () =>
+      `test("loop terminates within bounded step limit", () => {\n  expect(boundedLoop([1, 2])).toBe(2);\n});`,
+  },
+
+  // 10. Contradictory Boolean Logic
+  {
+    id: "bug_contradictory_condition",
+    name: "Contradictory Boolean Expression (Always False)",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-570",
+    pattern: /\b([a-zA-Z0-9_\.]+)\s*&&\s*!\1\b|\b!([a-zA-Z0-9_\.]+)\s*&&\s*\2\b/g,
+    description: "Boolean condition checks `x && !x`, which is mutually exclusive and can never be true.",
+    whyItMatters: "Guarantees the branch will never execute, pointing to an erroneous variable name or inverted logic check.",
+    suggestedFixTemplate: () => `// Fix the secondary condition variable: x && !y`,
+    autoRemedyTemplate: (matched, rawLine) => rawLine,
+    regressionTestTemplate: () =>
+      `test("evaluates consistent dual-variable expression", () => {\n  expect(checkFlags(true, false)).toBe(true);\n});`,
   },
 ];

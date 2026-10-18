@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-10-18
+
+### Added
+- **Multi-Mode Grouping & Scan Overview in Activity Bar**:
+  - Added dedicated workspace scan overview node displaying total files scanned, total findings count, severity distribution, and scan duration.
+  - Added grouping toggle (`buggers.toggleGrouping`) allowing developers to group findings by Category, Severity, or File path.
+  - Added severity filter control (`buggers.filterFindings`) for focusing on critical or high vulnerabilities.
+- **SARIF 2.1.0 and JSON Audit Export**:
+  - Added `buggers.exportFindings` command to export workspace audit results to standard SARIF 2.1.0 format or structured JSON for CI/CD compliance.
+- **Expanded Security Detection Rules**:
+  - `unsafe_deserialization` (Critical, CWE-502): Detects unvalidated object deserialization via `node-serialize`, `serialize-javascript`, `yaml.load`, and `pickle.loads`.
+  - `zip_slip_traversal` (High, CWE-29): Detects archive extraction without directory boundary validation.
+  - `nosql_injection` (High, CWE-943): Flags unvalidated MongoDB `$where` clauses and raw query object injection.
+- **Expanded Deterministic Logical Bug Checks**:
+  - `bug_async_foreach` (Medium, CWE-696): Detects async callbacks inside `Array.forEach()` that fail to await promise resolution.
+  - `bug_invalid_typeof` (Medium, CWE-697): Catches invalid `typeof` checks against `"null"` or `"array"`.
+  - `bug_missing_await_promise` (High, CWE-252): Flags async check functions called without `await` in boolean conditions.
+  - `bug_infinite_loop_counter` (High, CWE-835): Flags loops where the counter decrements while the condition expects an ascending termination bound.
+  - `bug_contradictory_condition` (Medium, CWE-570): Detects mutually exclusive boolean conditions (`x && !x`).
+- **Remediation & Review Workflow Hardening**:
+  - Diff previews now verify that the underlying source file has not changed underfoot before applying edits.
+  - Added "Copy Patch" action to diff preview alongside "Accept & Apply".
+  - Full removal of all emoji symbols across documentation, command titles, notifications, and sidebar tree views for clean enterprise aesthetics.
+
 ## [1.2.0] - 2026-10-17
 
 ### Added

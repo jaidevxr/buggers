@@ -325,10 +325,10 @@ function runTest(name, fn) {
   totalTests++;
   try {
     fn();
-    console.log(`  ✓ [PASS] ${name}`);
+    console.log(`  [PASS] ${name}`);
     passedTests++;
   } catch (err) {
-    console.error(`  ✗ [FAIL] ${name}`);
+    console.error(`  [FAIL] ${name}`);
     console.error(`    ${err.message}`);
     throw err;
   }
@@ -338,10 +338,10 @@ async function runAsyncTest(name, fn) {
   totalTests++;
   try {
     await fn();
-    console.log(`  ✓ [PASS] ${name}`);
+    console.log(`  [PASS] ${name}`);
     passedTests++;
   } catch (err) {
-    console.error(`  ✗ [FAIL] ${name}`);
+    console.error(`  [FAIL] ${name}`);
     console.error(`    ${err.message}`);
     throw err;
   }
@@ -353,8 +353,8 @@ async function runAsyncTest(name, fn) {
   // --------------------------------------------------------------------------
   console.log("--- Suite 1: Rule Registry Integrity & Coverage ---");
 
-  runTest("SAST Security Rules count and integrity (23 rules covering all 21 categories)", () => {
-    assert.ok(SAST_RULES.length >= 23, `Expected at least 23 SAST rules, found ${SAST_RULES.length}`);
+  runTest("SAST Security Rules count and integrity (26 rules covering all 24 categories)", () => {
+    assert.ok(SAST_RULES.length >= 26, `Expected at least 26 SAST rules, found ${SAST_RULES.length}`);
     const requiredRules = [
       "sql_injection",
       "command_injection",
@@ -379,6 +379,9 @@ async function runAsyncTest(name, fn) {
       "timing_attack",
       "insecure_cors",
       "ssrf",
+      "unsafe_deserialization",
+      "zip_slip_traversal",
+      "nosql_injection",
     ];
 
     for (const ruleId of requiredRules) {
@@ -409,14 +412,19 @@ async function runAsyncTest(name, fn) {
     }
   });
 
-  runTest("Logical Bug Rules count and integrity (5 rules)", () => {
-    assert.ok(LOGICAL_BUG_RULES.length >= 5, `Expected at least 5 Logical Bug rules, found ${LOGICAL_BUG_RULES.length}`);
+  runTest("Logical Bug Rules count and integrity (10 rules)", () => {
+    assert.ok(LOGICAL_BUG_RULES.length >= 10, `Expected at least 10 Logical Bug rules, found ${LOGICAL_BUG_RULES.length}`);
     const requiredBugs = [
       "bug_accidental_assignment_in_condition",
       "bug_tautological_condition",
       "bug_nan_comparison",
       "bug_off_by_one_index",
       "bug_unreachable_code",
+      "bug_async_foreach",
+      "bug_invalid_typeof",
+      "bug_missing_await_promise",
+      "bug_infinite_loop_counter",
+      "bug_contradictory_condition",
     ];
     for (const ruleId of requiredBugs) {
       const found = LOGICAL_BUG_RULES.find((r) => r.id === ruleId);
@@ -591,6 +599,27 @@ async function runAsyncTest(name, fn) {
     assert.strictEqual(f[0].ruleId, "ssrf");
   });
 
+  runTest("24. Unsafe Deserialization (CWE-502)", () => {
+    const code = 'const obj = serialize.unserialize(userInput);';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "unsafe_deserialization");
+  });
+
+  runTest("25. Zip Slip Path Traversal (CWE-29)", () => {
+    const code = 'unzipper.extractAllTo(destDir, entry.path);';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "zip_slip_traversal");
+  });
+
+  runTest("26. NoSQL Injection (CWE-943)", () => {
+    const code = 'User.find({ $where: req.query.filter });';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "nosql_injection");
+  });
+
   // --------------------------------------------------------------------------
   // Suite 3: Logical Bug Detection
   // --------------------------------------------------------------------------
@@ -632,6 +661,41 @@ async function runAsyncTest(name, fn) {
     assert.strictEqual(f[0].ruleId, "bug_unreachable_code");
   });
 
+  runTest("Detects async callback in Array.forEach", () => {
+    const code = 'items.forEach(async (item) => { await processItem(item); });';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "bug_async_foreach");
+  });
+
+  runTest("Detects invalid typeof comparison", () => {
+    const code = 'if (typeof val === "null") { return; }';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "bug_invalid_typeof");
+  });
+
+  runTest("Detects un-awaited promise in conditional expression", () => {
+    const code = 'if (validateUser(token)) { proceed(); }';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "bug_missing_await_promise");
+  });
+
+  runTest("Detects loop counter decrementing while ascending", () => {
+    const code = 'for (let i = 0; i < maxCount; i--) { loop(); }';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "bug_infinite_loop_counter");
+  });
+
+  runTest("Detects contradictory boolean logic (x && !x)", () => {
+    const code = 'if (isValid && !isValid) { fail(); }';
+    const f = scanText(code, "test.js");
+    assert.strictEqual(f.length, 1);
+    assert.strictEqual(f[0].ruleId, "bug_contradictory_condition");
+  });
+
   // --------------------------------------------------------------------------
   // Suite 4: End-to-End Multi-Category Vulnerability Sample File
   // --------------------------------------------------------------------------
@@ -642,7 +706,7 @@ async function runAsyncTest(name, fn) {
     const fixturePath = path.join(__dirname, "fixtures", "vulnerable-sample.js");
     const code = fs.readFileSync(fixturePath, "utf8");
     const findings = scanText(code, "fixtures/vulnerable-sample.js");
-    console.log(`    ℹ Detected ${findings.length} findings in reference fixture`);
+    console.log(`    [INFO] Detected ${findings.length} findings in reference fixture`);
     assert.ok(findings.length >= 28, `Expected at least 28 findings, got ${findings.length}`);
     const ruleIds = new Set(findings.map((f) => f.ruleId));
     assert.ok(ruleIds.has("sql_injection"));
@@ -745,6 +809,9 @@ async function runAsyncTest(name, fn) {
       "buggers.findLogicalBugs",
       "buggers.configureAiProvider",
       "buggers.clearAiCredentials",
+      "buggers.toggleGrouping",
+      "buggers.filterFindings",
+      "buggers.exportFindings",
     ];
 
     for (const cmdId of expectedNewCommands) {

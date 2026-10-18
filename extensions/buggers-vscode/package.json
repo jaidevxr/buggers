@@ -2,7 +2,7 @@
   "name": "buggers-vscode",
   "displayName": "Buggers",
   "description": "Automated Pull Request Code Review, OWASP SAST Flaw Detection & Bug Triage",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "buggers",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "resources/icon.png",
@@ -189,6 +189,24 @@
         "title": "Buggers: Clear Stored AI Credentials",
         "category": "Buggers",
         "icon": "$(key)"
+      },
+      {
+        "command": "buggers.toggleGrouping",
+        "title": "Buggers: Toggle Findings Grouping Mode",
+        "category": "Buggers",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "buggers.filterFindings",
+        "title": "Buggers: Filter Findings by Severity",
+        "category": "Buggers",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "buggers.exportFindings",
+        "title": "Buggers: Export Findings to SARIF or JSON",
+        "category": "Buggers",
+        "icon": "$(export)"
       }
     ],
     "menus": {
@@ -199,24 +217,29 @@
           "group": "navigation@1"
         },
         {
-          "command": "buggers.fixAllFile",
+          "command": "buggers.toggleGrouping",
           "when": "view == buggers.findingsView",
           "group": "navigation@2"
         },
         {
-          "command": "buggers.generateSecurityReport",
+          "command": "buggers.filterFindings",
           "when": "view == buggers.findingsView",
           "group": "navigation@3"
         },
         {
-          "command": "buggers.refreshFindings",
+          "command": "buggers.exportFindings",
           "when": "view == buggers.findingsView",
           "group": "navigation@4"
         },
         {
-          "command": "buggers.clearFindings",
+          "command": "buggers.refreshFindings",
           "when": "view == buggers.findingsView",
           "group": "navigation@5"
+        },
+        {
+          "command": "buggers.clearFindings",
+          "when": "view == buggers.findingsView",
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [

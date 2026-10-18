@@ -46,3 +46,17 @@ export interface AiConfig {
   customEndpoint?: string;
   timeoutMs?: number;
 }
+
+export type GroupingMode = "category" | "severity" | "file";
+
+export interface ScanOverview {
+  totalFiles: number;
+  totalFindings: number;
+  criticalCount: number;
+  highCount: number;
+  mediumCount: number;
+  lowCount: number;
+  scanTimeMs: number;
+  timestamp: string;
+}
+
