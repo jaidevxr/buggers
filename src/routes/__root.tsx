@@ -83,6 +83,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 import {
   SITE_ORIGIN,
   GOOGLE_SITE_VERIFICATION,
+  GA_MEASUREMENT_ID,
   getWebSiteJsonLd,
   getSoftwareApplicationJsonLd,
   getOrganizationJsonLd,
@@ -201,6 +202,24 @@ function RootShell({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
         />
+        {GA_MEASUREMENT_ID && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
         <HeadContent />
       </head>
       <body>

@@ -35,6 +35,11 @@ export const GOOGLE_SITE_VERIFICATION =
   (typeof process !== "undefined" && process.env?.["VITE_GOOGLE_SITE_VERIFICATION"]) ||
   "";
 
+export const GA_MEASUREMENT_ID =
+  (typeof import.meta !== "undefined" && import.meta.env?.["VITE_GA_MEASUREMENT_ID"]) ||
+  (typeof process !== "undefined" && process.env?.["VITE_GA_MEASUREMENT_ID"]) ||
+  "G-647ZZ85MPE";
+
 /**
  * Returns a normalized, absolute canonical URL for a given path.
  */
