@@ -1,13 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Dark contrast badge container ensuring 100% visibility on light/dark Google Search -->
-  <rect x="1" y="1" width="30" height="30" rx="7" fill="#09090b" stroke="#27272a" stroke-width="1.2"/>
-  <mask id="bug-cutout">
-    <rect width="32" height="32" fill="white"/>
-    <circle cx="16" cy="16" r="2.2" fill="black"/>
-  </mask>
-  <g mask="url(#bug-cutout)">
-    <path d="M11 7.5 13.5 10M21 7.5 18.5 10" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rounded corner dark container badge (squircle matching website aesthetics) -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#09090b" stroke="#27272a" stroke-width="2"/>
+  
+  <!-- Centered BugMark with comfortable padding (does not touch or attach to border) -->
+  <!-- Bug bounds: x=5 to 27 (width 22), y=7.5 to 26 (height 18.5), center (16, 16.75) -->
+  <g transform="translate(32, 32) scale(1.18) translate(-16, -16.75)">
+    <!-- Antennae -->
+    <path
+      d="M11 7.5 13.5 10M21 7.5 18.5 10"
+      stroke="#ffffff"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Body with rounded corners matching website BugMark rx=6 -->
     <rect x="10" y="10" width="12" height="16" rx="6" fill="#ffffff"/>
-    <path d="M10 15H5M10 20H6M22 15h5M22 20h4" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Legs (3 pairs) -->
+    <path
+      d="M10 15H5M10 20H6M22 15h5M22 20h4"
+      stroke="#ffffff"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Central core circle cutout matching dark background -->
+    <circle cx="16" cy="16" r="2.2" fill="#09090b"/>
   </g>
 </svg>

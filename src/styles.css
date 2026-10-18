@@ -350,7 +350,8 @@
   .page-transition,
   .content-fade-in,
   .route-fade-entrance {
-    animation: pageFadeIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    opacity: 1;
+    animation: pageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .auth-page-entrance {
