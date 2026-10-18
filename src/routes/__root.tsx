@@ -149,8 +149,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         {
+          rel: "preload",
+          as: "style",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        },
+        {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+          media: "print",
+          onLoad: "this.media='all'",
         },
         { rel: "preload", href: "/landing-bg.webp", as: "image", type: "image/webp", fetchPriority: "high" },
         { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
@@ -203,22 +210,33 @@ function RootShell({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
         />
         {GA_MEASUREMENT_ID && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${GA_MEASUREMENT_ID}');
-                `,
-              }}
-            />
-          </>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}');
+                (function() {
+                  function loadGtag() {
+                    if (window.__gtagLoaded) return;
+                    window.__gtagLoaded = true;
+                    var s = document.createElement('script');
+                    s.async = true;
+                    s.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';
+                    document.head.appendChild(s);
+                  }
+                  if (document.readyState === 'complete') {
+                    setTimeout(loadGtag, 1500);
+                  } else {
+                    window.addEventListener('load', function() {
+                      setTimeout(loadGtag, 1500);
+                    }, { once: true });
+                  }
+                })();
+              `,
+            }}
+          />
         )}
         <HeadContent />
       </head>

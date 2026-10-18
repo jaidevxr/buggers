@@ -302,7 +302,7 @@ export function AnimatedCodeScanner() {
               {/* Laser Scanning Beam (Visible only during scanning phase) */}
               {isScanning && (
                 <div
-                  className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none shadow-[0_0_12px_rgba(255,255,255,0.8)] z-30 animate-scanline"
+                  className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none shadow-[0_0_12px_rgba(255,255,255,0.8)] z-30 animate-scanline"
                 />
               )}
 
