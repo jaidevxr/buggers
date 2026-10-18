@@ -9,7 +9,7 @@
  */
 
 // Production domain fallback (strictly matching verified Google Search domain)
-const DEFAULT_SITE_URL = "https://buggers.dev";
+const DEFAULT_SITE_URL = "https://www.buggers.dev";
 
 function resolveBaseUrl(): string {
   let url = DEFAULT_SITE_URL;
