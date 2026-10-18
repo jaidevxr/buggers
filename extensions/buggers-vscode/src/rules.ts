@@ -15,16 +15,114 @@ export const SAST_RULES: ScanRule[] = [
     suggestedFixTemplate: () =>
       `await client.query("SELECT * FROM users WHERE id = $1", [userId]);`,
     autoRemedyTemplate: (matched, rawLine) => {
-      if (rawLine.includes("${")) {
+      // 1. Direct query call with string concatenation:
+      // e.g. return db.query("SELECT * FROM accounts WHERE email = '" + email + "'");
+      const directConcat = rawLine.match(
+        /(\b(?:db|client|pool|conn|connection)\.(?:query|execute)\s*\(\s*)(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)')\s*\+\s*([a-zA-Z0-9_\.]+)(?:\s*\+\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'))?(\s*\))/
+      );
+      if (directConcat) {
+        const prefix = directConcat[1];
+        let sqlStart = directConcat[2] !== undefined ? directConcat[2] : directConcat[3];
+        const param = directConcat[4];
+        let sqlEnd = (directConcat[5] !== undefined ? directConcat[5] : directConcat[6]) || "";
+        const suffix = directConcat[7];
+
+        if (sqlStart.endsWith("'")) sqlStart = sqlStart.slice(0, -1);
+        if (sqlEnd.startsWith("'")) sqlEnd = sqlEnd.slice(1);
+
+        const existingHolders = (sqlStart.match(/\$(\d+)/g) || []).map((p) => parseInt(p.slice(1), 10));
+        const nextIdx = existingHolders.length > 0 ? Math.max(...existingHolders) + 1 : 1;
+
+        const cleanSql = `${sqlStart}$${nextIdx}${sqlEnd}`;
         return rawLine.replace(
-          /`([^`]*)\$\{([^}]+)\}([^`]*)`/,
-          `{ text: "$1$$1$3", values: [$2] }`,
+          directConcat[0],
+          `${prefix}"${cleanSql}", [${param}]${suffix}`
         );
       }
-      return rawLine.replace(
-        /(["'`])([^"'`]+)\1\s*\+\s*([a-zA-Z0-9_\.]+)/,
-        `{ text: "$2$$1", values: [$3] }`,
+
+      // 2. Direct query call with template literal:
+      // e.g. return db.query(`SELECT * FROM users WHERE id = ${userId}`);
+      const directTemplate = rawLine.match(
+        /(\b(?:db|client|pool|conn|connection)\.(?:query|execute)\s*\(\s*)`([^`]*?)\$\{([^}]+)\}([^`]*?)`(\s*\))/
       );
+      if (directTemplate) {
+        const prefix = directTemplate[1];
+        let sqlStart = directTemplate[2];
+        const param = directTemplate[3].trim();
+        let sqlEnd = directTemplate[4];
+        const suffix = directTemplate[5];
+
+        if (sqlStart.endsWith("'")) sqlStart = sqlStart.slice(0, -1);
+        if (sqlEnd.startsWith("'")) sqlEnd = sqlEnd.slice(1);
+
+        const existingHolders = (sqlStart.match(/\$(\d+)/g) || []).map((p) => parseInt(p.slice(1), 10));
+        const nextIdx = existingHolders.length > 0 ? Math.max(...existingHolders) + 1 : 1;
+
+        const cleanSql = `${sqlStart}$${nextIdx}${sqlEnd}`;
+        return rawLine.replace(
+          directTemplate[0],
+          `${prefix}"${cleanSql}", [${param}]${suffix}`
+        );
+      }
+
+      // 3. Variable assignment with template literal:
+      // e.g. const query = `SELECT * FROM users WHERE id = ${userId}`;
+      const templateAssign = rawLine.match(
+        /`([^`]*?)\$\{([^}]+)\}([^`]*?)`/
+      );
+      if (templateAssign) {
+        let sqlStart = templateAssign[1];
+        const param = templateAssign[2].trim();
+        let sqlEnd = templateAssign[3];
+
+        if (/\b(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\b/i.test(sqlStart) || /\b(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\b/i.test(sqlEnd)) {
+          if (sqlStart.endsWith("'")) sqlStart = sqlStart.slice(0, -1);
+          if (sqlEnd.startsWith("'")) sqlEnd = sqlEnd.slice(1);
+
+          const existingHolders = (sqlStart.match(/\$(\d+)/g) || []).map((p) => parseInt(p.slice(1), 10));
+          const nextIdx = existingHolders.length > 0 ? Math.max(...existingHolders) + 1 : 1;
+
+          return rawLine.replace(
+            templateAssign[0],
+            `{ text: "${sqlStart}$${nextIdx}${sqlEnd}", values: [${param}] }`
+          );
+        }
+      }
+
+      // 4. Variable assignment with string concatenation:
+      // e.g. const query = "SELECT * FROM users WHERE username = '" + username + "'";
+      const concatAssign = rawLine.match(
+        /(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)')\s*\+\s*([a-zA-Z0-9_\.]+)(?:\s*\+\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'))?/
+      );
+      if (concatAssign) {
+        let sqlStart = concatAssign[1] !== undefined ? concatAssign[1] : concatAssign[2];
+        const param = concatAssign[3];
+        let sqlEnd = (concatAssign[4] !== undefined ? concatAssign[4] : concatAssign[5]) || "";
+
+        // Reject table/identifier interpolation (e.g. SELECT * FROM + table) or multiple unhandled concatenations
+        if (/\b(?:FROM|JOIN|INTO|TABLE)\s*$/i.test(sqlStart.trim())) {
+          return rawLine;
+        }
+        const restOfLine = rawLine.slice(rawLine.indexOf(concatAssign[0]) + concatAssign[0].length);
+        if (restOfLine.includes("+")) {
+          return rawLine;
+        }
+
+        if (/\b(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\b/i.test(sqlStart) || /\b(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\b/i.test(sqlEnd)) {
+          if (sqlStart.endsWith("'")) sqlStart = sqlStart.slice(0, -1);
+          if (sqlEnd.startsWith("'")) sqlEnd = sqlEnd.slice(1);
+
+          const existingHolders = (sqlStart.match(/\$(\d+)/g) || []).map((p) => parseInt(p.slice(1), 10));
+          const nextIdx = existingHolders.length > 0 ? Math.max(...existingHolders) + 1 : 1;
+
+          return rawLine.replace(
+            concatAssign[0],
+            `{ text: "${sqlStart}$${nextIdx}${sqlEnd}", values: [${param}] }`
+          );
+        }
+      }
+
+      return rawLine;
     },
     regressionTestTemplate: (matched, rawLine) =>
       `test("prevents sql injection in query", async () => {\n  const malicious = "' OR 1=1 --";\n  const result = await runQuery(malicious);\n  expect(result.rows).toHaveLength(0);\n});`,
@@ -57,13 +155,13 @@ export const SAST_RULES: ScanRule[] = [
     category: "security",
     cwe: "CWE-22",
     owasp: "A01:2021-Broken Access Control",
-    pattern: /\b(?:fs\.(?:readFile|readFileSync|createReadStream|writeFile|writeFileSync|open|openSync)|res\.sendFile)\s*\(\s*(?:path\.join\([^)]*(?:req\.|userInput|fileName|filePath|userPath|\.\.)|(?:req\.|userInput|fileName|filePath|userPath|\.\.))/g,
+    pattern: /\b(?:fs\.(?:readFile|readFileSync|createReadStream|writeFile|writeFileSync|open|openSync)|res\.sendFile)\s*\(\s*(?:path\.join\([^)]*(?:req\.|userInput|fileName|filename|filePath|userPath|\.\.)|(?:req\.|userInput|fileName|filename|filePath|userPath|\.\.))/gi,
     description: "File access constructed from unvalidated variables without directory sandboxing.",
     whyItMatters: "Passing sequences like '../../etc/passwd' enables attackers to escape the application root and read or overwrite arbitrary system files.",
     suggestedFixTemplate: () =>
       `const safePath = path.resolve(BASE_DIR, path.basename(userPath));\nif (!safePath.startsWith(BASE_DIR)) throw new Error("Path traversal blocked");`,
     autoRemedyTemplate: (matched, rawLine) =>
-      `const safePath = path.resolve(BASE_DIR, path.basename(userInput));\n  ${rawLine.replace(/path\.join\([^)]*\)|[a-zA-Z0-9_\.]*(?:userInput|fileName|filePath|userPath)[a-zA-Z0-9_\.]*/, "safePath")}`,
+      `const safePath = path.resolve(BASE_DIR, path.basename(userInput));\n  ${rawLine.replace(/path\.join\([^)]*\)|[a-zA-Z0-9_\.]*(?:userInput|fileName|filename|filePath|userPath)[a-zA-Z0-9_\.]*/i, "safePath")}`,
     regressionTestTemplate: () =>
       `test("blocks dot-dot path traversal", () => {\n  expect(() => resolvePath("../../etc/passwd")).toThrow(/traversal/i);\n});`,
   },
@@ -94,12 +192,12 @@ export const SAST_RULES: ScanRule[] = [
     category: "security",
     cwe: "CWE-338",
     owasp: "A02:2021-Cryptographic Failures",
-    pattern: /(?:token|secret|password|passwd|salt|sessionId|session_id|nonce|auth_key|apiKey|rand|random|id|key|code)\s*[:=][^;\n]*Math\.random\(\)|\bMath\.random\(\)[^;\n]*(?:token|secret|password|salt|session|id|key)/i,
+    pattern: /(?:token|secret|password|passwd|salt|sessionId|session_id|nonce|auth_key|apiKey|rand|random|id|key|code)\s*[:=][^;\n]*Math\.random\(\)|\bMath\.random\(\)(?:\.toString\([^)]*\)|\.substring\([^)]*\)|[^\n;]*(?:token|secret|password|salt|session|id|key|code))/gi,
     description: "Math.random() used for generating security-sensitive values (tokens, passwords, salts, keys).",
     whyItMatters: "Math.random() is pseudo-random and predictable. Attackers can determine future values to hijack sessions or predict credentials.",
     suggestedFixTemplate: () => `crypto.randomBytes(32).toString("hex")`,
     autoRemedyTemplate: (matched, rawLine) =>
-      rawLine.replace(/Math\.random\(\)/g, `crypto.randomBytes(16).toString("hex")`),
+      rawLine.replace(/Math\.random\(\)(?:\.toString\(\d+\))?(?:\.substring\(\d+\))?/, `crypto.randomBytes(16).toString("hex")`),
     regressionTestTemplate: () =>
       `test("generates cryptographically secure entropy", () => {\n  const token = generateToken();\n  expect(token).toHaveLength(64);\n});`,
   },
@@ -153,8 +251,15 @@ export const SAST_RULES: ScanRule[] = [
     description: "Certificate validation explicitly disabled in network client configuration or environment flags.",
     whyItMatters: "Disables identity verification of remote servers, leaving network traffic exposed to eavesdropping and MITM tampering.",
     suggestedFixTemplate: () => `rejectUnauthorized: true`,
-    autoRemedyTemplate: (matched, rawLine) =>
-      rawLine.replace(/rejectUnauthorized\s*:\s*false/, `rejectUnauthorized: true`),
+    autoRemedyTemplate: (matched, rawLine) => {
+      if (/rejectUnauthorized\s*:\s*false/.test(rawLine)) {
+        return rawLine.replace(/rejectUnauthorized\s*:\s*false/, "rejectUnauthorized: true");
+      }
+      if (/NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*["']0["']/.test(rawLine)) {
+        return rawLine.replace(/NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*["']0["']/, `NODE_TLS_REJECT_UNAUTHORIZED = "1"`);
+      }
+      return rawLine;
+    },
     regressionTestTemplate: () =>
       `test("enforces strict tls verification", () => {\n  expect(clientOptions.rejectUnauthorized).toBe(true);\n});`,
   },
@@ -167,7 +272,7 @@ export const SAST_RULES: ScanRule[] = [
     category: "security",
     cwe: "CWE-319",
     owasp: "A02:2021-Cryptographic Failures",
-    pattern: /["']http:\/\/(?!localhost|127\.0\.0\.1|0\.0\.0\.0|test|example)[a-zA-Z0-9_\.\-]+(?:\/[a-zA-Z0-9_\.\-\/]*?(?:auth|login|token|api|payment|credential|session))["']/i,
+    pattern: /\bhttp\.(?:get|request)\s*\(\s*["']http:\/\/|["']http:\/\/(?!localhost|127\.0\.0\.1|0\.0\.0\.0)[a-zA-Z0-9_\.\-]+(?:\/[a-zA-Z0-9_\.\-\/]*?(?:auth|login|token|api|payment|credential|session))["']/i,
     description: "Unencrypted HTTP protocol used for transmission of credentials or sensitive API calls.",
     whyItMatters: "Credentials and sensitive tokens transmitted over plain HTTP can be intercepted on intermediate networks.",
     suggestedFixTemplate: () => `https://api.yourdomain.com/v1/auth`,
@@ -203,7 +308,7 @@ export const SAST_RULES: ScanRule[] = [
     category: "security",
     cwe: "CWE-532",
     owasp: "A09:2021-Security Logging and Monitoring Failures",
-    pattern: /\b(?:console\.(?:log|warn|error|info|debug)|logger\.(?:log|warn|error|info|debug))\s*\([^)]*?\b(?:password|passwd|apiKey|api_key|secret|token|creditCard|privateKey)\b[^)]*\)/gi,
+    pattern: /\b(?:console\.(?:log|warn|error|info|debug)|logger\.(?:log|warn|error|info|debug))\s*\([^)]*?\b(?:password|passwd|apiKey|api_key|secret|token|creditCard|privateKey|db_uri|db_url|database_url|DB_URI|connection)\b[^)]*\)/gi,
     description: "Plaintext logging of sensitive variables (passwords, tokens, keys) to standard output.",
     whyItMatters: "Logs are frequently indexed, aggregated into third-party dashboards, or stored in plaintext where developers or intruders can inspect them.",
     suggestedFixTemplate: () => `console.log("Operation completed", { userId: user.id });`,
@@ -245,7 +350,10 @@ export const SAST_RULES: ScanRule[] = [
     suggestedFixTemplate: () =>
       `const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "buggers-"));`,
     autoRemedyTemplate: (matched, rawLine) =>
-      `const safeTmp = fs.mkdtempSync(path.join(os.tmpdir(), "safe-"));\n  ${rawLine.replace(/["'](?:\/tmp\/|\\tmp\\)[^"']+["']/, "safeTmp")}`,
+      rawLine.replace(
+        /\b(?:path\.join|path\.resolve)\s*\(\s*["'](?:\/tmp|\\tmp|C:\\Temp)["']\s*,\s*["'][^"']+\.[a-zA-Z0-9]+["']\s*\)|["'](?:\/tmp\/|\\tmp\\|C:\\Temp\\)[a-zA-Z0-9_\.\-]+["']/,
+        `path.join(os.tmpdir(), "safe-" + crypto.randomUUID())`
+      ),
     regressionTestTemplate: () =>
       `test("creates unique temporary directory with mkdtemp", () => {\n  const dir = createTempDir();\n  expect(fs.existsSync(dir)).toBe(true);\n});`,
   },
@@ -374,8 +482,12 @@ export const SAST_RULES: ScanRule[] = [
     description: "Asynchronous I/O operation invoked without await, .catch(), or error handling.",
     whyItMatters: "Unhandled rejections can crash the Node.js process, leave database connections open, or mask critical failures.",
     suggestedFixTemplate: () => `await operation().catch((err) => handleError(err));`,
-    autoRemedyTemplate: (matched, rawLine) =>
-      rawLine.replace(/(\b(?:fs\.promises|fetch|axios|db\.query)\.[a-zA-Z0-9_]+\([^)]*\))/, "await $1"),
+    autoRemedyTemplate: (matched, rawLine) => {
+      if (/\.then\s*\(/.test(rawLine) && !rawLine.includes(".catch")) {
+        return rawLine.replace(/;?\s*$/, `.catch((err) => console.error(err));`);
+      }
+      return rawLine.replace(/(\b(?:fs\.promises|axios|db\.query)\.[a-zA-Z0-9_]+\([^)]*\)|\bfetch\s*\([^)]*\))/, "await $1");
+    },
     regressionTestTemplate: () =>
       `test("handles rejected promises gracefully", async () => {\n  await expect(performAsyncOp()).resolves.toBeDefined();\n});`,
   },
@@ -436,7 +548,7 @@ export const SAST_RULES: ScanRule[] = [
     suggestedFixTemplate: () =>
       `const url = new URL(userUrl);\nif (!ALLOWED_HOSTS.includes(url.hostname)) throw new Error("Destination not allowed");`,
     autoRemedyTemplate: (matched, rawLine) =>
-      `if (!isAllowedUrl(req.body.url)) throw new Error("Blocked");\n  ${rawLine}`,
+      rawLine.replace(/([a-zA-Z0-9_\.]*(?:targetUrl|userUrl|webhookUrl|inputUrl|destUrl|untrustedUrl|remoteUrl)[a-zA-Z0-9_\.]*)/i, "sanitizeUrl($1)"),
     regressionTestTemplate: () =>
       `test("blocks requests to internal loopback and metadata addresses", () => {\n  expect(isSafeUrl("http://169.254.169.254/latest")).toBe(false);\n});`,
   },
@@ -454,7 +566,7 @@ export const SAST_RULES: ScanRule[] = [
     whyItMatters: "Allows attackers to instantiate arbitrary object prototypes, leading to remote code execution (RCE) or denial of service.",
     suggestedFixTemplate: () => `JSON.parse(untrustedData);`,
     autoRemedyTemplate: (matched, rawLine) =>
-      rawLine.replace(/\b(?:node-serialize|serialize-javascript)\.unserialize/, "JSON.parse"),
+      rawLine.replace(/\b(?:node-serialize|serialize-javascript|serialize)\.unserialize/, "JSON.parse"),
     regressionTestTemplate: () =>
       `test("rejects executable payloads during deserialization", () => {\n  const payload = '{\"rce\":\"_\$\$ND_FUNC\$\$_function(){}\"}';\n  expect(() => safeDeserialize(payload)).not.toThrow();\n});`,
   },
@@ -467,13 +579,13 @@ export const SAST_RULES: ScanRule[] = [
     category: "security",
     cwe: "CWE-29",
     owasp: "A01:2021-Broken Access Control",
-    pattern: /\b(?:unzipper|adm-zip|tar|decompress)\b[^\n]*?\b(?:extractAllTo|extractEntryTo|pipe\s*\(\s*fs\.createWriteStream)\s*\([^)]*(?:entry\.path|entry\.name|header\.name)/g,
+    pattern: /\b(?:unzipper|adm-zip|admZip|tar|decompress|zip|archive)\b[^\n]*?\b(?:extractAllTo|extractEntryTo|pipe\s*\(\s*fs\.createWriteStream)\s*\([^)]*(?:entry\.path|entry\.name|header\.name)/g,
     description: "Archive entries extracted to disk without validating relative path prefixes.",
     whyItMatters: "Malicious archives containing filenames like '../../etc/cron.d/evil' can overwrite arbitrary files outside the target directory.",
     suggestedFixTemplate: () =>
       `const targetPath = path.resolve(destDir, entry.path);\nif (!targetPath.startsWith(path.resolve(destDir) + path.sep)) throw new Error("Zip Slip attempt blocked");`,
     autoRemedyTemplate: (matched, rawLine) =>
-      `const safeDest = path.resolve(destDir, path.basename(entry.path));\n  ${rawLine}`,
+      rawLine.replace(/(\b(?:extractAllTo|extractEntryTo)\s*\(\s*)([a-zA-Z0-9_\.]+)(\s*\))/, "$1path.basename($2)$3"),
     regressionTestTemplate: () =>
       `test("prevents zip slip directory escape", () => {\n  expect(() => extractEntry("../../evil.sh", "/tmp/dest")).toThrow(/escape/i);\n});`,
   },
@@ -503,7 +615,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "aws_access_key",
     name: "AWS Access Key ID",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b(AKIA[0-9A-Z]{16})\b/g,
@@ -515,7 +627,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "github_pat",
     name: "GitHub Personal Access Token",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b(gh[pousr]_[A-Za-z0-9_]{36,255})\b/g,
@@ -527,7 +639,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "openai_api_key",
     name: "OpenAI Secret API Key",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b(sk-[a-zA-Z0-9_\-]{20,64})\b/g,
@@ -539,7 +651,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "stripe_secret_key",
     name: "Stripe Live Secret Key",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b(sk_live_[0-9a-zA-Z]{24,34})\b/g,
@@ -551,7 +663,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "private_key",
     name: "Unencrypted Private Key Block",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-312",
     owasp: "A02:2021-Cryptographic Failures",
     pattern: /-----BEGIN (?:[A-Z0-9_-]+\s+)?(?:PRIVATE\s+)?KEY-----/g,
@@ -563,7 +675,7 @@ export const SECRET_RULES: ScanRule[] = [
     id: "db_connection_uri",
     name: "Database Connection URI with Credentials",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b((?:postgres|postgresql|mysql|mongodb|mongodb\+srv|redis):\/\/[a-zA-Z0-9_.-]+:[^@\s/]+@[a-zA-Z0-9_.-]+)/g,
@@ -575,13 +687,25 @@ export const SECRET_RULES: ScanRule[] = [
     id: "generic_api_secret",
     name: "Hardcoded High-Entropy API Secret or Password",
     severity: "critical",
-    category: "security",
+    category: "secrets",
     cwe: "CWE-798",
     owasp: "A07:2021-Identification and Authentication Failures",
     pattern: /\b(?:password|passwd|api_key|apikey|secret_key|auth_token)\s*[:=]\s*["'](?!(?:true|false|null|undefined|test|example|placeholder|dummy|your_))[A-Za-z0-9_\-!@#$%^&*]{16,}["']/gi,
     description: "Hardcoded secret string or password assignment.",
     whyItMatters: "Plaintext secrets checked into revision control can be extracted by any viewer of the repository.",
     suggestedFixTemplate: () => `process.env.SECRET_KEY`,
+  },
+  {
+    id: "hardcoded_password",
+    name: "Hardcoded Password Literal",
+    severity: "critical",
+    category: "secrets",
+    cwe: "CWE-798",
+    owasp: "A07:2021-Identification and Authentication Failures",
+    pattern: /\b(?:DATABASE_PASSWORD|DB_PASSWORD|ADMIN_PASSWORD|USER_PASSWORD|PASSWORD|PASSWD)\s*=\s*["'][^"'\s]{6,}["']/gi,
+    description: "Hardcoded password variable assignment in source code.",
+    whyItMatters: "Plaintext database or user passwords committed to source control allow unauthorized access.",
+    suggestedFixTemplate: () => `process.env.DATABASE_PASSWORD`,
   },
 ];
 
@@ -613,7 +737,6 @@ export const LOGICAL_BUG_RULES: ScanRule[] = [
     description: "Condition compares an identifier directly to itself (e.g. `x === x`), always resulting in true or false.",
     whyItMatters: "Indicates a typo where a second distinct variable was intended, causing dead branches or logic inversion.",
     suggestedFixTemplate: () => `// Compare against the intended target variable: x === target`,
-    autoRemedyTemplate: (matched, rawLine) => rawLine,
     regressionTestTemplate: () =>
       `test("compares against valid reference variable", () => {\n  expect(evaluateCondition(1, 2)).toBe(false);\n});`,
   },
@@ -663,7 +786,6 @@ export const LOGICAL_BUG_RULES: ScanRule[] = [
     description: "Executable code detected directly after an unconditional `return` statement in the same scope.",
     whyItMatters: "Dead code that never executes often indicates a misplaced return statement or incomplete refactoring.",
     suggestedFixTemplate: () => `// Move logic before return statement, or remove dead code.`,
-    autoRemedyTemplate: (matched, rawLine) => rawLine,
     regressionTestTemplate: () =>
       `test("executes intended logic prior to termination", () => {\n  expect(calculateResult()).toBeDefined();\n});`,
   },
@@ -747,8 +869,138 @@ export const LOGICAL_BUG_RULES: ScanRule[] = [
     description: "Boolean condition checks `x && !x`, which is mutually exclusive and can never be true.",
     whyItMatters: "Guarantees the branch will never execute, pointing to an erroneous variable name or inverted logic check.",
     suggestedFixTemplate: () => `// Fix the secondary condition variable: x && !y`,
-    autoRemedyTemplate: (matched, rawLine) => rawLine,
     regressionTestTemplate: () =>
       `test("evaluates consistent dual-variable expression", () => {\n  expect(checkFlags(true, false)).toBe(true);\n});`,
   },
+
+  // 11. Potential Null or Undefined Property Dereference
+  {
+    id: "bug_null_undefined_dereference",
+    name: "Potential Null or Undefined Property Dereference",
+    severity: "high",
+    category: "logical_bug",
+    cwe: "CWE-476",
+    pattern: /\bif\s*\(\s*!([a-zA-Z0-9_]+)\s*\)\s*\{[^\n}]*\b\1\.[a-zA-Z0-9_]+/g,
+    description: "Accessing property on a variable inside a block where it was just verified to be falsy/null/undefined.",
+    whyItMatters: "Guarantees a runtime TypeError (Cannot read properties of null/undefined) that crashes the process.",
+    suggestedFixTemplate: () => `if (!val) { return; } // Avoid accessing val.property inside falsy branch`,
+    regressionTestTemplate: () =>
+      `test("handles null or undefined input safely", () => {\n  expect(() => processEntity(null)).not.toThrow();\n});`,
+  },
+
+  // 12. Unhandled Promise Rejection (Missing Catch Handler)
+  {
+    id: "bug_unhandled_promise_rejection",
+    name: "Unhandled Promise Rejection (Missing .catch)",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-703",
+    pattern: /(?:^|\s)(?:fetch|[a-zA-Z0-9_]+Client\.[a-zA-Z0-9_]+|axios\.[a-zA-Z0-9_]+)\s*\([^)]*\)\.then\s*\([^)]*\)(?!\s*\.catch|\s*;?\s*return|\s*await)/g,
+    description: "Promise chain with `.then()` lacks a terminal `.catch()` rejection handler.",
+    whyItMatters: "Unhandled promise rejections crash Node.js processes or leave operations hanging in an indeterminate state.",
+    suggestedFixTemplate: () => `operation().then(res => ...).catch(err => handleError(err));`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/(\.then\s*\([^)]*\))(?!\.catch)/, "$1.catch(err => console.error(err))"),
+    regressionTestTemplate: () =>
+      `test("catches asynchronous rejections cleanly", async () => {\n  expect(await safeAsyncCall()).toBeDefined();\n});`,
+  },
+
+  // 13. Direct State Mutation
+  {
+    id: "bug_suspicious_state_mutation",
+    name: "Direct Mutation of Component State",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-665",
+    pattern: /\bthis\.state\.[a-zA-Z0-9_]+\s*(?:=|\.push|\.splice|\.unshift|\+\+)/g,
+    description: "Mutating component state directly rather than using proper state updater functions (e.g. setState).",
+    whyItMatters: "Direct mutation breaks component reconciliation, causes silent rendering glitches, and produces stale UI state.",
+    suggestedFixTemplate: () => `this.setState((prev) => ({ ...prev, value: newValue }))`,
+    regressionTestTemplate: () =>
+      `test("updates state immutably", () => {\n  const next = updateState(initial, { count: 2 });\n  expect(next).not.toBe(initial);\n});`,
+  },
+
+  // 14. Silent Swallowed Error in Empty Catch Block
+  {
+    id: "bug_silent_swallowed_error",
+    name: "Silent Error Swallowing in Empty Catch Block",
+    severity: "medium",
+    category: "logical_bug",
+    cwe: "CWE-390",
+    pattern: /\bcatch\s*\(\s*[a-zA-Z0-9_]*\s*\)\s*\{\s*\}/g,
+    description: "Catch block completely empty, silently discarding exceptions without logging or remediation.",
+    whyItMatters: "Masks runtime exceptions, making diagnosing failures impossible and causing data corruption.",
+    suggestedFixTemplate: () => `catch (err) { logger.error(err); throw err; }`,
+    autoRemedyTemplate: (matched, rawLine) =>
+      rawLine.replace(/catch\s*\(\s*([a-zA-Z0-9_]*)\s*\)\s*\{\s*\}/, "catch ($1) { console.error($1); }"),
+    regressionTestTemplate: () =>
+      `test("logs or rethrows caught exception", () => {\n  expect(() => riskyOperation()).toThrow();\n});`,
+  },
 ];
+
+const SHORT_TITLES: Record<string, string> = {
+  // SAST Security Rules
+  sql_injection: "SQL Injection",
+  command_injection: "Command Injection",
+  path_traversal: "Path Traversal",
+  weak_cryptography: "Weak Cryptography",
+  insecure_randomness: "Insecure Randomness",
+  cross_site_scripting: "Cross-Site Scripting (XSS)",
+  unsafe_redirect: "Open Redirect",
+  disabled_tls: "Disabled TLS Validation",
+  insecure_http: "Insecure Cleartext HTTP",
+  dynamic_code_execution: "Dynamic Code Execution",
+  sensitive_logging: "Sensitive Data Logging",
+  insecure_file_permissions: "Insecure File Permissions",
+  unsafe_temp_files: "Insecure Temp File",
+  weak_comparisons: "Loose Equality Comparison",
+  unsafe_regex: "ReDoS Regular Expression",
+  insecure_cookies: "Insecure Cookie Flags",
+  error_disclosure: "Error Stack Disclosure",
+  unsafe_file_deletion: "Unsafe File Deletion",
+  prototype_pollution: "Prototype Pollution",
+  missing_async_error_handling: "Missing Async Catch Handler",
+  timing_attack: "Timing Attack in Secret Compare",
+  insecure_cors: "Insecure Wildcard CORS",
+  ssrf: "Server-Side Request Forgery",
+  unsafe_deserialization: "Unsafe Deserialization",
+  zip_slip_traversal: "Zip Slip Path Traversal",
+  nosql_injection: "NoSQL Operator Injection",
+
+  // Secret Rules
+  aws_access_key: "AWS Access Key",
+  aws_secret_key: "AWS Secret Key",
+  jwt_secret: "Hardcoded JWT Secret",
+  private_key: "Hardcoded Private Key",
+  generic_api_key: "Hardcoded API Key",
+  database_password_uri: "Database Password in URI",
+  github_pat: "GitHub Personal Access Token",
+
+  // Logical Bug Rules
+  bug_accidental_assignment_in_condition: "Accidental Assignment in If-Condition",
+  bug_tautological_condition: "Tautological Self-Comparison",
+  bug_nan_comparison: "Direct Comparison to NaN",
+  bug_off_by_one_index: "Off-by-One Loop Boundary",
+  bug_unreachable_code: "Unreachable Code After Return",
+  bug_async_foreach: "Async Callback in forEach",
+  bug_invalid_typeof: "Invalid typeof Comparison",
+  bug_missing_await_promise: "Unawaited Promise in Condition",
+  bug_infinite_loop_counter: "Loop Counter Decrementing While Ascending",
+  bug_contradictory_condition: "Contradictory Boolean Logic",
+  bug_null_undefined_dereference: "Null or Undefined Property Dereference",
+  bug_unhandled_promise_rejection: "Unhandled Promise Rejection",
+  bug_suspicious_state_mutation: "Direct Component State Mutation",
+  bug_silent_swallowed_error: "Silent Error Swallowing in Catch Block",
+};
+
+export function getShortTitle(ruleId: string, defaultName?: string): string {
+  if (SHORT_TITLES[ruleId]) {
+    return SHORT_TITLES[ruleId];
+  }
+  if (!defaultName) return ruleId;
+  return defaultName
+    .replace(/^(Security Flaw:\s*|Exposed Secret:\s*|Potential Logic Bug:\s*|Logical Bug:\s*)/i, "")
+    .replace(/\s+via\s+.*$/i, "")
+    .replace(/\s+in\s+.*$/i, "")
+    .trim();
+}

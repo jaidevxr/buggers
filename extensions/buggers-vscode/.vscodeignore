@@ -5,9 +5,10 @@ out/**
 test/**
 tsconfig.json
 esbuild.js
-*.map
+**/*.map
 node_modules/**
 *.vsix
 package-lock.json
 *.log
 .DS_Store
+.gitignore

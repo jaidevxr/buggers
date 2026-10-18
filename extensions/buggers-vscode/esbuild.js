@@ -7,7 +7,7 @@ async function build() {
     entryPoints: ["src/extension.ts"],
     bundle: true,
     outfile: "dist/extension.js",
-    external: ["vscode"],
+    external: ["vscode", "typescript"],
     format: "cjs",
     platform: "node",
     target: "node18",

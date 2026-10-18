@@ -1,26 +1,442 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { exec } from "child_process";
 import { BuggersAuth } from "./auth";
 import { scanDocument, scanWorkspace } from "./scanner";
-import { BuggersFinding, Severity } from "./types";
+import { BuggersFinding, Severity, ScanOverview, getFindingUri } from "./types";
 import { BuggersFindingsProvider } from "./treeView";
-import { BuggersAiService } from "./aiService";
+import { ScannerManager } from "./scannerManager";
+import { GitHubManager } from "./githubManager";
+import { BuggersPreviewProvider } from "./previewProvider";
+import { HighlightManager } from "./highlightManager";
+import { BuggersInspectorViewProvider } from "./inspectorView";
+import { RuleExplainer } from "./ruleExplainer";
+import { SAST_RULES, SECRET_RULES, LOGICAL_BUG_RULES } from "./rules";
 
 export { SAST_RULES, SECRET_RULES, LOGICAL_BUG_RULES } from "./rules";
 export { scanText, scanDocument, scanWorkspace } from "./scanner";
+export { ScannerManager } from "./scannerManager";
+export {
+  BuggersFindingsProvider,
+  OverviewNode,
+  StatusHeaderNode,
+  SeveritySummaryNode,
+  SeverityGroupNode,
+  CategoryGroupNode,
+  FindingNode,
+  InfoNode,
+  GitHubRepoNode,
+  GitHubActionNode,
+} from "./treeView";
+export { GitHubManager } from "./githubManager";
+export { BuggersPreviewProvider } from "./previewProvider";
+export { HighlightManager } from "./highlightManager";
+export { BuggersInspectorViewProvider } from "./inspectorView";
+export { RuleExplainer } from "./ruleExplainer";
+export { getFindingUri } from "./types";
+export { extractSyntaxErrors, classifyDiagnostic, getExternalDiagnostics, mergeFindings } from "./diagnosticsManager";
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let treeProvider: BuggersFindingsProvider;
 let statusBarItem: vscode.StatusBarItem;
 let auth: BuggersAuth;
-let aiService: BuggersAiService;
+let scannerManager: ScannerManager;
+let githubManager: GitHubManager;
+let highlightManager: HighlightManager;
+let inspectorProvider: BuggersInspectorViewProvider;
+let ruleExplainer: RuleExplainer;
+
+export {
+  githubManager,
+  treeProvider,
+  scannerManager,
+  highlightManager,
+  inspectorProvider,
+  ruleExplainer,
+};
+
+/**
+ * Applies a deterministic fix directly to the target document.
+ * Keeps the user in the normal source editor without opening diffs.
+ */
+export async function executeDirectFix(
+  nodeOrFinding: any,
+  scannerManagerInstance: ScannerManager,
+  highlightManagerInstance?: HighlightManager,
+  inspectorProviderInstance?: BuggersInspectorViewProvider,
+): Promise<boolean> {
+  let finding: BuggersFinding | undefined =
+    nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+  const editor = vscode.window.activeTextEditor;
+
+  if (!finding && editor) {
+    const findings = scannerManagerInstance.getFindingsForFile(editor.document.fileName);
+    const curLine = editor.selection.active.line + 1;
+    finding = findings.find((f) => f.line === curLine) || findings[0];
+  }
+
+  if (!finding) {
+    vscode.window.showInformationMessage("Buggers: No finding selected or active to fix.");
+    return false;
+  }
+
+  if (!finding.file) {
+    vscode.window.showErrorMessage("Buggers: Finding has no associated file path.");
+    return false;
+  }
+
+  const rule =
+    SAST_RULES.find((r) => r.id === finding!.ruleId) ||
+    SECRET_RULES.find((r) => r.id === finding!.ruleId) ||
+    LOGICAL_BUG_RULES.find((r) => r.id === finding!.ruleId);
+
+  if (
+    (!finding.replacementCode || finding.replacementCode.trim().length === 0) &&
+    !rule?.autoRemedyTemplate &&
+    !rule?.pattern
+  ) {
+    vscode.window.showInformationMessage(
+      `Buggers: No automated remedy available for ${finding.ruleId}. Please follow recommended remediation guidance.`,
+    );
+    if (finding.suggestedFix) {
+      await vscode.env.clipboard.writeText(finding.suggestedFix);
+      vscode.window.showInformationMessage("Buggers: Copied recommended remediation to clipboard.");
+    }
+    return false;
+  }
+
+  let doc: vscode.TextDocument;
+  try {
+    const uri = getFindingUri(finding);
+    doc = await vscode.workspace.openTextDocument(uri);
+  } catch (err: any) {
+    vscode.window.showErrorMessage(`Buggers: Unable to open file ${path.basename(finding.file)}: ${err.message}`);
+    return false;
+  }
+
+  const lineIdx = Math.max(0, finding.line - 1);
+  if (lineIdx >= doc.lineCount) {
+    vscode.window.showErrorMessage(
+      `Buggers: Target line ${finding.line} exceeds document line count (${doc.lineCount}). File may have changed.`,
+    );
+    return false;
+  }
+
+  const originalLine = doc.lineAt(lineIdx);
+  const originalLineText = originalLine.text;
+
+  const trimmedOriginal = originalLineText.trim();
+  const trimmedEvidence = finding.evidence ? finding.evidence.trim() : "";
+  const matchesPattern = rule?.pattern ? rule.pattern.test(originalLineText) : false;
+
+  // A line is vulnerable if it triggers the security scanner pattern.
+  // If rule is not found or has no pattern, fall back to checking if trimmedOriginal includes trimmedEvidence
+  // and whether replacementCode differs from original line.
+  const isCurrentlyVulnerable = rule?.pattern
+    ? matchesPattern
+    : !!(trimmedEvidence && trimmedOriginal.includes(trimmedEvidence));
+
+  // If the source code on this line no longer matches the vulnerability pattern,
+  // it is genuinely resolved in source.
+  if (!isCurrentlyVulnerable) {
+    vscode.window.showInformationMessage(
+      `Buggers: Finding ${finding.ruleId} on line ${finding.line} is already resolved in source. Re-analyzing...`,
+    );
+    scannerManagerInstance.scanSingleDocument(doc, true);
+    if (highlightManagerInstance) {
+      highlightManagerInstance.clearIfActive(finding.id);
+    }
+    if (inspectorProviderInstance) {
+      inspectorProviderInstance.clear();
+    }
+    return true;
+  }
+
+  // Generate patch dynamically from current source line
+  let replacement = finding.replacementCode;
+  if (rule?.autoRemedyTemplate) {
+    const generated = rule.autoRemedyTemplate(originalLineText.trim(), originalLineText);
+    if (generated && generated.trim() !== originalLineText.trim()) {
+      replacement = generated;
+    }
+  }
+
+  if (!replacement || replacement.trim().length === 0 || replacement.trim() === originalLineText.trim()) {
+    vscode.window.showInformationMessage(
+      `Buggers: Automated fix unavailable for ${finding.ruleId} on line ${finding.line}. Please use recommended parameterized query or manual remediation.`,
+    );
+    if (finding.suggestedFix) {
+      await vscode.env.clipboard.writeText(finding.suggestedFix);
+      vscode.window.showInformationMessage("Buggers: Copied recommended remediation to clipboard.");
+    }
+    return false;
+  }
+
+  // Preserve leading whitespace/indentation
+  let formattedReplacement = replacement;
+  const leadingWhitespaceMatch = originalLineText.match(/^(\s+)/);
+  if (leadingWhitespaceMatch && !replacement.startsWith(" ") && !replacement.startsWith("\t")) {
+    formattedReplacement = leadingWhitespaceMatch[1] + replacement.trimStart();
+  }
+
+  if (formattedReplacement.trim() === originalLineText.trim()) {
+    vscode.window.showInformationMessage(
+      `Buggers: Automated fix unavailable for ${finding.ruleId} on line ${finding.line}. Code remains unchanged.`,
+    );
+    return false;
+  }
+
+  // Verify the proposed replacement does NOT itself contain the vulnerability pattern
+  if (rule?.pattern && rule.pattern.test(formattedReplacement)) {
+    vscode.window.showWarningMessage(
+      `Buggers: Automated patch rejected because ${finding.ruleId} pattern remains detected in proposed replacement. Manual remediation required.`,
+    );
+    return false;
+  }
+
+  // Stale check: verify current line still matches evidence or pattern
+  if (trimmedEvidence && !trimmedOriginal.includes(trimmedEvidence) && !trimmedEvidence.includes(trimmedOriginal)) {
+    vscode.window.showErrorMessage(
+      `Buggers: File content on line ${finding.line} has diverged since the scan was performed. Re-analyzing...`,
+    );
+    scannerManagerInstance.scanSingleDocument(doc, true);
+    return false;
+  }
+
+  // Preserve user editor cursor and viewport stability
+  const activeEditor = vscode.window.activeTextEditor;
+  const wasActive = activeEditor?.document.uri.toString() === doc.uri.toString();
+  const preserveSelection = wasActive ? activeEditor.selection : undefined;
+
+  // Apply edit directly to source document using WorkspaceEdit
+  const edit = new vscode.WorkspaceEdit();
+  edit.replace(doc.uri, originalLine.range, formattedReplacement);
+  const applied = await vscode.workspace.applyEdit(edit);
+
+  if (!applied) {
+    vscode.window.showErrorMessage(`Buggers: Failed to apply fix edit to ${path.basename(doc.fileName)}.`);
+    return false;
+  }
+
+  // Restore editor cursor if active without moving viewport
+  if (wasActive && activeEditor) {
+    if (preserveSelection) {
+      activeEditor.selection = preserveSelection;
+    }
+  }
+
+  // Re-run scanner on the modified document
+  const remainingFindings = scannerManagerInstance.scanSingleDocument(doc, true);
+  const stillPresent = remainingFindings.some(
+    (f) => f.ruleId === finding!.ruleId && Math.abs(f.line - finding!.line) <= 1,
+  );
+
+  if (stillPresent) {
+    vscode.window.showWarningMessage(
+      `Buggers: Fix applied, but finding ${finding.ruleId} remains detected on line ${finding.line}.`,
+    );
+    return false;
+  } else {
+    // Verified resolved! Clear active highlight and inspector without jumping to line 1
+    if (highlightManagerInstance) {
+      highlightManagerInstance.clearIfActive(finding.id);
+    }
+    if (inspectorProviderInstance) {
+      inspectorProviderInstance.clear();
+    }
+    vscode.window.showInformationMessage(
+      `Buggers: Verified resolved! ${finding.title} on line ${finding.line} has been eliminated.`,
+    );
+    return true;
+  }
+}
+
+/**
+ * Optional Preview Fix: Opens a side-by-side diff editor for inspection prior to applying.
+ */
+export async function executeReviewableFix(
+  nodeOrFinding: any,
+  scannerManagerInstance: ScannerManager,
+  previewProviderInstance: BuggersPreviewProvider,
+  highlightManagerInstance?: HighlightManager,
+  inspectorProviderInstance?: BuggersInspectorViewProvider,
+): Promise<boolean> {
+  let finding: BuggersFinding | undefined =
+    nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+  const editor = vscode.window.activeTextEditor;
+
+  if (!finding && editor) {
+    const findings = scannerManagerInstance.getFindingsForFile(editor.document.fileName);
+    const curLine = editor.selection.active.line + 1;
+    finding = findings.find((f) => f.line === curLine) || findings[0];
+  }
+
+  if (!finding) {
+    vscode.window.showInformationMessage("Buggers: No finding selected or active to preview.");
+    return false;
+  }
+
+  if (!finding.file) {
+    vscode.window.showErrorMessage("Buggers: Finding has no associated file path.");
+    return false;
+  }
+
+  const rule =
+    SAST_RULES.find((r) => r.id === finding!.ruleId) ||
+    SECRET_RULES.find((r) => r.id === finding!.ruleId) ||
+    LOGICAL_BUG_RULES.find((r) => r.id === finding!.ruleId);
+
+  if (
+    (!finding.replacementCode || finding.replacementCode.trim().length === 0) &&
+    !rule?.autoRemedyTemplate &&
+    !rule?.pattern
+  ) {
+    vscode.window.showInformationMessage(
+      `Buggers: No automated remedy available for ${finding.ruleId}. Please review recommended remediation guidance.`,
+    );
+    return false;
+  }
+
+  let doc: vscode.TextDocument;
+  try {
+    const uri = getFindingUri(finding);
+    doc = await vscode.workspace.openTextDocument(uri);
+  } catch (err: any) {
+    vscode.window.showErrorMessage(`Buggers: Unable to open file ${path.basename(finding.file)}: ${err.message}`);
+    return false;
+  }
+
+  const lineIdx = Math.max(0, finding.line - 1);
+  if (lineIdx >= doc.lineCount) {
+    vscode.window.showErrorMessage(
+      `Buggers: Target line ${finding.line} exceeds document line count (${doc.lineCount}). File may have changed.`,
+    );
+    return false;
+  }
+
+  const originalLine = doc.lineAt(lineIdx);
+  const originalLineText = originalLine.text;
+
+
+  let replacement = finding.replacementCode;
+  if (rule?.autoRemedyTemplate) {
+    const generated = rule.autoRemedyTemplate(originalLineText.trim(), originalLineText);
+    if (generated && generated.trim() !== originalLineText.trim()) {
+      replacement = generated;
+    }
+  }
+
+  if (!replacement || replacement.trim().length === 0 || replacement.trim() === originalLineText.trim()) {
+    vscode.window.showInformationMessage(
+      `Buggers: No automated remedy available for ${finding.ruleId}. Please review recommended remediation guidance.`,
+    );
+    return false;
+  }
+
+  let formattedReplacement = replacement;
+  const leadingWhitespaceMatch = originalLineText.match(/^(\s+)/);
+  if (leadingWhitespaceMatch && !replacement.startsWith(" ") && !replacement.startsWith("\t")) {
+    formattedReplacement = leadingWhitespaceMatch[1] + replacement.trimStart();
+  }
+
+  const docLines = doc.getText().split("\n");
+  docLines[lineIdx] = formattedReplacement;
+  const proposedFullText = docLines.join("\n");
+
+  const fileName = path.basename(doc.fileName);
+  const previewUri = vscode.Uri.parse(
+    `${BuggersPreviewProvider.scheme}://preview/${fileName}?ruleId=${encodeURIComponent(finding.ruleId)}&t=${Date.now()}`,
+  );
+  previewProviderInstance.setPreview(previewUri, proposedFullText);
+
+  const diffTitle = `${fileName} (Original Source <-> Buggers Proposed Fix: ${finding.ruleId})`;
+  await vscode.commands.executeCommand(
+    "vscode.diff",
+    doc.uri,
+    previewUri,
+    diffTitle,
+    { preview: true },
+  );
+
+  const shortProblem = finding.problem.length > 70 ? finding.problem.slice(0, 67) + "..." : finding.problem;
+  const promptText = `Buggers Proposed Fix [${finding.ruleId}]: Replace line ${finding.line} to resolve ${shortProblem}`;
+
+  const action = await vscode.window.showInformationMessage(
+    promptText,
+    "Apply Fix",
+    "Copy Patch",
+    "Reject",
+  );
+
+  if (action === "Copy Patch") {
+    previewProviderInstance.clearPreview(previewUri);
+    await vscode.env.clipboard.writeText(formattedReplacement);
+    vscode.window.showInformationMessage("Buggers: Remediation patch copied to clipboard.");
+    return false;
+  }
+
+  if (action === "Reject" || !action) {
+    previewProviderInstance.clearPreview(previewUri);
+    return false;
+  }
+
+  if (action === "Apply Fix") {
+    const latestDoc = await vscode.workspace.openTextDocument(doc.uri);
+    const latestLineText = latestDoc.lineAt(lineIdx).text;
+    if (latestLineText !== originalLineText) {
+      previewProviderInstance.clearPreview(previewUri);
+      vscode.window.showErrorMessage(
+        "Buggers: File content has diverged since the diff was generated. Please re-scan before applying.",
+      );
+      return false;
+    }
+
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(doc.uri, originalLine.range, formattedReplacement);
+    const applied = await vscode.workspace.applyEdit(edit);
+    previewProviderInstance.clearPreview(previewUri);
+
+    if (applied) {
+      // Re-open normal editor tab for the user
+      await vscode.window.showTextDocument(latestDoc, { preview: false });
+
+      const remainingFindings = scannerManagerInstance.scanSingleDocument(latestDoc, true);
+      const stillPresent = remainingFindings.some(
+        (f) => f.ruleId === finding!.ruleId && f.line === finding!.line,
+      );
+      if (stillPresent) {
+        vscode.window.showWarningMessage(
+          `Buggers: Fix applied, but finding ${finding!.ruleId} remains detected on line ${finding!.line}.`,
+        );
+      } else {
+        if (highlightManagerInstance) {
+          highlightManagerInstance.clearIfActive(finding!.id);
+        }
+        if (inspectorProviderInstance) {
+          inspectorProviderInstance.clear();
+        }
+        vscode.window.showInformationMessage(
+          `Buggers: Verified resolved! ${finding!.title} on line ${finding!.line} has been eliminated.`,
+        );
+      }
+      return true;
+    } else {
+      vscode.window.showErrorMessage(`Buggers: Failed to apply fix edit to ${fileName}.`);
+      return false;
+    }
+  }
+
+  return false;
+}
 
 export function activate(context: vscode.ExtensionContext) {
-  // 1. Initialize Auth & AI Service
+  // 1. Initialize Auth & Rule Explainer
   auth = new BuggersAuth(context);
-  aiService = new BuggersAiService(context);
+  ruleExplainer = new RuleExplainer();
+
+  // Initialize GitHub Manager (Repository-Aware Integration)
+  githubManager = new GitHubManager(context, auth);
+  context.subscriptions.push(githubManager);
 
   // 2. Diagnostics Collection for Problems Panel
   diagnosticCollection = vscode.languages.createDiagnosticCollection("buggers");
@@ -30,37 +446,59 @@ export function activate(context: vscode.ExtensionContext) {
   treeProvider = new BuggersFindingsProvider();
   vscode.window.registerTreeDataProvider("buggers.findingsView", treeProvider);
 
+  // Wire GitHub Manager to Tree View
+  githubManager.onDidChangeStatus((status) => {
+    treeProvider.setGitHubStatus(status);
+  });
+  githubManager.refreshStatus();
+
   // 4. Status Bar Item
   statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     100,
   );
   statusBarItem.command = "buggers.showFindings";
-  statusBarItem.text = "$(shield) Buggers: Ready";
-  statusBarItem.tooltip = "Click to open Buggers Security Findings";
+  statusBarItem.text = "$(shield) Buggers: Initializing";
+  statusBarItem.tooltip = "Click to open Buggers Security & Bug Triage";
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
-  // Virtual Text Document Provider for Remedy Diff Previews
-  class BuggersPreviewProvider implements vscode.TextDocumentContentProvider {
-    private previews = new Map<string, string>();
-    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
-    readonly onDidChange = this._onDidChange.event;
+  // 5. Initialize Scanner Manager (Automated Real-Time Detection)
+  scannerManager = new ScannerManager(diagnosticCollection, (findings, overview) => {
+    updateStatusBar(findings, overview);
+  });
+  context.subscriptions.push(scannerManager);
 
-    setPreview(uri: vscode.Uri, content: string) {
-      this.previews.set(uri.toString(), content);
-      this._onDidChange.fire(uri);
-    }
-    provideTextDocumentContent(uri: vscode.Uri): string {
-      return this.previews.get(uri.toString()) || "";
-    }
-  }
-  const previewProvider = new BuggersPreviewProvider();
+  scannerManager.onDidChangeFindings((findings) => {
+    treeProvider.setFindings(findings, scannerManager.getOverview());
+  });
+
+  scannerManager.onDidChangeStatus((overview) => {
+    treeProvider.setOverview(overview);
+    updateStatusBar(scannerManager.getAllFindings(), overview);
+  });
+
+  // 6. Initialize Editor Highlight Manager
+  highlightManager = new HighlightManager();
+  context.subscriptions.push(highlightManager);
+
+  // 7. Initialize Finding Inspector & Action Toolbar View
+  inspectorProvider = new BuggersInspectorViewProvider(context.extensionUri);
   context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider("buggers-preview", previewProvider),
+    vscode.window.registerWebviewViewProvider(
+      BuggersInspectorViewProvider.viewType,
+      inspectorProvider,
+      { webviewOptions: { retainContextWhenHidden: true } },
+    ),
   );
 
-  // 5. Register Commands
+  // 8. Virtual Text Document Provider for Diff Previews
+  const previewProvider = BuggersPreviewProvider.getInstance();
+  context.subscriptions.push(
+    vscode.workspace.registerTextDocumentContentProvider(BuggersPreviewProvider.scheme, previewProvider),
+  );
+
+  // 9. Register Commands
 
   // Command: Sign In
   context.subscriptions.push(
@@ -86,10 +524,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       const doc = editor.document;
-      const findings = scanDocument(doc);
-      applyDiagnostics(doc.uri, findings);
-      treeProvider.setFindings(findings);
-      updateStatusBar(findings);
+      const findings = scannerManager.scanSingleDocument(doc, true);
 
       if (findings.length > 0) {
         const crit = findings.filter((f) => f.severity === "critical").length;
@@ -108,56 +543,20 @@ export function activate(context: vscode.ExtensionContext) {
   // Command: Analyze Workspace
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.analyzeWorkspace", async () => {
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: "Buggers: Scanning workspace for security flaws & defects...",
-          cancellable: true,
-        },
-        async (progress, token) => {
-          const startTime = Date.now();
-          diagnosticCollection.clear();
-          const results = await scanWorkspace((msg, inc) => {
-            progress.report({ message: msg, increment: inc });
-          });
+      const scanResult = await scannerManager.startWorkspaceScan(true);
+      const allFindings = scannerManager.getAllFindings();
 
-          if (token.isCancellationRequested) {
-            vscode.window.showInformationMessage("Buggers: Workspace analysis cancelled by user.");
-            return;
-          }
-
-          const allFindings: BuggersFinding[] = [];
-          for (const [filePath, findings] of results.entries()) {
-            applyDiagnostics(vscode.Uri.file(filePath), findings);
-            allFindings.push(...findings);
-          }
-
-          const scanDuration = Date.now() - startTime;
-          const overview = {
-            totalFiles: results.size,
-            totalFindings: allFindings.length,
-            criticalCount: allFindings.filter((f) => f.severity === "critical").length,
-            highCount: allFindings.filter((f) => f.severity === "high").length,
-            mediumCount: allFindings.filter((f) => f.severity === "medium").length,
-            lowCount: allFindings.filter((f) => f.severity === "low").length,
-            scanTimeMs: scanDuration,
-            timestamp: new Date().toLocaleTimeString(),
-          };
-
-          treeProvider.setFindings(allFindings, overview);
-          updateStatusBar(allFindings);
-
-          if (allFindings.length > 0) {
-            vscode.window.showWarningMessage(
-              `Buggers Workspace Audit: Detected ${allFindings.length} issue(s) across ${results.size} file(s) (${overview.criticalCount} critical, ${overview.highCount} high).`,
-            );
-          } else {
-            vscode.window.showInformationMessage(
-              "Buggers Workspace Audit: Clean. No security flaws or secrets detected.",
-            );
-          }
-        },
-      );
+      if (allFindings.length > 0) {
+        const crit = allFindings.filter((f) => f.severity === "critical").length;
+        const high = allFindings.filter((f) => f.severity === "high").length;
+        vscode.window.showWarningMessage(
+          `Buggers Workspace Audit: Detected ${allFindings.length} issue(s) across ${scanResult.scannedCount} file(s) (${crit} critical, ${high} high).`,
+        );
+      } else {
+        vscode.window.showInformationMessage(
+          `Buggers Workspace Audit: Clean. Audited ${scanResult.scannedCount} file(s). Zero security flaws detected.`,
+        );
+      }
     }),
   );
 
@@ -168,35 +567,166 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // Command: Refresh Findings
+  // Command: Refresh / Rescan Findings
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.refreshFindings", async () => {
+      treeProvider.restoreDismissed();
+      scannerManager.restoreDismissed();
       const editor = vscode.window.activeTextEditor;
       if (editor) {
-        await vscode.commands.executeCommand("buggers.analyzeFile");
-      } else {
-        await vscode.commands.executeCommand("buggers.analyzeWorkspace");
+        scannerManager.scanSingleDocument(editor.document, true);
+      }
+      await scannerManager.startWorkspaceScan(false);
+      await githubManager.refreshStatus();
+    }),
+  );
+
+  // Command: Clear Displayed Findings
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.clearFindings", async () => {
+      const confirm = await vscode.window.showWarningMessage(
+        "Clear all displayed findings? (Source code will not be changed. Findings can be restored by clicking Rescan.)",
+        "Clear Displayed Findings",
+        "Cancel",
+      );
+      if (confirm !== "Clear Displayed Findings") return;
+
+      scannerManager.clear();
+      treeProvider.clear();
+      highlightManager.clearHighlight();
+      inspectorProvider.clear();
+      vscode.window.showInformationMessage("Buggers: Displayed findings cleared. Click Rescan to re-audit.");
+    }),
+  );
+
+  // Command: Dismiss Individual Finding
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.dismissFinding", async (nodeOrFinding?: any) => {
+      const finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+      if (!finding) return;
+
+      scannerManager.dismissFinding(finding.id);
+      treeProvider.dismissFinding(finding.id);
+      highlightManager.clearIfActive(finding.id);
+
+      if (inspectorProvider.getActiveFinding()?.id === finding.id) {
+        inspectorProvider.clear();
+      }
+
+      vscode.window.showInformationMessage(
+        `Buggers: Dismissed "${finding.title}". (Restored on next rescan)`,
+        "Undo",
+      ).then((choice) => {
+        if (choice === "Undo") {
+          scannerManager.restoreDismissed();
+          treeProvider.restoreDismissed();
+        }
+      });
+    }),
+  );
+
+  // Command: More Actions for Finding
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.moreActions", async (nodeOrFinding?: any) => {
+      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+      if (!finding) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          const findings = scannerManager.getFindingsForFile(editor.document.fileName);
+          const curLine = editor.selection.active.line + 1;
+          finding = findings.find((f) => f.line === curLine) || findings[0];
+        }
+      }
+      if (!finding) return;
+
+      const hasFix = Boolean(finding.replacementCode && finding.replacementCode.trim().length > 0);
+      const items = [
+        ...(hasFix
+          ? [
+              { label: "Fix Finding (Apply Directly)", id: "applyRemedy", description: "Apply verified remediation to document" },
+              { label: "Preview Fix Diff", id: "previewDiff", description: "Review side-by-side patch in diff editor" },
+            ]
+          : []),
+        { label: "Explain Finding & Rule Guidance", id: "explainFinding", description: "Deep dive into vulnerability causation and fix" },
+        { label: "Copy Remediation Patch to Clipboard", id: "copyPatch", description: "Copy replacement code snippet" },
+        { label: "Generate Regression Test", id: "generateTest", description: "Generate automated test reproduction" },
+        { label: "Suppress Finding", id: "ignoreFinding", description: "Insert // buggers-ignore comment" },
+        { label: "Dismiss Finding from Display", id: "dismissFinding", description: "Hide from current list until rescan" },
+      ];
+
+      const pick = await vscode.window.showQuickPick(items, {
+        placeHolder: `Actions for [${finding.severity.toUpperCase()}] ${finding.title}`,
+      });
+
+      if (!pick) return;
+
+      switch (pick.id) {
+        case "applyRemedy":
+          vscode.commands.executeCommand("buggers.applyRemedy", finding);
+          break;
+        case "previewDiff":
+          vscode.commands.executeCommand("buggers.previewDiff", finding);
+          break;
+        case "explainFinding":
+          vscode.commands.executeCommand("buggers.explainFinding", finding);
+          break;
+        case "copyPatch":
+          vscode.commands.executeCommand("buggers.copyPatch", finding);
+          break;
+        case "generateTest":
+          vscode.commands.executeCommand("buggers.generateRegressionTest", finding);
+          break;
+        case "ignoreFinding":
+          vscode.commands.executeCommand("buggers.ignoreFinding", finding);
+          break;
+        case "dismissFinding":
+          vscode.commands.executeCommand("buggers.dismissFinding", finding);
+          break;
       }
     }),
   );
 
-  // Command: Clear Findings
+  // Command: Generate Regression Test
   context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.clearFindings", async () => {
-      diagnosticCollection.clear();
-      treeProvider.clear();
-      updateStatusBar([]);
-      vscode.window.showInformationMessage("Buggers: Findings cleared.");
+    vscode.commands.registerCommand("buggers.generateRegressionTest", async (nodeOrFinding?: any) => {
+      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+      if (!finding) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          const findings = scannerManager.getFindingsForFile(editor.document.fileName);
+          const curLine = editor.selection.active.line + 1;
+          finding = findings.find((f) => f.line === curLine) || findings[0];
+        }
+      }
+      if (!finding) return;
+
+      const testContent = ruleExplainer.generateRegressionTest(finding);
+      const isTs = finding.file.endsWith(".ts") || finding.file.endsWith(".tsx");
+      const doc = await vscode.workspace.openTextDocument({
+        content: testContent,
+        language: isTs ? "typescript" : "javascript",
+      });
+      await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
+      vscode.window.showInformationMessage(`Buggers: Generated regression test for ${finding.title}.`);
     }),
   );
 
   // Command: Toggle Findings Grouping Mode
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.toggleGrouping", async () => {
-      const current = treeProvider.getGroupingMode();
-      const nextMode = current === "category" ? "severity" : current === "severity" ? "file" : "category";
-      treeProvider.setGroupingMode(nextMode);
-      vscode.window.showInformationMessage(`Buggers: Findings grouped by ${nextMode.toUpperCase()}`);
+      const choice = await vscode.window.showQuickPick(
+        [
+          { label: "Severity Grouping", description: "Critical, High, Medium, Low (Auto-expanded)", id: "severity" },
+          { label: "Flat List", description: "Direct un-nested findings list sorted by priority", id: "flat" },
+          { label: "Category Grouping", description: "Secrets, Security, Logical Bugs, Quality", id: "category" },
+          { label: "File Grouping", description: "Grouped by source file path", id: "file" },
+        ],
+        { placeHolder: "Select Findings View Grouping Mode" },
+      );
+      if (choice) {
+        treeProvider.setGroupingMode(choice.id as any);
+        vscode.window.showInformationMessage(`Buggers: Findings grouped by ${choice.label}`);
+      }
     }),
   );
 
@@ -222,7 +752,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Command: Export Findings to SARIF or JSON
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.exportFindings", async () => {
-      const findings = treeProvider.getFindings();
+      const findings = scannerManager.getAllFindings();
       if (findings.length === 0) {
         vscode.window.showInformationMessage("Buggers: No findings to export.");
         return;
@@ -253,7 +783,7 @@ export function activate(context: vscode.ExtensionContext) {
               tool: {
                 driver: {
                   name: "Buggers",
-                  version: "1.3.0",
+                  version: "1.4.5",
                   informationUri: "https://buggers.dev",
                   rules: Array.from(new Set(findings.map((f) => f.ruleId))).map((ruleId) => {
                     const f = findings.find((item) => item.ruleId === ruleId)!;
@@ -302,132 +832,86 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // Command: Inspect Finding
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.inspectFinding", async (nodeOrFinding: any) => {
-      const finding: BuggersFinding = nodeOrFinding?.finding ?? nodeOrFinding;
-      if (!finding) return;
-
-      const uri = vscode.Uri.file(finding.file);
-      const doc = await vscode.workspace.openTextDocument(uri);
-      const editor = await vscode.window.showTextDocument(doc);
-
-      const startPos = new vscode.Position(Math.max(0, finding.line - 1), finding.column ?? 0);
-      const endPos = new vscode.Position(Math.max(0, finding.line - 1), (finding.column ?? 0) + (finding.length ?? 1));
-      editor.selection = new vscode.Selection(startPos, endPos);
-      editor.revealRange(new vscode.Range(startPos, endPos), vscode.TextEditorRevealType.InCenter);
-
-      const items = finding.replacementCode
-        ? ["Accept & Apply Remedy", "Review Diff", "Explain Finding", "Generate Test"]
-        : ["Explain Finding", "Generate Test", "Commit to Git"];
-
-      const choice = await vscode.window.showInformationMessage(
-        `[${finding.severity.toUpperCase()}] ${finding.title}: ${finding.problem}`,
-        ...items,
-      );
-
-      if (choice === "Accept & Apply Remedy") {
-        await vscode.commands.executeCommand("buggers.applyRemedy", finding);
-      } else if (choice === "Review Diff") {
-        await vscode.commands.executeCommand("buggers.suggestFix", finding);
-      } else if (choice === "Explain Finding") {
-        await vscode.commands.executeCommand("buggers.explainFinding", finding);
-      } else if (choice === "Generate Test") {
-        await vscode.commands.executeCommand("buggers.generateRegressionTest", finding);
-      } else if (choice === "Commit to Git") {
-        await vscode.commands.executeCommand("buggers.commitRemedy", finding);
-      }
-    }),
-  );
-
-  // Command: Apply Auto-Remedy Fix
+  // Command: Fix Finding (Apply Directly to Editor)
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.applyRemedy", async (findingNodeOrFinding: any) => {
-      const finding: BuggersFinding = findingNodeOrFinding?.finding ?? findingNodeOrFinding;
-      if (!finding || !finding.replacementCode) {
-        vscode.window.showInformationMessage("Buggers: No automated remedy available for this finding.");
-        return;
-      }
-
-      const uri = vscode.Uri.file(finding.file);
-      const doc = await vscode.workspace.openTextDocument(uri);
-      await vscode.window.showTextDocument(doc);
-
-      const lineIdx = Math.max(0, finding.line - 1);
-      const line = doc.lineAt(lineIdx);
-      const range = line.range;
-
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(doc.uri, range, finding.replacementCode);
-      const success = await vscode.workspace.applyEdit(edit);
-
-      if (success) {
-        vscode.window.showInformationMessage(
-          `Buggers: Applied automated remedy for ${finding.title}.`,
-          "Commit Fix to Git",
-        ).then((action) => {
-          if (action === "Commit Fix to Git") {
-            vscode.commands.executeCommand("buggers.commitRemedy", finding);
-          }
-        });
-
-        const updatedFindings = scanDocument(doc);
-        applyDiagnostics(doc.uri, updatedFindings);
-        treeProvider.setFindings(updatedFindings);
-        updateStatusBar(updatedFindings);
-      }
+      return executeDirectFix(findingNodeOrFinding, scannerManager, highlightManager, inspectorProvider);
     }),
   );
 
-  // Command: Suggest Fix with Reviewable Diff
+  // Command: Fix Finding Alias
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.suggestFix", async (nodeOrFinding?: any) => {
-      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
-      const editor = vscode.window.activeTextEditor;
-      if (!finding && editor) {
-        const findings = scanDocument(editor.document);
-        const curLine = editor.selection.active.line + 1;
-        finding = findings.find((f) => f.line === curLine) || findings[0];
-      }
-      if (!finding) {
-        vscode.window.showInformationMessage("Buggers: No finding selected to fix.");
+      return executeDirectFix(nodeOrFinding, scannerManager, highlightManager, inspectorProvider);
+    }),
+  );
+
+  // Command: Preview Fix Diff (Optional Diff Inspection)
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.previewDiff", async (nodeOrFinding: any) => {
+      return executeReviewableFix(nodeOrFinding, scannerManager, previewProvider, highlightManager, inspectorProvider);
+    }),
+  );
+
+  // Command: Copy Remediation Patch to Clipboard
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.copyPatch", async (nodeOrFinding?: any) => {
+      const finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? nodeOrFinding;
+      if (!finding) return;
+
+      const patchCode = finding.replacementCode || finding.suggestedFix;
+      if (!patchCode) {
+        vscode.window.showInformationMessage("Buggers: No patch snippet available for this finding.");
         return;
       }
 
-      const doc = editor?.document || (await vscode.workspace.openTextDocument(vscode.Uri.file(finding.file)));
-      const lineIdx = Math.max(0, finding.line - 1);
-      const line = doc.lineAt(lineIdx);
-      const replacement = finding.replacementCode || finding.suggestedFix;
+      await vscode.env.clipboard.writeText(patchCode);
+      vscode.window.showInformationMessage(`Buggers: Remediation patch copied to clipboard.`);
+    }),
+  );
 
-      if (!replacement) {
-        vscode.window.showInformationMessage("Buggers: No fix pattern available for this finding.");
-        return;
-      }
+  // Command: Select Finding (Jump to Code, Highlight, and Update Inspector)
+  let isNavigatingFinding = false;
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.selectFinding", async (nodeOrFinding?: any) => {
+      let finding: BuggersFinding | undefined =
+        nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
+      if (!finding) return;
+      if (isNavigatingFinding) return;
 
-      const accepted = await aiService.promptReviewableDiff(
-        doc,
-        line.range,
-        replacement,
-        finding.title,
-      );
+      isNavigatingFinding = true;
+      try {
+        const uri = getFindingUri(finding);
+        const activeEditor = vscode.window.activeTextEditor;
+        let editor: vscode.TextEditor | undefined;
 
-      if (accepted) {
-        const updatedFindings = scanDocument(doc);
-        applyDiagnostics(doc.uri, updatedFindings);
-        treeProvider.setFindings(updatedFindings);
-        updateStatusBar(updatedFindings);
+        if (activeEditor && activeEditor.document.uri.toString() === uri.toString()) {
+          editor = activeEditor;
+        } else {
+          const doc = await vscode.workspace.openTextDocument(uri);
+          editor = await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: true });
+        }
+
+        if (editor) {
+          highlightManager.highlightFinding(editor, finding);
+          await inspectorProvider.setFinding(finding, editor.document);
+        }
+      } catch (err: any) {
+        vscode.window.showErrorMessage(`Buggers: Unable to open finding location: ${err.message}`);
+      } finally {
+        isNavigatingFinding = false;
       }
     }),
   );
 
-  // Command: Explain Finding (Root Cause & Fix Strategy)
+  // Command: Explain Finding (Root Cause & Guidance)
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.explainFinding", async (nodeOrFinding?: any) => {
       let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
       if (!finding) {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
-          const findings = scanDocument(editor.document);
+          const findings = scannerManager.getFindingsForFile(editor.document.fileName);
           const curLine = editor.selection.active.line + 1;
           finding = findings.find((f) => f.line === curLine) || findings[0];
         }
@@ -437,82 +921,25 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: `Buggers: Analyzing ${finding.ruleId}...`,
-          cancellable: false,
-        },
-        async () => {
-          const explanation = await aiService.explainFinding(finding!);
-          const doc = await vscode.workspace.openTextDocument({
-            content: explanation,
-            language: "markdown",
-          });
-          await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
-        },
-      );
-    }),
-  );
-
-  // Command: Debug Selection with AI
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.debugSelection", async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        vscode.window.showWarningMessage("Buggers: Open a file and select code to debug.");
-        return;
-      }
-      const selection = editor.selection;
-      if (selection.isEmpty) {
-        vscode.window.showInformationMessage("Buggers: Please select a block of code to debug.");
-        return;
-      }
-
-      const code = editor.document.getText(selection);
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: "Buggers: Debugging selected code...",
-          cancellable: false,
-        },
-        async () => {
-          const result = await aiService.debugSelection(code, editor.document.fileName);
-          const doc = await vscode.workspace.openTextDocument({
-            content: result,
-            language: "markdown",
-          });
-          await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
-        },
-      );
-    }),
-  );
-
-  // Command: Generate Regression Test
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.generateRegressionTest", async (nodeOrFinding?: any) => {
-      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
-      if (!finding) {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-          const findings = scanDocument(editor.document);
-          const curLine = editor.selection.active.line + 1;
-          finding = findings.find((f) => f.line === curLine) || findings[0];
-        }
-      }
-      if (!finding) {
-        vscode.window.showInformationMessage("Buggers: No finding selected to generate test for.");
-        return;
-      }
-
-      const testCode = aiService.generateRegressionTest(finding);
-      const isTs = finding.file.endsWith(".ts") || finding.file.endsWith(".tsx");
+      const explanation = ruleExplainer.explainFinding(finding);
       const doc = await vscode.workspace.openTextDocument({
-        content: testCode,
-        language: isTs ? "typescript" : "javascript",
+        content: explanation,
+        language: "markdown",
       });
-      await vscode.window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside });
-      vscode.window.showInformationMessage(`Buggers: Generated regression test template for ${finding.ruleId}`);
+      await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
+    }),
+  );
+
+  // Command: Inspect Finding & Focus Inspector
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.inspectFinding", async (nodeOrFinding?: any) => {
+      return vscode.commands.executeCommand("buggers.openInspector", nodeOrFinding);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.openInspector", async (nodeOrFinding?: any) => {
+      await vscode.commands.executeCommand("buggers.selectFinding", nodeOrFinding);
     }),
   );
 
@@ -525,331 +952,65 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const allFindings = scanDocument(editor.document);
+      const allFindings = scannerManager.scanSingleDocument(editor.document, true);
       const logicalBugs = allFindings.filter((f) => f.category === "logical_bug");
-
-      applyDiagnostics(editor.document.uri, logicalBugs);
-      treeProvider.setFindings(logicalBugs);
-      updateStatusBar(logicalBugs);
 
       if (logicalBugs.length > 0) {
         vscode.window.showWarningMessage(
-          `Buggers: Detected ${logicalBugs.length} logical bug(s) in ${path.basename(editor.document.fileName)}.`,
+          `Buggers: Detected ${logicalBugs.length} potential logical bug(s) in ${path.basename(editor.document.fileName)}.`,
         );
       } else {
         vscode.window.showInformationMessage(
-          `Buggers: No logical bugs detected in ${path.basename(editor.document.fileName)}. Clean.`,
+          `Buggers: No logical bugs detected in ${path.basename(editor.document.fileName)}.`,
         );
       }
     }),
   );
 
-  // Command: Configure AI Provider
+  // GitHub Commands
   context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.configureAiProvider", async () => {
-      await aiService.configureProvider();
+    vscode.commands.registerCommand("buggers.gitReviewChanges", async () => {
+      const review = await githubManager.reviewChangedFiles(scannerManager);
+      vscode.window.showInformationMessage(`Buggers Git Review: ${review.summaryMessage}`);
     }),
   );
 
-  // Command: Clear AI Credentials
   context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.clearAiCredentials", async () => {
-      await aiService.clearApiKey();
-      vscode.window.showInformationMessage("Buggers: Cleared stored AI credentials from VS Code secret storage.");
+    vscode.commands.registerCommand("buggers.gitCommit", async () => {
+      await githubManager.promptSafeCommit(scannerManager);
     }),
   );
 
-  // Command: Commit Security Remedy to Git
   context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.commitRemedy", async (nodeOrFinding?: any) => {
-      const finding: BuggersFinding | undefined =
-        nodeOrFinding?.finding ?? (nodeOrFinding?.ruleId ? nodeOrFinding : undefined);
-      const commitMsg = finding?.ruleId
-        ? `fix(security): resolve ${finding.ruleId} (${finding.title}) via Buggers`
-        : "fix(security): resolve security vulnerabilities via Buggers auto-remedy";
-
-      const editor = vscode.window.activeTextEditor;
-      const doc = editor?.document;
-      const targetFile = finding?.file || doc?.fileName;
-
-      const workspaceFolder = targetFile
-        ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(targetFile))
-        : vscode.workspace.workspaceFolders?.[0];
-      const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : (targetFile ? path.dirname(targetFile) : undefined);
-
-      if (!cwd) {
-        const terminal = vscode.window.createTerminal("Buggers Security Commit");
-        terminal.show();
-        terminal.sendText(`git add -u && git commit -m "${commitMsg}"`);
-        vscode.window.showInformationMessage("Buggers: Staged and running commit in terminal.");
-        return;
-      }
-
-      try {
-        const relPath = targetFile ? path.relative(cwd, targetFile).replace(/\\/g, "/") : ".";
-        const cmd = `git add "${relPath}" && git commit -m "${commitMsg.replace(/"/g, '\\"')}"`;
-
-        exec(cmd, { cwd }, (err: any, stdout: string) => {
-          if (err) {
-            const terminal = vscode.window.createTerminal("Buggers Security Commit");
-            terminal.show();
-            terminal.sendText(`git add "${relPath}" && git commit -m "${commitMsg}"`);
-            vscode.window.showWarningMessage(`Buggers: Staged file in terminal to complete commit.`);
-          } else {
-            const firstLine = stdout.split("\n")[0] || "Committed security fix";
-            vscode.window.showInformationMessage(`Buggers Git Commit: ${firstLine}`);
-          }
-        });
-      } catch {
-        const terminal = vscode.window.createTerminal("Buggers Security Commit");
-        terminal.show();
-        terminal.sendText(`git add -u && git commit -m "${commitMsg}"`);
-        vscode.window.showInformationMessage("Buggers: Staged and running commit in terminal.");
-      }
+    vscode.commands.registerCommand("buggers.gitPush", async () => {
+      await githubManager.promptSafePush();
     }),
   );
 
-  // Command: Open Dashboard
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.openOnGitHub", async () => {
+      await githubManager.openOnGitHub();
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.connectGitHub", async () => {
+      await githubManager.connectGitHub();
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("buggers.refreshGitHubStatus", async () => {
+      await githubManager.refreshStatus();
+      vscode.window.showInformationMessage("Buggers: Refreshed GitHub repository status.");
+    }),
+  );
+
   context.subscriptions.push(
     vscode.commands.registerCommand("buggers.openDashboard", async () => {
       const config = vscode.workspace.getConfiguration("buggers");
       const url = config.get<string>("serverUrl") || "https://buggers.dev";
       await vscode.env.openExternal(vscode.Uri.parse(url));
-    }),
-  );
-
-  // Command: Preview Security Remedy Diff
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.previewDiff", async (nodeOrFinding: any) => {
-      const finding: BuggersFinding = nodeOrFinding?.finding ?? nodeOrFinding;
-      if (!finding || !finding.replacementCode) {
-        vscode.window.showInformationMessage("Buggers: No remedy preview available for this finding.");
-        return;
-      }
-
-      const uri = vscode.Uri.file(finding.file);
-      const doc = await vscode.workspace.openTextDocument(uri);
-      const lines = doc.getText().split("\n");
-      const lineIdx = Math.max(0, finding.line - 1);
-      lines[lineIdx] = finding.replacementCode;
-      const remediatedText = lines.join("\n");
-
-      const previewUri = vscode.Uri.parse(`buggers-preview://preview/${path.basename(finding.file)}?remedy=true`);
-      previewProvider.setPreview(previewUri, remediatedText);
-
-      await vscode.commands.executeCommand(
-        "vscode.diff",
-        uri,
-        previewUri,
-        `Buggers Remedy Diff: ${finding.title}`,
-        { preview: true },
-      );
-    }),
-  );
-
-  // Command: Open Rich Finding Inspector Webview
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.openInspector", async (nodeOrFinding?: any) => {
-      let finding: BuggersFinding | undefined = nodeOrFinding?.finding ?? nodeOrFinding;
-
-      if (!finding) {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-          const findings = scanDocument(editor.document);
-          const curLine = editor.selection.active.line;
-          finding = findings.find((f) => Math.max(0, f.line - 1) === curLine) || findings[0];
-        }
-      }
-
-      if (!finding) {
-        vscode.window.showInformationMessage("Buggers: No finding selected or detected to inspect.");
-        return;
-      }
-
-      const panel = vscode.window.createWebviewPanel(
-        "buggersFindingInspector",
-        `Buggers: ${finding.ruleId}`,
-        vscode.ViewColumn.Beside,
-        { enableScripts: true },
-      );
-
-      const sevColor =
-        finding.severity === "critical"
-          ? "#ef4444"
-          : finding.severity === "high"
-            ? "#f97316"
-            : finding.severity === "medium"
-              ? "#eab308"
-              : "#3b82f6";
-
-      panel.webview.html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      padding: 24px;
-      color: var(--vscode-foreground, #e2e8f0);
-      background-color: var(--vscode-editor-background, #09090b);
-      line-height: 1.6;
-    }
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 9999px;
-      font-weight: 700;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-right: 6px;
-    }
-    .badge-sev {
-      background: ${sevColor}22;
-      color: ${sevColor};
-      border: 1px solid ${sevColor}66;
-    }
-    .badge-tag {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--vscode-foreground);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    h1 {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 12px 0 6px;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 16px;
-      margin: 16px 0;
-    }
-    .code-label {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .code-vuln {
-      background: rgba(239, 68, 68, 0.12);
-      border-left: 3px solid #ef4444;
-      padding: 12px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      overflow-x: auto;
-      color: #fca5a5;
-    }
-    .code-fix {
-      background: rgba(34, 197, 94, 0.12);
-      border-left: 3px solid #22c55e;
-      padding: 12px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      overflow-x: auto;
-      color: #86efac;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 24px;
-    }
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
-    button.secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--vscode-foreground, #fff);
-    }
-    button.secondary:hover {
-      background: rgba(255, 255, 255, 0.18);
-    }
-  </style>
-</head>
-<body>
-  <div>
-    <span class="badge badge-sev">${finding.severity}</span>
-    ${finding.cwe ? `<span class="badge badge-tag">${finding.cwe}</span>` : ""}
-    ${finding.owasp ? `<span class="badge badge-tag">${finding.owasp}</span>` : ""}
-  </div>
-
-  <h1>${finding.title}</h1>
-  <div style="font-size: 12px; opacity: 0.7; margin-bottom: 16px;">
-    File: <code>${path.basename(finding.file)}</code> · Line: <strong>${finding.line}</strong> · Rule ID: <code>${finding.ruleId}</code>
-  </div>
-
-  <div class="card">
-    <div style="font-weight: 600; margin-bottom: 4px;">Description</div>
-    <div>${finding.problem}</div>
-  </div>
-
-  <div class="card">
-    <div style="font-weight: 600; margin-bottom: 4px;">Why It Matters & Exploit Scenario</div>
-    <div>${finding.whyItMatters}</div>
-  </div>
-
-  <div class="card">
-    <span class="code-label" style="color: #f87171;">Vulnerable Code Detected:</span>
-    <pre class="code-vuln">${finding.evidence}</pre>
-
-    <span class="code-label" style="color: #4ade80; margin-top: 14px;">Suggested Buggers Auto-Remedy:</span>
-    <pre class="code-fix">${finding.replacementCode || finding.suggestedFix}</pre>
-  </div>
-
-  <div class="actions">
-    <button onclick="send('applyRemedy')">Accept & Apply Remedy</button>
-    <button class="secondary" onclick="send('previewDiff')">View Side-by-Side Diff</button>
-    <button class="secondary" onclick="send('explainFinding')">Explain Root Cause</button>
-    <button class="secondary" onclick="send('generateTest')">Generate Regression Test</button>
-    <button class="secondary" onclick="send('commitRemedy')">Commit to Git</button>
-    <button class="secondary" onclick="send('ignoreFinding')">Suppress Finding</button>
-  </div>
-
-  <script>
-    const vscode = acquireVsCodeApi();
-    function send(cmd) {
-      vscode.postMessage({ command: cmd });
-    }
-  </script>
-</body>
-</html>`;
-
-      panel.webview.onDidReceiveMessage(async (msg) => {
-        if (msg.command === "applyRemedy") {
-          await vscode.commands.executeCommand("buggers.applyRemedy", finding);
-        } else if (msg.command === "previewDiff") {
-          await vscode.commands.executeCommand("buggers.previewDiff", finding);
-        } else if (msg.command === "explainFinding") {
-          await vscode.commands.executeCommand("buggers.explainFinding", finding);
-        } else if (msg.command === "generateTest") {
-          await vscode.commands.executeCommand("buggers.generateRegressionTest", finding);
-        } else if (msg.command === "commitRemedy") {
-          await vscode.commands.executeCommand("buggers.commitRemedy", finding);
-        } else if (msg.command === "ignoreFinding") {
-          await vscode.commands.executeCommand("buggers.ignoreFinding", finding);
-          panel.dispose();
-        }
-      });
     }),
   );
 
@@ -862,7 +1023,7 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       const doc = editor.document;
-      const findings = scanDocument(doc).filter((f) => f.replacementCode);
+      const findings = scannerManager.getFindingsForFile(doc.fileName).filter((f) => f.replacementCode);
       if (findings.length === 0) {
         vscode.window.showInformationMessage("Buggers: No automated fixes available for this file.");
         return;
@@ -874,77 +1035,23 @@ export function activate(context: vscode.ExtensionContext) {
         const lineIdx = Math.max(0, f.line - 1);
         const line = doc.lineAt(lineIdx);
         if (f.replacementCode) {
-          edit.replace(doc.uri, line.range, f.replacementCode);
+          let formattedReplacement = f.replacementCode;
+          const leadingWhitespaceMatch = line.text.match(/^(\s+)/);
+          if (leadingWhitespaceMatch && !f.replacementCode.startsWith(" ") && !f.replacementCode.startsWith("\t")) {
+            formattedReplacement = leadingWhitespaceMatch[1] + f.replacementCode.trimStart();
+          }
+          edit.replace(doc.uri, line.range, formattedReplacement);
         }
       }
       const success = await vscode.workspace.applyEdit(edit);
       if (success) {
-        const updated = scanDocument(doc);
-        applyDiagnostics(doc.uri, updated);
-        treeProvider.setFindings(updated);
-        updateStatusBar(updated);
+        scannerManager.scanSingleDocument(doc, true);
+        highlightManager.clearHighlight();
+        inspectorProvider.clear();
         vscode.window.showInformationMessage(
           `Buggers: Successfully fixed ${findings.length} flaw(s) in ${path.basename(doc.fileName)}.`,
-          "Commit Fixes to Git",
-        ).then((choice) => {
-          if (choice === "Commit Fixes to Git") {
-            vscode.commands.executeCommand("buggers.commitRemedy", {
-              file: doc.fileName,
-              ruleId: "batch_remediation",
-              title: `Batch remedy of ${findings.length} findings`,
-            });
-          }
-        });
+        );
       }
-    }),
-  );
-
-  // Command: Fix All Flaws Across Workspace
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buggers.fixAllWorkspace", async () => {
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: "Buggers: Applying automated security fixes across workspace...",
-          cancellable: false,
-        },
-        async () => {
-          const results = await scanWorkspace();
-          let totalFixed = 0;
-          for (const [filePath, fileFindings] of results.entries()) {
-            const fixable = fileFindings.filter((f) => f.replacementCode).sort((a, b) => b.line - a.line);
-            if (fixable.length === 0) continue;
-            try {
-              const uri = vscode.Uri.file(filePath);
-              const doc = await vscode.workspace.openTextDocument(uri);
-              const edit = new vscode.WorkspaceEdit();
-              for (const f of fixable) {
-                const lineIdx = Math.max(0, f.line - 1);
-                const line = doc.lineAt(lineIdx);
-                if (f.replacementCode) {
-                  edit.replace(doc.uri, line.range, f.replacementCode);
-                }
-              }
-              const ok = await vscode.workspace.applyEdit(edit);
-              if (ok) totalFixed += fixable.length;
-            } catch {
-              // Ignore file open/apply errors
-            }
-          }
-          vscode.window.showInformationMessage(
-            `Buggers Workspace Remediation: Applied ${totalFixed} automated fix(es).`,
-            "Commit All Fixes",
-          ).then((action) => {
-            if (action === "Commit All Fixes") {
-              vscode.commands.executeCommand("buggers.commitRemedy", {
-                ruleId: "workspace_remediation",
-                title: `Workspace auto-remediation of ${totalFixed} findings`,
-              });
-            }
-          });
-          await vscode.commands.executeCommand("buggers.refreshFindings");
-        },
-      );
     }),
   );
 
@@ -954,7 +1061,7 @@ export function activate(context: vscode.ExtensionContext) {
       const finding: BuggersFinding = nodeOrFinding?.finding ?? nodeOrFinding;
       if (!finding) return;
 
-      const uri = vscode.Uri.file(finding.file);
+      const uri = getFindingUri(finding);
       const doc = await vscode.workspace.openTextDocument(uri);
       await vscode.window.showTextDocument(doc);
 
@@ -971,10 +1078,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (success) {
         vscode.window.showInformationMessage(`Buggers: Suppressed ${finding.title} on Line ${finding.line}`);
-        const updated = scanDocument(doc);
-        applyDiagnostics(doc.uri, updated);
-        treeProvider.setFindings(updated);
-        updateStatusBar(updated);
+        scannerManager.scanSingleDocument(doc, true);
+        highlightManager.clearIfActive(finding.id);
+        inspectorProvider.clear();
       }
     }),
   );
@@ -989,12 +1095,7 @@ export function activate(context: vscode.ExtensionContext) {
           cancellable: false,
         },
         async () => {
-          const results = await scanWorkspace();
-          const allFindings: BuggersFinding[] = [];
-          for (const findings of results.values()) {
-            allFindings.push(...findings);
-          }
-
+          const allFindings = scannerManager.getAllFindings();
           const crit = allFindings.filter((f) => f.severity === "critical").length;
           const high = allFindings.filter((f) => f.severity === "high").length;
           const med = allFindings.filter((f) => f.severity === "medium").length;
@@ -1004,44 +1105,41 @@ export function activate(context: vscode.ExtensionContext) {
           let grade = "A+";
           if (score < 60) grade = "F";
           else if (score < 75) grade = "C";
-          else if (score < 90) grade = "B";
+          else if (score < 85) grade = "B";
+          else if (score < 95) grade = "A";
 
           const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-          const rootPath = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
-          const reportPath = path.join(rootPath, "BUGGERS-SECURITY-AUDIT.md");
+          const reportPath = workspaceFolder
+            ? path.join(workspaceFolder.uri.fsPath, "BUGGERS-SECURITY-AUDIT.md")
+            : path.join(process.cwd(), "BUGGERS-SECURITY-AUDIT.md");
 
-          const date = new Date().toISOString().replace("T", " ").substring(0, 19);
+          let reportContent = `# Buggers Security Health Audit Report\n\n`;
+          reportContent += `**Generated:** ${new Date().toUTCString()}  \n`;
+          reportContent += `**Overall Security Grade:** **${grade} (${score}/100)**  \n`;
+          reportContent += `**Total Vulnerabilities Flagged:** **${allFindings.length}**  \n\n`;
+          reportContent += `## Vulnerability Breakdown\n`;
+          reportContent += `- **Critical Severity:** ${crit}\n`;
+          reportContent += `- **High Severity:** ${high}\n`;
+          reportContent += `- **Medium Severity:** ${med}\n`;
+          reportContent += `- **Low Severity / Best Practice:** ${low}\n\n`;
 
-          let reportContent = `# Buggers Security Audit & Triage Report\n\n`;
-          reportContent += `**Generated:** ${date} | **Platform:** Buggers DevSecOps (v1.1.0)\n\n`;
-          reportContent += `## Executive Summary\n\n`;
-          reportContent += `| Metric | Value |\n| :--- | :--- |\n`;
-          reportContent += `| **Security Health Score** | **${score}/100** (Grade: \`${grade}\`) |\n`;
-          reportContent += `| **Files Audited** | ${results.size} files |\n`;
-          reportContent += `| **Total Findings** | ${allFindings.length} issue(s) |\n`;
-          reportContent += `| **Critical Severity** | ${crit} |\n`;
-          reportContent += `| **High Severity** | ${high} |\n`;
-          reportContent += `| **Medium Severity** | ${med} |\n`;
-          reportContent += `| **Low Severity** | ${low} |\n\n`;
-
-          reportContent += `## Vulnerability Ledger\n\n`;
+          reportContent += `## Detailed Finding Inventory\n`;
           if (allFindings.length === 0) {
-            reportContent += `> Zero security vulnerabilities or hardcoded secrets detected in this workspace. Clean bill of health.\n\n`;
+            reportContent += `> Zero security flaws detected. Project passes all active SAST and Secret scanning policies.\n\n`;
           } else {
-            reportContent += `| Severity | Rule | CWE | OWASP | File | Line | Title |\n`;
-            reportContent += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+            reportContent += `| Severity | Rule ID | Title | File | Line |\n`;
+            reportContent += `| :--- | :--- | :--- | :--- | :--- |\n`;
             for (const f of allFindings) {
-              const rel = path.basename(f.file);
-              reportContent += `| **${f.severity.toUpperCase()}** | \`${f.ruleId}\` | ${f.cwe || "N/A"} | ${f.owasp || "N/A"} | \`${rel}\` | ${f.line} | ${f.title} |\n`;
+              reportContent += `| **${f.severity.toUpperCase()}** | \`${f.ruleId}\` | ${f.title} | \`${path.basename(f.file)}\` | ${f.line} |\n`;
             }
             reportContent += `\n`;
           }
 
           reportContent += `## Remediation Actions\n`;
-          reportContent += `- Use **Buggers: Review Fix Diff & Apply** to review side-by-side changes before applying.\n`;
-          reportContent += `- Use **Buggers: Explain Finding & Root Cause** for detailed causal breakdown.\n`;
-          reportContent += `- Run **Buggers: Fix All Flaws in Workspace** to resolve all compatible flaws automatically.\n`;
-          reportContent += `- Visit [Buggers Security Cloud](https://buggers.dev) for real-time CI/CD webhook triage and team collaboration.\n`;
+          reportContent += `- Use **Buggers: Fix Finding** to apply validated patches directly to source code.\n`;
+          reportContent += `- Use **Buggers: Preview Fix Diff** to review side-by-side changes prior to applying.\n`;
+          reportContent += `- Use **Buggers: Explain Finding & Rule Guidance** for detailed causal breakdowns.\n`;
+          reportContent += `- Visit [Buggers Security Cloud](https://buggers.dev) for real-time CI/CD webhook triage.\n`;
 
           fs.writeFileSync(reportPath, reportContent, "utf8");
 
@@ -1074,20 +1172,38 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // 6. Register CodeLens Provider
+  // 10. Document Selector matching all workspace schemes (file, vscode-remote, vscode-vfs, untitled)
+  const supportedDocSelector: vscode.DocumentSelector = [
+    { language: "javascript" },
+    { language: "typescript" },
+    { language: "javascriptreact" },
+    { language: "typescriptreact" },
+    { language: "python" },
+    { language: "go" },
+    { pattern: "**/*" },
+  ];
+
+  // 11. Register CodeLens Provider
   const codeLensProvider: vscode.CodeLensProvider = {
     provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
       const lenses: vscode.CodeLens[] = [];
-      const findings = scanDocument(document);
+      const findings = scannerManager.getFindingsForFile(document.fileName);
       for (const f of findings) {
         const lineIdx = Math.max(0, f.line - 1);
         const range = new vscode.Range(lineIdx, 0, lineIdx, 0);
 
-        if (f.replacementCode) {
+        if (f.replacementCode && f.replacementCode.trim().length > 0) {
           lenses.push(
             new vscode.CodeLens(range, {
-              title: `Buggers: Review Fix (${f.ruleId})`,
-              command: "buggers.suggestFix",
+              title: `Buggers: Fix Finding (${f.ruleId})`,
+              command: "buggers.applyRemedy",
+              arguments: [f],
+            }),
+          );
+          lenses.push(
+            new vscode.CodeLens(range, {
+              title: `Preview Diff`,
+              command: "buggers.previewDiff",
               arguments: [f],
             }),
           );
@@ -1100,14 +1216,6 @@ export function activate(context: vscode.ExtensionContext) {
             arguments: [f],
           }),
         );
-
-        lenses.push(
-          new vscode.CodeLens(range, {
-            title: `Generate Test`,
-            command: "buggers.generateRegressionTest",
-            arguments: [f],
-          }),
-        );
       }
       return lenses;
     },
@@ -1115,20 +1223,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerCodeLensProvider(
-      [
-        { scheme: "file", language: "javascript" },
-        { scheme: "file", language: "typescript" },
-        { scheme: "file", language: "javascriptreact" },
-        { scheme: "file", language: "typescriptreact" },
-        { scheme: "file", language: "python" },
-        { scheme: "file", language: "go" },
-        { scheme: "file", pattern: "**/*" },
-      ],
+      supportedDocSelector,
       codeLensProvider,
     ),
   );
 
-  // 7. Register Code Action Provider for Native "Quick Fix" (Ctrl+.)
+  // 12. Register Code Action Provider for Native "Quick Fix" (Ctrl+.)
   const codeActionProvider: vscode.CodeActionProvider = {
     provideCodeActions(document, range, context) {
       const actions: vscode.CodeAction[] = [];
@@ -1140,42 +1240,43 @@ export function activate(context: vscode.ExtensionContext) {
         const line = document.lineAt(lineIdx);
         const rawLine = line.text;
 
-        const fix = new vscode.CodeAction(
-          `Review & Apply Buggers Fix (${diag.code})`,
-          vscode.CodeActionKind.QuickFix,
-        );
-        fix.diagnostics = [diag];
-        fix.isPreferred = true;
+        const findings = scannerManager.getFindingsForFile(document.fileName);
+        const matchingFinding = findings.find((f) => f.ruleId === diag.code && f.line === lineIdx + 1);
 
-        let remedyCode = "";
-        if (String(diag.code).includes("sql")) {
-          remedyCode = rawLine.replace(/`([^`]*)\$\{([^}]+)\}([^`]*)`/, `{ text: "$1$$1$3", values: [$2] }`);
-        } else if (String(diag.code).includes("eval")) {
-          remedyCode = rawLine.replace(/\beval\s*\(([^)]+)\)/, `JSON.parse($1)`);
-        } else if (String(diag.code).includes("command")) {
-          remedyCode = `// Sanitized command execution\n  execFile("ping", ["-c", "1", String(userId)])`;
-        } else if (String(diag.code).includes("cors")) {
-          remedyCode = rawLine.replace(/origin\s*:\s*["'`]\*["'`]/, `origin: ["https://buggers.dev"]`);
-        } else if (String(diag.code).includes("crypto") || String(diag.code).includes("md5")) {
-          remedyCode = rawLine.replace(/["'](?:md5|sha1)["']/i, `"sha256"`);
-        } else {
-          remedyCode = `// [Resolved] ${rawLine.trim()}`;
+        if (matchingFinding && matchingFinding.replacementCode) {
+          const directFix = new vscode.CodeAction(
+            `Fix Finding Directly: ${diag.code}`,
+            vscode.CodeActionKind.QuickFix,
+          );
+          directFix.diagnostics = [diag];
+          directFix.isPreferred = true;
+          directFix.command = {
+            command: "buggers.applyRemedy",
+            title: "Fix Finding Directly",
+            arguments: [matchingFinding],
+          };
+          actions.push(directFix);
+
+          const previewFix = new vscode.CodeAction(
+            `Preview Fix Diff: ${diag.code}`,
+            vscode.CodeActionKind.QuickFix,
+          );
+          previewFix.command = {
+            command: "buggers.previewDiff",
+            title: "Preview Fix Diff",
+            arguments: [matchingFinding],
+          };
+          actions.push(previewFix);
         }
 
-        const edit = new vscode.WorkspaceEdit();
-        edit.replace(document.uri, line.range, remedyCode);
-        fix.edit = edit;
-        actions.push(fix);
-
-        // Action: Explain finding
         const explainAction = new vscode.CodeAction(
-          `Explain Root Cause (${diag.code})`,
+          `Explain Finding & Guidance: ${diag.code}`,
           vscode.CodeActionKind.QuickFix,
         );
         explainAction.command = {
           command: "buggers.explainFinding",
           title: "Explain Finding",
-          arguments: [{ ruleId: diag.code, title: diag.message, file: document.fileName, line: lineIdx + 1, evidence: rawLine }],
+          arguments: [matchingFinding || { ruleId: diag.code, title: diag.message, file: document.fileName, line: lineIdx + 1, evidence: rawLine }],
         };
         actions.push(explainAction);
       }
@@ -1186,24 +1287,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
-      [
-        { scheme: "file", language: "javascript" },
-        { scheme: "file", language: "typescript" },
-        { scheme: "file", language: "javascriptreact" },
-        { scheme: "file", language: "typescriptreact" },
-        { scheme: "file", language: "python" },
-        { scheme: "file", language: "go" },
-        { scheme: "file", pattern: "**/*" },
-      ],
+      supportedDocSelector,
       codeActionProvider,
       { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] },
     ),
   );
 
-  // 8. Register Hover Provider for In-Editor Tooltips
+  // 13. Register Hover Provider for In-Editor Tooltips
   const hoverProvider: vscode.HoverProvider = {
     provideHover(document: vscode.TextDocument, position: vscode.Position) {
-      const findings = scanDocument(document);
+      const findings = scannerManager.getFindingsForFile(document.fileName);
       const f = findings.find((item) => Math.max(0, item.line - 1) === position.line);
       if (!f) return undefined;
 
@@ -1219,11 +1312,12 @@ export function activate(context: vscode.ExtensionContext) {
       if (f.replacementCode || f.suggestedFix) {
         md.appendMarkdown(`**Suggested Fix:**\n\`\`\`javascript\n${f.replacementCode || f.suggestedFix}\n\`\`\`\n\n`);
       }
+
+      const fixLinks = f.replacementCode
+        ? `[Fix Finding](command:buggers.applyRemedy) &nbsp;|&nbsp; [Preview Fix](command:buggers.previewDiff) &nbsp;|&nbsp; `
+        : "";
       md.appendMarkdown(
-        `[Review Fix Diff](command:buggers.suggestFix) &nbsp;|&nbsp; ` +
-        `[Explain Finding](command:buggers.explainFinding) &nbsp;|&nbsp; ` +
-        `[Generate Test](command:buggers.generateRegressionTest) &nbsp;|&nbsp; ` +
-        `[Suppress](command:buggers.ignoreFinding)\n`
+        `${fixLinks}[Explain Finding](command:buggers.explainFinding) &nbsp;|&nbsp; [Suppress](command:buggers.ignoreFinding)\n`
       );
 
       return new vscode.Hover(md);
@@ -1232,97 +1326,78 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
-      [
-        { scheme: "file", language: "javascript" },
-        { scheme: "file", language: "typescript" },
-        { scheme: "file", language: "javascriptreact" },
-        { scheme: "file", language: "typescriptreact" },
-        { scheme: "file", language: "python" },
-        { scheme: "file", language: "go" },
-        { scheme: "file", pattern: "**/*" },
-      ],
+      supportedDocSelector,
       hoverProvider,
     ),
   );
 
-  // 9. Listen to onDidSaveTextDocument
-  context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument((doc) => {
-      const config = vscode.workspace.getConfiguration("buggers");
-      const autoScan = config.get<boolean>("autoAnalyzeOnSave") ?? true;
-      if (autoScan) {
-        const findings = scanDocument(doc);
-        applyDiagnostics(doc.uri, findings);
-        treeProvider.setFindings(findings);
-        updateStatusBar(findings);
-      }
-    }),
-  );
+  // 14. Editor selection synchronization: update highlight and inspector when cursor moves
+  if (typeof vscode.window.onDidChangeTextEditorSelection === "function") {
+    context.subscriptions.push(
+      vscode.window.onDidChangeTextEditorSelection(async (e) => {
+        if (!e.textEditor || !e.selections || e.selections.length === 0) return;
+        const doc = e.textEditor.document;
+        const cursorLine = e.selections[0].active.line + 1;
 
-  // Auto-scan current active document on activation if one is open
+        const fileFindings = scannerManager.getFindingsForFile(doc.fileName);
+        const matched = fileFindings.find((f) => f.line === cursorLine);
+
+        if (matched && (!highlightManager.getActiveFinding() || highlightManager.getActiveFinding()?.id !== matched.id)) {
+          highlightManager.highlightFinding(e.textEditor, matched);
+          await inspectorProvider.setFinding(matched, doc);
+        }
+      }),
+    );
+  }
+
+  // 15. Document edit listener: if active finding line changed, update highlight
+  if (typeof vscode.workspace.onDidChangeTextDocument === "function") {
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeTextDocument((e) => {
+        const activeFinding = highlightManager.getActiveFinding();
+        if (activeFinding && e.document.uri.toString() === getFindingUri(activeFinding).toString()) {
+          const lineIdx = Math.max(0, activeFinding.line - 1);
+          const changedLine = e.contentChanges.some(
+            (c) => c.range.start.line <= lineIdx && c.range.end.line >= lineIdx,
+          );
+          if (changedLine) {
+            highlightManager.clearIfActive(activeFinding.id);
+          }
+        }
+      }),
+    );
+  }
+
+  // 16. Auto-Scan on Startup
   if (vscode.window.activeTextEditor) {
     const doc = vscode.window.activeTextEditor.document;
-    const findings = scanDocument(doc);
-    applyDiagnostics(doc.uri, findings);
-    treeProvider.setFindings(findings);
-    updateStatusBar(findings);
+    scannerManager.scanSingleDocument(doc, true);
   }
-}
-
-function mapSeverity(sev: Severity): vscode.DiagnosticSeverity {
-  switch (sev) {
-    case "critical":
-    case "high":
-      return vscode.DiagnosticSeverity.Error;
-    case "medium":
-      return vscode.DiagnosticSeverity.Warning;
-    case "low":
-    default:
-      return vscode.DiagnosticSeverity.Information;
-  }
-}
-
-function applyDiagnostics(uri: vscode.Uri, findings: BuggersFinding[]) {
-  const config = vscode.workspace.getConfiguration("buggers");
-  const minSev = config.get<string>("minimumSeverity") || "low";
-
-  const sevRanks: Record<string, number> = {
-    critical: 4,
-    high: 3,
-    medium: 2,
-    low: 1,
-  };
-  const minRank = sevRanks[minSev] ?? 1;
-
-  const diagnostics: vscode.Diagnostic[] = [];
-
-  for (const f of findings) {
-    if ((sevRanks[f.severity] ?? 1) < minRank) continue;
-
-    const lineIdx = Math.max(0, f.line - 1);
-    const colIdx = f.column ?? 0;
-    const length = f.length ?? 10;
-
-    const range = new vscode.Range(
-      new vscode.Position(lineIdx, colIdx),
-      new vscode.Position(lineIdx, colIdx + length),
-    );
-
-    const diag = new vscode.Diagnostic(
-      range,
-      `[Buggers ${f.ruleId}] ${f.title}: ${f.problem}`,
-      mapSeverity(f.severity),
-    );
-
-    diag.source = "Buggers";
-    diag.code = f.ruleId;
-    diagnostics.push(diag);
+  if (vscode.window.visibleTextEditors) {
+    for (const editor of vscode.window.visibleTextEditors) {
+      if (editor && editor.document) {
+        scannerManager.scanSingleDocument(editor.document, false);
+      }
+    }
   }
 
-  diagnosticCollection.set(uri, diagnostics);
+  // Trigger background workspace scan after brief debounce
+  setTimeout(() => {
+    scannerManager.startWorkspaceScan(false);
+  }, 200);
 }
 
-function updateStatusBar(findings: BuggersFinding[]) {
+function updateStatusBar(findings: BuggersFinding[], overview?: ScanOverview) {
+  if (!statusBarItem) return;
+
+  const status = overview?.status || "idle";
+
+  if (status === "scanning_workspace" || status === "scanning_file") {
+    statusBarItem.text = `$(sync~spin) Buggers: Scanning...`;
+    statusBarItem.backgroundColor = undefined;
+    return;
+  }
+
   if (findings.length === 0) {
     statusBarItem.text = "$(shield-check) Buggers: Clean";
     statusBarItem.backgroundColor = undefined;
@@ -1345,6 +1420,15 @@ function updateStatusBar(findings: BuggersFinding[]) {
 }
 
 export function deactivate() {
+  if (highlightManager) {
+    highlightManager.dispose();
+  }
+  if (githubManager) {
+    githubManager.dispose();
+  }
+  if (scannerManager) {
+    scannerManager.dispose();
+  }
   if (diagnosticCollection) {
     diagnosticCollection.clear();
     diagnosticCollection.dispose();
