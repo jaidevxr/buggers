@@ -87,7 +87,7 @@ export function Landing() {
           </div>
 
           {/* Main Headline with Linear's neutral editorial contrast */}
-          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
             <span className="sr-only">Buggers — </span>Catch critical issues <br />
             <span className="font-serif italic font-normal text-white tracking-wide px-1">
               before
@@ -96,7 +96,7 @@ export function Landing() {
           </h1>
 
           {/* Subtitle in Linear's muted reference gray #8a8f98 */}
-          <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-[#8a8f98] font-normal leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+          <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-[#8a8f98] font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             Buggers automatically reviews your pull requests, detects bugs, security risks, and code quality issues — so you can ship with confidence.
           </p>
 

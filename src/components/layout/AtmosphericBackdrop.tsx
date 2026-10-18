@@ -6,7 +6,7 @@ export function AtmosphericBackdrop() {
   const isAtmospheric = pathname === "/" || pathname === "/auth";
   const isAuth = pathname === "/auth";
   const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   const bgRef = useRef<HTMLDivElement>(null);
   const lampRef = useRef<HTMLDivElement>(null);
@@ -154,9 +154,9 @@ export function AtmosphericBackdrop() {
         <div className="absolute left-[56%] top-[49%] h-1.5 w-1.5 rounded-full bg-amber-300/60 blur-[0.5px] animate-soft-twinkle-3" />
       </div>
 
-      {/* Natural warm filament cursor ambient follow */}
+      {/* Natural warm filament cursor ambient follow (Desktop pointer only) */}
       <div
-        className="pointer-events-none absolute h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
+        className="pointer-events-none absolute hidden md:block h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.04] blur-3xl transition-all duration-700 ease-out"
         style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
       />
     </div>
