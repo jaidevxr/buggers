@@ -213,8 +213,8 @@ npm run package
 ## Team & Credits
 
 Buggers for VS Code was designed and engineered by:
+- **Khushi Sharma** ([@KhushiSharma006](https://github.com/KhushiSharma006)) — Extension & Security Scanner Lead
 - **Jaidev Yadav**
-- **Khushi Sharma**
 - **Madhvi Mishra**
 - **Kumkum**
 

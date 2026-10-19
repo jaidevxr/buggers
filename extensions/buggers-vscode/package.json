@@ -4,6 +4,17 @@
   "description": "Continuous Code Security, Automated SAST Flaw Detection, Inline Code Highlighting & Safe Fixes",
   "version": "1.4.7",
   "publisher": "buggers",
+  "author": {
+    "name": "Khushi Sharma",
+    "email": "khushisharma.ks656@gmail.com",
+    "url": "https://github.com/KhushiSharma006"
+  },
+  "contributors": [
+    "Khushi Sharma <khushisharma.ks656@gmail.com>",
+    "Jaidev Yadav <jaiy9956@gmail.com>",
+    "Madhvi Mishra",
+    "Kumkum"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "icon": "resources/icon.png",
   "homepage": "https://buggers.dev",
