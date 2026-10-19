@@ -1,0 +1,9 @@
+{
+  "name": "Buggers — Complete Product Design Generator",
+  "id": "buggers-design-generator",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figma"]
+}
