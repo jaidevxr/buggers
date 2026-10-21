@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
+import { Route as AuthenticatedCodespacesRouteImport } from './routes/_authenticated/codespaces'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPullRequestsRouteImport } from './routes/_authenticated/pull-requests'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -60,6 +61,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCodespacesRoute = AuthenticatedCodespacesRouteImport.update({
+  id: '/codespaces',
+  path: '/codespaces',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/codespaces': typeof AuthenticatedCodespacesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pull-requests': typeof AuthenticatedPullRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/codespaces': typeof AuthenticatedCodespacesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pull-requests': typeof AuthenticatedPullRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
+  '/_authenticated/codespaces': typeof AuthenticatedCodespacesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/pull-requests': typeof AuthenticatedPullRequestsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/how-it-works'
     | '/analytics'
+    | '/codespaces'
     | '/dashboard'
     | '/pull-requests'
     | '/settings'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/how-it-works'
     | '/analytics'
+    | '/codespaces'
     | '/dashboard'
     | '/pull-requests'
     | '/settings'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/how-it-works'
     | '/_authenticated/analytics'
+    | '/_authenticated/codespaces'
     | '/_authenticated/dashboard'
     | '/_authenticated/pull-requests'
     | '/_authenticated/settings'
@@ -302,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/codespaces': {
+      id: '/_authenticated/codespaces'
+      path: '/codespaces'
+      fullPath: '/codespaces'
+      preLoaderRoute: typeof AuthenticatedCodespacesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -386,6 +405,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
+  AuthenticatedCodespacesRoute: typeof AuthenticatedCodespacesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPullRequestsRoute: typeof AuthenticatedPullRequestsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -400,6 +420,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
+  AuthenticatedCodespacesRoute: AuthenticatedCodespacesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPullRequestsRoute: AuthenticatedPullRequestsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
