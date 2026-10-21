@@ -58,17 +58,22 @@ function CodespacesPage() {
     queryFn: () =>
       mode === "individual" && activeRepo
         ? listAnalyses({ data: { repoFullName: activeRepo } })
-        : listAnalyses(),
+        : listAnalyses({ data: {} }),
     enabled: Boolean(conn.data?.connected),
   });
 
-  const analysesList = analysesQuery.data?.analyses ?? [];
+  const analysesList = useMemo(() => {
+    const raw: any = analysesQuery.data;
+    if (Array.isArray(raw?.analyses)) return raw.analyses;
+    if (Array.isArray(raw)) return raw;
+    return [];
+  }, [analysesQuery.data]);
 
   // Map of repoFullName -> latest analysis
   const latestAnalysisByRepo = useMemo(() => {
     const map = new Map<string, any>();
     for (const a of analysesList) {
-      if (!map.has(a.repo_full_name)) {
+      if (a?.repo_full_name && !map.has(a.repo_full_name)) {
         map.set(a.repo_full_name, a);
       }
     }
