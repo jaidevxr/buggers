@@ -25,7 +25,7 @@ import { Route as AuthenticatedFindingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedFindingsIdRouteImport } from './routes/_authenticated/findings.$id'
 import { Route as AuthenticatedRepositoriesIndexRouteImport } from './routes/_authenticated/repositories.index'
 import { Route as OauthGithubReturnRouteImport } from './routes/oauth/github/return'
-import { Route as AuthenticatedRepositoriesOwnerRepoRouteImport } from './routes/_authenticated/repositories.$owner.$repo'
+import { Route as AuthenticatedRepositoriesOwnerRepoIndexRouteImport } from './routes/_authenticated/repositories.$owner.$repo.index'
 import { Route as AuthenticatedRepositoriesOwnerRepoExplorerRouteImport } from './routes/_authenticated/repositories.$owner.$repo.explorer'
 
 const IndexRoute = IndexRouteImport.update({
@@ -110,17 +110,17 @@ const OauthGithubReturnRoute = OauthGithubReturnRouteImport.update({
   path: '/oauth/github/return',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRepositoriesOwnerRepoRoute =
-  AuthenticatedRepositoriesOwnerRepoRouteImport.update({
-    id: '/repositories/$owner/$repo',
-    path: '/repositories/$owner/$repo',
+const AuthenticatedRepositoriesOwnerRepoIndexRoute =
+  AuthenticatedRepositoriesOwnerRepoIndexRouteImport.update({
+    id: '/repositories/$owner/$repo/',
+    path: '/repositories/$owner/$repo/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedRepositoriesOwnerRepoExplorerRoute =
   AuthenticatedRepositoriesOwnerRepoExplorerRouteImport.update({
-    id: '/explorer',
-    path: '/explorer',
-    getParentRoute: () => AuthenticatedRepositoriesOwnerRepoRoute,
+    id: '/repositories/$owner/$repo/explorer',
+    path: '/repositories/$owner/$repo/explorer',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -139,8 +139,8 @@ export interface FileRoutesByFullPath {
   '/oauth/github/return': typeof OauthGithubReturnRoute
   '/findings/': typeof AuthenticatedFindingsIndexRoute
   '/repositories/': typeof AuthenticatedRepositoriesIndexRoute
-  '/repositories/$owner/$repo': typeof AuthenticatedRepositoriesOwnerRepoRouteWithChildren
   '/repositories/$owner/$repo/explorer': typeof AuthenticatedRepositoriesOwnerRepoExplorerRoute
+  '/repositories/$owner/$repo/': typeof AuthenticatedRepositoriesOwnerRepoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,8 +158,8 @@ export interface FileRoutesByTo {
   '/oauth/github/return': typeof OauthGithubReturnRoute
   '/findings': typeof AuthenticatedFindingsIndexRoute
   '/repositories': typeof AuthenticatedRepositoriesIndexRoute
-  '/repositories/$owner/$repo': typeof AuthenticatedRepositoriesOwnerRepoRouteWithChildren
   '/repositories/$owner/$repo/explorer': typeof AuthenticatedRepositoriesOwnerRepoExplorerRoute
+  '/repositories/$owner/$repo': typeof AuthenticatedRepositoriesOwnerRepoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,8 +179,8 @@ export interface FileRoutesById {
   '/oauth/github/return': typeof OauthGithubReturnRoute
   '/_authenticated/findings/': typeof AuthenticatedFindingsIndexRoute
   '/_authenticated/repositories/': typeof AuthenticatedRepositoriesIndexRoute
-  '/_authenticated/repositories/$owner/$repo': typeof AuthenticatedRepositoriesOwnerRepoRouteWithChildren
   '/_authenticated/repositories/$owner/$repo/explorer': typeof AuthenticatedRepositoriesOwnerRepoExplorerRoute
+  '/_authenticated/repositories/$owner/$repo/': typeof AuthenticatedRepositoriesOwnerRepoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,8 +200,8 @@ export interface FileRouteTypes {
     | '/oauth/github/return'
     | '/findings/'
     | '/repositories/'
-    | '/repositories/$owner/$repo'
     | '/repositories/$owner/$repo/explorer'
+    | '/repositories/$owner/$repo/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,8 +219,8 @@ export interface FileRouteTypes {
     | '/oauth/github/return'
     | '/findings'
     | '/repositories'
-    | '/repositories/$owner/$repo'
     | '/repositories/$owner/$repo/explorer'
+    | '/repositories/$owner/$repo'
   id:
     | '__root__'
     | '/'
@@ -239,8 +239,8 @@ export interface FileRouteTypes {
     | '/oauth/github/return'
     | '/_authenticated/findings/'
     | '/_authenticated/repositories/'
-    | '/_authenticated/repositories/$owner/$repo'
     | '/_authenticated/repositories/$owner/$repo/explorer'
+    | '/_authenticated/repositories/$owner/$repo/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,37 +367,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OauthGithubReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/repositories/$owner/$repo': {
-      id: '/_authenticated/repositories/$owner/$repo'
+    '/_authenticated/repositories/$owner/$repo/': {
+      id: '/_authenticated/repositories/$owner/$repo/'
       path: '/repositories/$owner/$repo'
-      fullPath: '/repositories/$owner/$repo'
-      preLoaderRoute: typeof AuthenticatedRepositoriesOwnerRepoRouteImport
+      fullPath: '/repositories/$owner/$repo/'
+      preLoaderRoute: typeof AuthenticatedRepositoriesOwnerRepoIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/repositories/$owner/$repo/explorer': {
       id: '/_authenticated/repositories/$owner/$repo/explorer'
-      path: '/explorer'
+      path: '/repositories/$owner/$repo/explorer'
       fullPath: '/repositories/$owner/$repo/explorer'
       preLoaderRoute: typeof AuthenticatedRepositoriesOwnerRepoExplorerRouteImport
-      parentRoute: typeof AuthenticatedRepositoriesOwnerRepoRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
-
-interface AuthenticatedRepositoriesOwnerRepoRouteChildren {
-  AuthenticatedRepositoriesOwnerRepoExplorerRoute: typeof AuthenticatedRepositoriesOwnerRepoExplorerRoute
-}
-
-const AuthenticatedRepositoriesOwnerRepoRouteChildren: AuthenticatedRepositoriesOwnerRepoRouteChildren =
-  {
-    AuthenticatedRepositoriesOwnerRepoExplorerRoute:
-      AuthenticatedRepositoriesOwnerRepoExplorerRoute,
-  }
-
-const AuthenticatedRepositoriesOwnerRepoRouteWithChildren =
-  AuthenticatedRepositoriesOwnerRepoRoute._addFileChildren(
-    AuthenticatedRepositoriesOwnerRepoRouteChildren,
-  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
@@ -409,7 +394,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFindingsIdRoute: typeof AuthenticatedFindingsIdRoute
   AuthenticatedFindingsIndexRoute: typeof AuthenticatedFindingsIndexRoute
   AuthenticatedRepositoriesIndexRoute: typeof AuthenticatedRepositoriesIndexRoute
-  AuthenticatedRepositoriesOwnerRepoRoute: typeof AuthenticatedRepositoriesOwnerRepoRouteWithChildren
+  AuthenticatedRepositoriesOwnerRepoExplorerRoute: typeof AuthenticatedRepositoriesOwnerRepoExplorerRoute
+  AuthenticatedRepositoriesOwnerRepoIndexRoute: typeof AuthenticatedRepositoriesOwnerRepoIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -422,8 +408,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFindingsIdRoute: AuthenticatedFindingsIdRoute,
   AuthenticatedFindingsIndexRoute: AuthenticatedFindingsIndexRoute,
   AuthenticatedRepositoriesIndexRoute: AuthenticatedRepositoriesIndexRoute,
-  AuthenticatedRepositoriesOwnerRepoRoute:
-    AuthenticatedRepositoriesOwnerRepoRouteWithChildren,
+  AuthenticatedRepositoriesOwnerRepoExplorerRoute:
+    AuthenticatedRepositoriesOwnerRepoExplorerRoute,
+  AuthenticatedRepositoriesOwnerRepoIndexRoute:
+    AuthenticatedRepositoriesOwnerRepoIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
