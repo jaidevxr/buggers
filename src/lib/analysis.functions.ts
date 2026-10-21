@@ -125,19 +125,53 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
     );
     const headSha = branchData.commit.sha;
 
-    // Idempotency check: see if a running scan exists for this repo at pr_number = 0
+    // Idempotency check: see if a scan exists for this repo at pr_number = 0 and head_sha
     const { data: existing } = await supabaseAdmin
       .from("analyses")
-      .select("id, status")
+      .select("id, status, heartbeat_at, lease_expires_at, updated_at")
       .eq("user_id", context.userId)
       .eq("repo_full_name", data.repoFullName)
       .eq("pr_number", 0)
-      .order("created_at", { ascending: false })
-      .limit(1)
+      .eq("head_sha", headSha)
       .maybeSingle();
 
-    if (existing && (existing.status === "processing" || existing.status === "queued")) {
-      return { analysisId: existing.id, alreadyRunning: true };
+    if (existing) {
+      if (existing.status === "processing" || existing.status === "queued") {
+        const now = Date.now();
+        const heartbeat = existing.heartbeat_at ? new Date(existing.heartbeat_at).getTime() : 0;
+        const leaseExp = existing.lease_expires_at ? new Date(existing.lease_expires_at).getTime() : 0;
+        const lastUpdate = existing.updated_at ? new Date(existing.updated_at).getTime() : 0;
+        const staleCutoff = 15 * 60_000;
+
+        const isAlive =
+          (heartbeat > 0 && now - heartbeat < staleCutoff) ||
+          (leaseExp > 0 && leaseExp > now) ||
+          (lastUpdate > 0 && now - lastUpdate < staleCutoff);
+
+        if (isAlive) {
+          return { analysisId: existing.id, alreadyRunning: true };
+        }
+      }
+
+      await supabaseAdmin
+        .from("analyses")
+        .update({
+          status: "queued",
+          stage: "queued",
+          pr_title: data.targetPath
+            ? `Targeted Analysis: ${data.targetPath} (${branch})`
+            : `Full Codebase Analysis (${branch})`,
+          stage_data: data.targetPath ? { targetPath: data.targetPath, scope: data.scope || "directory" } : {},
+          error_message: null,
+          risk_score: null,
+          risk_level: null,
+          risk_confidence: null,
+          completed_at: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existing.id);
+
+      return { analysisId: existing.id, alreadyRunning: false };
     }
 
     const { data: inserted, error } = await supabaseAdmin
