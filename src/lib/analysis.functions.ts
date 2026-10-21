@@ -177,7 +177,7 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
           status: "queued",
           stage: "queued",
           pr_title: scanTitle,
-          stage_data: stageDataPayload,
+          stage_data: stageDataPayload as any,
           error_message: null,
           risk_score: null,
           risk_level: null,
@@ -204,7 +204,7 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
         pr_state: "repository",
         base_branch: branch,
         head_branch: branch,
-        stage_data: stageDataPayload,
+        stage_data: stageDataPayload as any,
       })
       .select("id")
       .single();

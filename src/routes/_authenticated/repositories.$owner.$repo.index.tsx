@@ -61,14 +61,14 @@ function RepoOverview() {
     }
   };
 
-  const handleAnalyzeCommit = async (sha: string, message: string) => {
+  const handleAnalyzeCommit = async (sha: string, message?: string) => {
     setAnalyzingSha(sha);
     try {
       const res = await startRepositoryAnalysis({
         data: {
           repoFullName: full,
           commitSha: sha,
-          commitMessage: message,
+          commitMessage: message || undefined,
         },
       });
       if (!res.alreadyRunning) {
@@ -94,7 +94,7 @@ function RepoOverview() {
             data: {
               repoFullName: full,
               commitSha: c.sha,
-              commitMessage: c.message,
+              commitMessage: c.message || undefined,
             },
           });
           if (!res.alreadyRunning) {
