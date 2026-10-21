@@ -55,6 +55,70 @@ describe("SAST Scanner Engine", () => {
     expect(findings[0]!.severity).toBe("high");
   });
 
+  describe("Path Traversal Regression Suite", () => {
+    it("detects file access using literal base path concatenation with req.query", () => {
+      const files = [
+        {
+          filename: "src/routes/view.js",
+          patch: `@@ -1,4 +1,5 @@
++require("fs").readFile("./uploads/" + req.query.filename, cb);
+`,
+        },
+      ];
+      const findings = scanFilesForSast(files);
+      expect(findings).toHaveLength(1);
+      expect(findings[0]!.title).toContain("Path Traversal");
+      expect(findings[0]!.severity).toBe("high");
+    });
+
+    it("detects file access across supported request objects (req.params, req.body, request.args)", () => {
+      const files = [
+        {
+          filename: "src/api/files.ts",
+          patch: `@@ -1,6 +1,8 @@
++fs.readFileSync(req.params.id);
++fs.createReadStream(req.body.filepath);
++fs.writeFileSync("./out.txt", request.args.data);
+`,
+        },
+      ];
+      const findings = scanFilesForSast(files);
+      expect(findings.length).toBe(3);
+      for (const f of findings) {
+        expect(f.title).toContain("Path Traversal");
+      }
+    });
+
+    it("does not flag benign file access using a fixed literal path", () => {
+      const files = [
+        {
+          filename: "src/config/reader.ts",
+          patch: `@@ -1,5 +1,6 @@
++const data = fs.readFileSync("./config/app.json", "utf-8");
++fs.readFile(path.join(__dirname, "static", "logo.svg"), cb);
+`,
+        },
+      ];
+      const findings = scanFilesForSast(files);
+      expect(findings).toHaveLength(0);
+    });
+
+    it("does not flag file operations that do not receive untrusted input", () => {
+      const files = [
+        {
+          filename: "src/utils/cleanup.ts",
+          patch: `@@ -1,5 +1,6 @@
++const safePath = path.resolve(BASE_DIR, "temp.log");
++fs.unlinkSync(safePath);
++const exists = fs.existsSync("./ready.lock");
+`,
+        },
+      ];
+      const findings = scanFilesForSast(files);
+      expect(findings).toHaveLength(0);
+    });
+  });
+
   it("detects SSRF via unvalidated fetch/axios calls", () => {
     const files = [
       {

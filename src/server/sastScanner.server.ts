@@ -62,7 +62,7 @@ export const SAST_RULES: SastRule[] = [
     name: "Potential Path Traversal in File System Access",
     severity: "high",
     category: "security",
-    pattern: /\bfs\.(?:readFile|readFileSync|createReadStream|writeFile|writeFileSync)\s*\(\s*(?:path\.join\([^)]*req\.(?:params|query|body)|req\.(?:params|query|body))/g,
+    pattern: /(?:fs|require\(["']fs["']\))\.(?:readFile|readFileSync|createReadStream|writeFile|writeFileSync|open|openSync)\s*\([^;\n]*?\b(?:req|request|ctx)\.(?:params|query|body|args|headers|GET|POST)/g,
     description: "File system access constructed directly from HTTP request parameters without sanitization.",
     whyItMatters: "Attackers can pass dot-dot-slash sequence ('../../etc/passwd') to traverse directory boundaries and read sensitive system files.",
     suggestedFixTemplate: (matched) =>

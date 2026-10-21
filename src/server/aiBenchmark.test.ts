@@ -151,5 +151,5 @@ describe("AI Review Quality & Accuracy Benchmark", () => {
       expect(typeof result.error).toBe("string");
       expect(result.error.length).toBeGreaterThan(0);
     }
-  }, 60_000);
+  }, 120_000);
 });

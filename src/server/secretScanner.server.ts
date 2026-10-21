@@ -38,7 +38,7 @@ export const SECRET_RULES: SecretRule[] = [
   {
     id: "stripe_secret_key",
     name: "Stripe Live Secret Key",
-    pattern: /\b(sk_live_[0-9a-zA-Z]{24,34})\b/g,
+    pattern: /\b(sk_live_[0-9a-zA-Z]{24,99})\b/g,
     description: "Stripe Production Secret Key detected in repository.",
     recommendation: "Immediately roll key in Stripe Dashboard and use STRIPE_SECRET_KEY in server environment.",
   },

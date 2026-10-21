@@ -330,6 +330,105 @@ export async function fetchFileContents(
   return results;
 }
 
+// ─── Eval Static Argument Analyzer ──────────────────────────────────
+
+/**
+ * Evaluates whether an argument expression passed to eval() is dynamic vs a compile-time string constant.
+ *
+ * Safe constant formats recognized:
+ * - Single-quoted strings: '...' with escaped characters allowed (e.g. 'hello "world"', 'escaped \' quote')
+ * - Double-quoted strings: "..." with escaped characters allowed (e.g. "console.log('hi')", "escaped \" quote")
+ * - Template literals without interpolation: `...` with NO ${...} expressions
+ *
+ * Limitations of this heuristic:
+ * - Constant string concatenation (e.g. "a" + "b") is conservative and treated as dynamic.
+ * - Multi-line eval expressions where arguments span multiple lines are evaluated based on opening line tokens.
+ * - This zero-dependency heuristic avoids bundling the heavy TypeScript compiler (8MB+) into serverless runtimes.
+ */
+export function isDynamicEvalArgument(argText: string): boolean {
+  const trimmed = argText.trim();
+  if (!trimmed) return false;
+
+  // Single-quoted string literal: '...' with escaped quotes allowed
+  const isSingleQuoted = /^'([^'\\]|\\.)*'$/.test(trimmed);
+  if (isSingleQuoted) return false;
+
+  // Double-quoted string literal: "..." with escaped quotes allowed
+  const isDoubleQuoted = /^"([^"\\]|\\.)*"$/.test(trimmed);
+  if (isDoubleQuoted) return false;
+
+  // Template literal WITHOUT interpolation: `...` where $ is not followed by {
+  const isSafeTemplateLiteral = /^`([^`\\$]|\\[\s\S]|\$(?!\{))*`$/.test(trimmed);
+  if (isSafeTemplateLiteral) return false;
+
+  // Any other argument (variable, property access, concatenation, template with ${...}) is dynamic
+  return true;
+}
+
+export function hasDynamicEvalExecution(lineText: string): boolean {
+  const evalRegex = /\beval\s*\(/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = evalRegex.exec(lineText)) !== null) {
+    const startParenIdx = evalRegex.lastIndex - 1;
+    let depth = 1;
+    let inString: null | '"' | "'" | "`" = null;
+    let isEscaped = false;
+    let endParenIdx = -1;
+
+    for (let i = startParenIdx + 1; i < lineText.length; i++) {
+      const ch = lineText[i]!;
+
+      if (isEscaped) {
+        isEscaped = false;
+        continue;
+      }
+
+      if (ch === "\\") {
+        isEscaped = true;
+        continue;
+      }
+
+      if (inString !== null) {
+        if (ch === inString) {
+          inString = null;
+        }
+        continue;
+      }
+
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inString = ch;
+        continue;
+      }
+
+      if (ch === "(") {
+        depth++;
+      } else if (ch === ")") {
+        depth--;
+        if (depth === 0) {
+          endParenIdx = i;
+          break;
+        }
+      }
+    }
+
+    if (endParenIdx !== -1) {
+      const arg = lineText.slice(startParenIdx + 1, endParenIdx);
+      if (isDynamicEvalArgument(arg)) {
+        return true;
+      }
+    } else {
+      // If closing parenthesis is on a subsequent line, check if the argument begins with a non-string token
+      const remaining = lineText.slice(startParenIdx + 1).trim();
+      if (remaining && !/^["'`]/.test(remaining)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // ─── Multi-Layer Security & Code Quality Analyzer ───────────────────
 
 export function analyzeWholeCodebaseFiles(
@@ -459,7 +558,7 @@ export function analyzeWholeCodebaseFiles(
       }
 
       // Dangerous dynamic code execution
-      if (/\beval\s*\(\s*(?!["'`][^"'`]*["'`]\s*\))[^)]+\)/i.test(lineText) && !isTestFile) {
+      if (hasDynamicEvalExecution(lineText) && !isTestFile) {
         addFinding({
           id: `eval-${file.path}-${idx + 1}`,
           file_path: file.path,

@@ -3,6 +3,8 @@ import {
   detectLanguage,
   shouldExcludeFile,
   analyzeWholeCodebaseFiles,
+  isDynamicEvalArgument,
+  hasDynamicEvalExecution,
   type ScannedFileContent,
 } from "./repoScanner.server";
 
@@ -143,6 +145,55 @@ export function dangerousDynamic(userFormula) {
       expect(depFindings.map((d) => d.title)).toContain("Vulnerable Dependency: lodash");
       expect(depFindings.map((d) => d.title)).toContain("Vulnerable Dependency: axios");
       expect(depFindings.map((d) => d.title)).toContain("Vulnerable Dependency: jsonwebtoken");
+    });
+  });
+
+  describe("Eval Argument Safety Regression Suite (Defect 2)", () => {
+    it("distinguishes constant strings containing nested single or double quotes", () => {
+      // Double quotes with inner single quotes
+      expect(isDynamicEvalArgument('"console.log(\'safe constant\') "')).toBe(false);
+      expect(hasDynamicEvalExecution('eval("console.log(\'safe constant\')");')).toBe(false);
+
+      // Single quotes with inner double quotes
+      expect(isDynamicEvalArgument('\'console.log("safe constant")\'')).toBe(false);
+      expect(hasDynamicEvalExecution('eval(\'console.log("safe constant")\');')).toBe(false);
+    });
+
+    it("distinguishes escaped quotes in constant strings", () => {
+      expect(isDynamicEvalArgument('"console.log(\\"escaped double\\")"')).toBe(false);
+      expect(hasDynamicEvalExecution('eval("console.log(\\"escaped double\\")");')).toBe(false);
+
+      expect(isDynamicEvalArgument("'console.log(\\'escaped single\\')'")).toBe(false);
+      expect(hasDynamicEvalExecution("eval('console.log(\\'escaped single\\')');")).toBe(false);
+    });
+
+    it("flags dynamic variables passed to eval", () => {
+      expect(isDynamicEvalArgument("userCode")).toBe(true);
+      expect(isDynamicEvalArgument("formula")).toBe(true);
+      expect(hasDynamicEvalExecution("eval(userCode);")).toBe(true);
+    });
+
+    it("flags request-controlled values passed to eval", () => {
+      expect(isDynamicEvalArgument("req.body.code")).toBe(true);
+      expect(isDynamicEvalArgument('request.GET.get("expr")')).toBe(true);
+      expect(hasDynamicEvalExecution("eval(req.body.code);")).toBe(true);
+      expect(hasDynamicEvalExecution('res = eval(request.GET.get("expr"));')).toBe(true);
+    });
+
+    it("flags template literals containing interpolation", () => {
+      expect(isDynamicEvalArgument("`const x = ${user}`")).toBe(true);
+      expect(isDynamicEvalArgument("`calc(${a} + ${b})`")).toBe(true);
+      expect(hasDynamicEvalExecution("eval(`const x = ${user}`);")).toBe(true);
+    });
+
+    it("does not flag template literals without interpolation", () => {
+      expect(isDynamicEvalArgument("`console.log('safe template')`")).toBe(false);
+      expect(hasDynamicEvalExecution("eval(`console.log('safe template')`);")).toBe(false);
+    });
+
+    it("flags concatenation expressions even if they start with a string literal", () => {
+      expect(isDynamicEvalArgument('"prefix" + userCode')).toBe(true);
+      expect(hasDynamicEvalExecution('eval("prefix" + userCode);')).toBe(true);
     });
   });
 });
