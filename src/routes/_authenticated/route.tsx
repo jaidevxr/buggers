@@ -39,7 +39,19 @@ export const Route = createFileRoute("/_authenticated")({
         }
       }
     }
-    const sessionUser = sessionData.session?.user;
+    let sessionUser = sessionData.session?.user;
+    if (!sessionUser && typeof window !== "undefined") {
+      try {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        if (refreshed?.session?.user) {
+          sessionData = refreshed;
+          sessionUser = refreshed.session.user;
+        }
+      } catch {
+        // ignore refresh errors
+      }
+    }
+
     if (!sessionUser) {
       cachedUserId = null;
       throw redirect({ to: "/auth" });
@@ -50,16 +62,29 @@ export const Route = createFileRoute("/_authenticated")({
       return { user: sessionUser };
     }
 
-    // Verify user with Supabase Auth
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
-      cachedUserId = null;
-      throw redirect({ to: "/auth" });
+    // Verify user with Supabase Auth, but gracefully fall back to active sessionUser if network fails
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (!error && data.user) {
+        cachedUserId = data.user.id;
+        lastAuthCheck = now;
+        return { user: data.user };
+      }
+      if (sessionUser) {
+        cachedUserId = sessionUser.id;
+        lastAuthCheck = now;
+        return { user: sessionUser };
+      }
+    } catch {
+      if (sessionUser) {
+        cachedUserId = sessionUser.id;
+        lastAuthCheck = now;
+        return { user: sessionUser };
+      }
     }
 
-    cachedUserId = data.user.id;
-    lastAuthCheck = now;
-    return { user: data.user };
+    cachedUserId = null;
+    throw redirect({ to: "/auth" });
   },
   component: AppShell,
 });

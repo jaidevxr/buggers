@@ -266,6 +266,7 @@ function RootComponent() {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/repositories") ||
     pathname.startsWith("/pull-requests") ||
+    pathname.startsWith("/codespaces") ||
     pathname.startsWith("/findings") ||
     pathname.startsWith("/analytics") ||
     pathname.startsWith("/tickets") ||
