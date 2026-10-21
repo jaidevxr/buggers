@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -22,6 +22,24 @@ import { VsCodeExtensionHeroSection } from "@/components/home/VsCodeExtensionHer
 import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      if (search.has("public") || search.has("landing")) {
+        return;
+      }
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.user) {
+          throw redirect({ to: "/dashboard" });
+        }
+      } catch (e) {
+        if (e && typeof e === "object" && "to" in e) {
+          throw e;
+        }
+      }
+    }
+  },
   head: () => {
     const seo = createRouteSeo({
       path: "/",
@@ -62,39 +80,35 @@ export function Landing() {
   const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
 
-  // If user returns from OAuth with tokens/hash/pending-flag, immediately route to /dashboard
+  // If user is already authenticated (or returns from OAuth), immediately route to /dashboard
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const isPendingAuth = sessionStorage.getItem("buggers_auth_pending") === "true";
-    const hasOAuthHash = window.location.hash.includes("access_token") || window.location.hash === "#";
-    const hasOAuthCode = window.location.search.includes("code=");
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("public") || searchParams.has("landing")) return;
 
-    if (isPendingAuth || hasOAuthHash || hasOAuthCode) {
-      const handleRedirect = () => {
-        sessionStorage.removeItem("buggers_auth_pending");
-        navigate({ to: "/dashboard" });
-      };
+    const redirectToDashboard = () => {
+      sessionStorage.removeItem("buggers_auth_pending");
+      navigate({ to: "/dashboard", replace: true });
+    };
 
-      // Check current session
-      supabase.auth.getSession().then(({ data }) => {
-        if (data.session) {
-          handleRedirect();
-        }
-      });
+    // Check active session
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        redirectToDashboard();
+      }
+    });
 
-      // Listen for auth event
-      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-        if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-          handleRedirect();
-        }
-      });
+    // Listen for auth state change
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        redirectToDashboard();
+      }
+    });
 
-      return () => {
-        authListener?.subscription?.unsubscribe();
-      };
-    }
-    return undefined;
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, [navigate]);
 
   // Subtle natural cursor ambient drift

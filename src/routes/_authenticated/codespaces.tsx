@@ -43,7 +43,7 @@ function CodespacesPage() {
     enabled: Boolean(conn.data?.connected),
   });
 
-  const [mode, setMode] = useState<"individual" | "all">("individual");
+  const [mode, setMode] = useState<"individual" | "all">("all");
   const [selectedRepo, setSelectedRepo] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [scanningRepo, setScanningRepo] = useState<string | null>(null);
