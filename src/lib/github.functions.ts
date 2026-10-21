@@ -8,6 +8,9 @@ import {
   listPullRequestsSchema,
   pullRequestDetailSchema,
   repositoryOverviewSchema,
+  getRepositoryTreeSchema,
+  getFileContentSchema,
+  searchRepositoryFilesSchema,
 } from "@/lib/validation";
 
 const CONNECTOR_ID = "github";
@@ -415,5 +418,188 @@ export const getPullRequestDetail = createServerFn({ method: "GET" })
         author: c.commit.author?.name ?? null,
         date: c.commit.author?.date ?? null,
       })),
+    };
+  });
+
+export type RepositoryTreeItem = {
+  path: string;
+  type: "blob" | "tree";
+  size?: number | undefined;
+  sha: string;
+};
+
+export type RepositoryTreeResult = {
+  branch: string;
+  commitSha: string;
+  tree: RepositoryTreeItem[];
+  truncated: boolean;
+  totalFiles: number;
+  totalDirectories: number;
+};
+
+export const getRepositoryTree = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(getRepositoryTreeSchema)
+  .handler(async ({ data, context }): Promise<RepositoryTreeResult> => {
+    const { githubJson } = await import("@/server/github.server");
+
+    let branch = data.branch;
+    if (!branch) {
+      const repo = await githubJson<{ default_branch: string }>(
+        context.userId,
+        `/repos/${data.repoFullName}`,
+      );
+      branch = repo.default_branch || "main";
+    }
+
+    const commitData = await githubJson<{ sha: string }>(
+      context.userId,
+      `/repos/${data.repoFullName}/commits/${encodeURIComponent(branch)}`,
+    );
+    const commitSha = commitData.sha;
+
+    const treeRes = await githubJson<{
+      sha: string;
+      truncated: boolean;
+      tree: Array<{ path: string; mode: string; type: "blob" | "tree"; sha: string; size?: number }>;
+    }>(
+      context.userId,
+      `/repos/${data.repoFullName}/git/trees/${commitSha}?recursive=${data.recursive ? "1" : "0"}`,
+    );
+
+    const items: RepositoryTreeItem[] = (treeRes.tree || []).map((item) => ({
+      path: item.path,
+      type: item.type,
+      size: item.size,
+      sha: item.sha,
+    }));
+
+    const totalFiles = items.filter((i) => i.type === "blob").length;
+    const totalDirectories = items.filter((i) => i.type === "tree").length;
+
+    return {
+      branch,
+      commitSha,
+      tree: items,
+      truncated: Boolean(treeRes.truncated),
+      totalFiles,
+      totalDirectories,
+    };
+  });
+
+export type FileContentResult = {
+  path: string;
+  content: string;
+  size: number;
+  lines: number;
+  language: string;
+  sha: string;
+  isBinary: boolean;
+};
+
+export const getFileContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(getFileContentSchema)
+  .handler(async ({ data, context }): Promise<FileContentResult> => {
+    const { githubJson } = await import("@/server/github.server");
+    const { detectLanguage } = await import("@/server/repoScanner.server");
+
+    const cleanPath = data.path.replace(/^\/+/, "");
+    const ext = cleanPath.split(".").pop()?.toLowerCase() ?? "";
+    const isBinaryExt = new Set([
+      "png", "jpg", "jpeg", "gif", "webp", "ico", "svg", "pdf", "zip", "tar", "gz", "tgz",
+      "7z", "rar", "exe", "dll", "so", "dylib", "wasm", "ttf", "woff", "woff2", "eot",
+      "mp3", "mp4", "mov", "avi", "webm", "bin", "iso", "pyc", "class", "jar", "o", "obj",
+    ]).has(ext);
+
+    if (isBinaryExt) {
+      return {
+        path: cleanPath,
+        content: "[Binary file preview not supported]",
+        size: 0,
+        lines: 0,
+        language: detectLanguage(cleanPath),
+        sha: "",
+        isBinary: true,
+      };
+    }
+
+    const refQuery = data.ref ? `?ref=${encodeURIComponent(data.ref)}` : "";
+    const encodedPath = cleanPath.split("/").map(encodeURIComponent).join("/");
+    
+    try {
+      const fileRes = await githubJson<{
+        content?: string;
+        encoding?: string;
+        size: number;
+        sha: string;
+      }>(context.userId, `/repos/${data.repoFullName}/contents/${encodedPath}${refQuery}`);
+
+      let decoded = "";
+      if (fileRes.content && fileRes.encoding === "base64") {
+        decoded = Buffer.from(fileRes.content, "base64").toString("utf-8");
+      } else if (typeof fileRes.content === "string") {
+        decoded = fileRes.content;
+      }
+
+      const lines = decoded ? decoded.split("\n").length : 0;
+      return {
+        path: cleanPath,
+        content: decoded,
+        size: fileRes.size ?? decoded.length,
+        lines,
+        language: detectLanguage(cleanPath),
+        sha: fileRes.sha ?? "",
+        isBinary: false,
+      };
+    } catch {
+      // Fallback: fetch via git blob if contents API fails or file is >1MB
+      return {
+        path: cleanPath,
+        content: "[Unable to load file contents directly from GitHub API]",
+        size: 0,
+        lines: 0,
+        language: detectLanguage(cleanPath),
+        sha: "",
+        isBinary: false,
+      };
+    }
+  });
+
+export const searchRepositoryFiles = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(searchRepositoryFilesSchema)
+  .handler(async ({ data, context }) => {
+    const { getRepositoryTree } = await import("@/lib/github.functions");
+    const { detectLanguage } = await import("@/server/repoScanner.server");
+
+    const treeResult = await getRepositoryTree({
+      data: {
+        repoFullName: data.repoFullName,
+        branch: data.branch,
+        recursive: true,
+      },
+    });
+
+    const q = data.query.toLowerCase();
+    const matchedFiles = treeResult.tree
+      .filter((item) => item.type === "blob")
+      .filter((item) => {
+        const lang = detectLanguage(item.path);
+        if (data.language && data.language !== "all" && lang !== data.language) {
+          return false;
+        }
+        return item.path.toLowerCase().includes(q);
+      })
+      .slice(0, 50);
+
+    return {
+      results: matchedFiles.map((item) => ({
+        path: item.path,
+        size: item.size,
+        language: detectLanguage(item.path),
+        sha: item.sha,
+      })),
+      totalMatches: matchedFiles.length,
     };
   });

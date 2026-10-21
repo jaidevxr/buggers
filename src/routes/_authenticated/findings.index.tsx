@@ -66,7 +66,19 @@ function Findings() {
                     <td className="p-3"><Link to="/findings/$id" params={{ id: f.id }} className="font-medium hover:underline">{f.title}</Link></td>
                     <td className="p-3 text-muted-foreground">{f.repo_full_name}</td>
                     <td className="p-3">#{f.pr_number}</td>
-                    <td className="max-w-[200px] truncate p-3 font-mono text-xs">{f.file_path}{f.line_number ? `:${f.line_number}` : ""}</td>
+                    <td className="max-w-[200px] truncate p-3 font-mono text-xs">
+                      <Link
+                        to="/repositories/$owner/$repo/explorer"
+                        params={{
+                          owner: f.repo_full_name.split("/")[0] || "",
+                          repo: f.repo_full_name.split("/")[1] || "",
+                        }}
+                        search={{ file: f.file_path, line: f.line_number || undefined }}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {f.file_path}{f.line_number ? `:${f.line_number}` : ""}
+                      </Link>
+                    </td>
                     <td className="p-3"><SeverityBadge severity={f.severity} /></td>
                     <td className="p-3"><ConfidenceMeter value={Number(f.confidence ?? 0.8)} /></td>
                     <td className="p-3">

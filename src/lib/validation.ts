@@ -26,6 +26,27 @@ export const startAnalysisSchema = z.object({
 export const startRepositoryAnalysisSchema = z.object({
   repoFullName: repoFullNameSchema,
   branch: z.string().trim().max(100).optional(),
+  targetPath: z.string().trim().max(500).optional(),
+  scope: z.enum(["repository", "directory", "file"]).optional(),
+});
+
+export const getRepositoryTreeSchema = z.object({
+  repoFullName: repoFullNameSchema,
+  branch: z.string().trim().max(100).optional(),
+  recursive: z.boolean().optional().default(true),
+});
+
+export const getFileContentSchema = z.object({
+  repoFullName: repoFullNameSchema,
+  path: z.string().trim().min(1, "Path cannot be empty").max(1000),
+  ref: z.string().trim().max(100).optional(),
+});
+
+export const searchRepositoryFilesSchema = z.object({
+  repoFullName: repoFullNameSchema,
+  query: z.string().trim().min(1).max(200),
+  branch: z.string().trim().max(100).optional(),
+  language: z.string().trim().max(50).optional(),
 });
 
 export const analyzeAllPullRequestsSchema = z.object({

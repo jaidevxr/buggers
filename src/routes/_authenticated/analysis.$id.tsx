@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   XCircle,
   Zap,
+  FolderTree,
 } from "lucide-react";
 import {
   getAnalysis,
@@ -36,6 +37,7 @@ import {
 } from "@/components/status/StatusBadges";
 import { Button } from "@/components/ui/button";
 import { DiffViewer } from "@/components/diff/DiffViewer";
+import { CoverageReportCard } from "@/components/explorer/CoverageReportCard";
 
 export const Route = createFileRoute("/_authenticated/analysis/$id")({
   head: () => ({ meta: [{ title: "Analysis – Buggers" }] }),
@@ -439,6 +441,16 @@ ${f.suggested_fix ? `#### Remediation Fix\n\`\`\`\n${f.suggested_fix}\n\`\`\`` :
                   )}
                 </div>
               )}
+
+              {Boolean((a.signals as any)?.coverage) && (
+                <div className="mb-4">
+                  <CoverageReportCard
+                    metrics={(a.signals as any).coverage}
+                    isTruncated={(a.signals as any).coverage?.isTruncated}
+                    targetPath={(a.signals as any).coverage?.targetPath}
+                  />
+                </div>
+              )}
               <div className="grid gap-2 sm:grid-cols-2">
                 {signals.map((s, i) => (
                   <div
@@ -531,8 +543,29 @@ ${f.suggested_fix ? `#### Remediation Fix\n\`\`\`\n${f.suggested_fix}\n\`\`\`` :
                     {f.line_number ? `:${f.line_number}` : ""} · {f.category}
                   </div>
                 </div>
-                <ConfidenceMeter value={Number(f.confidence)} />
-                <StatusPill status={f.status} />
+                <div className="flex items-center gap-2">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Link
+                      to="/repositories/$owner/$repo/explorer"
+                      params={{
+                        owner: a.repo_full_name.split("/")[0] || "",
+                        repo: a.repo_full_name.split("/")[1] || "",
+                      }}
+                      search={{ file: f.file_path, line: f.line_number || undefined }}
+                    >
+                      <FolderTree className="h-3 w-3" />
+                      <span>Explore</span>
+                    </Link>
+                  </Button>
+                  <ConfidenceMeter value={Number(f.confidence)} />
+                  <StatusPill status={f.status} />
+                </div>
               </div>
               {f.description && (
                 <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 pl-[calc(theme(spacing.3)+theme(spacing.16))]">

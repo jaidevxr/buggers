@@ -269,7 +269,13 @@ async function processWholeRepositoryAnalysis(
     );
     const { scanRepositoryGitHistory } = await import("@/server/gitHistoryScanner.server");
 
-    const { eligibleBlobs, metrics } = await discoverRepositoryInventory(userId, repoFullName, branch);
+    const targetPath = stageData["targetPath"] as string | undefined;
+    const { eligibleBlobs, metrics, truncated } = await discoverRepositoryInventory(
+      userId,
+      repoFullName,
+      branch,
+      targetPath,
+    );
     const files = await fetchFileContents(userId, repoFullName, eligibleBlobs, 5);
 
     const totalLines = files.reduce((acc, f) => acc + f.content.split("\n").length, 0);
@@ -366,6 +372,12 @@ async function processWholeRepositoryAnalysis(
         risk_confidence: 0.95,
         signals: {
           inventory: metrics,
+          coverage: {
+            ...metrics,
+            isTruncated: truncated,
+            isCompleteCoverage: !truncated && metrics.failedFiles === 0 && metrics.skippedFiles === 0,
+            targetPath: targetPath || "entire_repository",
+          },
           history: {
             commitsInspected: historySummary.totalCommitsInspected,
             authors: historySummary.authorsIdentified,

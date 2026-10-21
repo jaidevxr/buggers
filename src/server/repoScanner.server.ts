@@ -17,6 +17,8 @@ import { SAST_RULES } from "@/server/sastScanner.server";
 import { SECRET_RULES, maskSecret } from "@/server/secretScanner.server";
 import { scanDependencyFile } from "@/server/dependencyScanner.server";
 import { logStructured } from "@/server/logger.server";
+import { analyzeCodebaseFile } from "@/server/codebaseAnalyzer.server";
+import { traceCrossFileTaint } from "@/server/crossFileTracer.server";
 
 export interface GitTreeItem {
   path: string;
@@ -227,7 +229,8 @@ export async function discoverRepositoryInventory(
   userId: string,
   repoFullName: string,
   branch: string,
-): Promise<{ eligibleBlobs: GitTreeItem[]; metrics: InventoryMetrics }> {
+  targetPath?: string,
+): Promise<{ eligibleBlobs: GitTreeItem[]; metrics: InventoryMetrics; truncated: boolean }> {
   const treeResp = await githubJson<GitTreeResponse>(
     userId,
     `/repos/${repoFullName}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
@@ -245,9 +248,17 @@ export async function discoverRepositoryInventory(
   };
 
   const eligibleBlobs: GitTreeItem[] = [];
+  const cleanTarget = targetPath ? targetPath.replace(/^\/+/, "") : "";
 
   for (const item of tree) {
     if (item.type !== "blob") continue;
+
+    if (cleanTarget) {
+      const isExact = item.path === cleanTarget;
+      const isInDir = item.path.startsWith(cleanTarget.endsWith("/") ? cleanTarget : cleanTarget + "/");
+      if (!isExact && !isInDir) continue;
+    }
+
     metrics.totalFilesDiscovered++;
 
     const filter = shouldExcludeFile(item.path, item.size);
@@ -274,7 +285,7 @@ export async function discoverRepositoryInventory(
     return scoreB - scoreA;
   });
 
-  return { eligibleBlobs, metrics };
+  return { eligibleBlobs, metrics, truncated: Boolean(treeResp?.truncated) };
 }
 
 // ─── Safe Batch File Fetcher ────────────────────────────────────────
@@ -438,7 +449,8 @@ export function analyzeWholeCodebaseFiles(
   const seenSignatures = new Set<string>();
 
   const addFinding = (f: UnifiedRepositoryFinding) => {
-    const sig = `${f.file_path}:${f.line_number ?? 0}:${f.rule_id}`;
+    const normalizedRule = f.rule_id.replace(/^sec_/, "");
+    const sig = `${f.file_path}:${f.line_number ?? 0}:${normalizedRule}`;
     if (seenSignatures.has(sig)) return;
     seenSignatures.add(sig);
     findings.push(f);
@@ -596,6 +608,52 @@ export function analyzeWholeCodebaseFiles(
         });
       }
     }
+
+    // ── Layer E: 12-Class Modular Codebase Analyzer ─────────────────
+    const multiClassFindings = analyzeCodebaseFile({
+      path: file.path,
+      content: file.content,
+      language: file.language,
+    });
+    for (const mcf of multiClassFindings) {
+      addFinding({
+        id: mcf.id,
+        file_path: mcf.file_path,
+        line_number: mcf.line_number,
+        title: mcf.title,
+        description: mcf.explanation,
+        why_it_matters: mcf.actual_behavior,
+        evidence: mcf.evidence,
+        suggested_fix: mcf.suggested_fix,
+        severity: mcf.severity,
+        category: mcf.category === "security" ? "security" : "quality",
+        confidence: mcf.confidence,
+        source: mcf.category === "security" ? "sast" : "quality",
+        rule_id: mcf.rule_id,
+      });
+    }
+  }
+
+  // ── Layer F: Cross-File Import & Taint Tracing ────────────────────
+  const crossModuleFindings = traceCrossFileTaint(
+    files.map((f) => ({ path: f.path, content: f.content })),
+  );
+  for (const cmf of crossModuleFindings) {
+    addFinding({
+      id: cmf.id,
+      file_path: cmf.file_path,
+      line_number: cmf.line_number,
+      title: cmf.title,
+      description: cmf.explanation,
+      why_it_matters: cmf.actual_behavior,
+      evidence: cmf.evidence,
+      suggested_fix: cmf.suggested_fix,
+      severity: cmf.severity,
+      category: "security",
+      confidence: cmf.confidence,
+      source: "dataflow",
+      rule_id: cmf.rule_id,
+    });
   }
 
   return findings;

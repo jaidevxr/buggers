@@ -372,7 +372,28 @@ function FindingDetail() {
         backTo="/findings"
         backLabel="Findings"
         title={f.title}
-        description={`${f.repo_full_name} · PR #${f.pr_number} · ${f.file_path}${f.line_number ? `:${f.line_number}` : ""} · ${timeAgo(f.created_at)}`}
+        description={
+          <span className="flex items-center gap-1.5 flex-wrap">
+            <span>{f.repo_full_name}</span>
+            <span>·</span>
+            <span>{f.pr_number > 0 ? `PR #${f.pr_number}` : "Codebase"}</span>
+            <span>·</span>
+            <Link
+              to="/repositories/$owner/$repo/explorer"
+              params={{
+                owner: f.repo_full_name.split("/")[0] || "",
+                repo: f.repo_full_name.split("/")[1] || "",
+              }}
+              search={{ file: f.file_path, line: f.line_number || undefined }}
+              className="text-primary hover:underline font-mono inline-flex items-center gap-1"
+            >
+              <span>{f.file_path}{f.line_number ? `:${f.line_number}` : ""}</span>
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+            <span>·</span>
+            <span>{timeAgo(f.created_at)}</span>
+          </span>
+        }
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

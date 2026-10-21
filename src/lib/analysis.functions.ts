@@ -149,11 +149,14 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
         head_sha: headSha,
         status: "queued",
         stage: "queued",
-        pr_title: `Full Codebase Analysis (${branch})`,
+        pr_title: data.targetPath
+          ? `Targeted Analysis: ${data.targetPath} (${branch})`
+          : `Full Codebase Analysis (${branch})`,
         pr_author: repo.owner?.login ?? "Repository",
         pr_state: "repository",
         base_branch: branch,
         head_branch: branch,
+        stage_data: data.targetPath ? { targetPath: data.targetPath, scope: data.scope || "directory" } : {},
       })
       .select("id")
       .single();

@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, ShieldCheck, Loader2 } from "lucide-react";
+import { ExternalLink, ShieldCheck, Loader2, FolderTree } from "lucide-react";
 import { getRepositoryOverview } from "@/lib/github.functions";
 import { startRepositoryAnalysis, runAnalysis } from "@/lib/analysis.functions";
 import { PageHeader, StatCard, timeAgo, errMsg } from "@/components/layout/PageHeader";
@@ -76,6 +76,17 @@ function RepoOverview() {
                   <span>Scan Entire Codebase</span>
                 </>
               )}
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs transition-all duration-200 active:scale-95"
+            >
+              <Link to="/repositories/$owner/$repo/explorer" params={{ owner, repo }}>
+                <FolderTree className="h-3.5 w-3.5 text-primary" />
+                <span>Explore Code</span>
+              </Link>
             </Button>
             <Button asChild variant="outline" size="sm" className="transition-all duration-200 active:scale-95">
               <a href={d.repo.htmlUrl} target="_blank" rel="noreferrer">GitHub <ExternalLink className="ml-1 h-3 w-3" /></a>
