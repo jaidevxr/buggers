@@ -112,18 +112,36 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
     const { githubJson } = await import("@/server/github.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Fetch repository default branch
-    const repo = await githubJson<{ default_branch: string; owner: { login: string } }>(
-      context.userId,
-      `/repos/${data.repoFullName}`,
-    );
-    const branch = data.branch ?? repo.default_branch ?? "main";
+    let headSha = data.commitSha;
+    let branch = data.branch;
 
-    const branchData = await githubJson<{ commit: { sha: string } }>(
-      context.userId,
-      `/repos/${data.repoFullName}/branches/${encodeURIComponent(branch)}`,
-    );
-    const headSha = branchData.commit.sha;
+    if (!headSha) {
+      // Fetch repository default branch
+      const repo = await githubJson<{ default_branch: string; owner: { login: string } }>(
+        context.userId,
+        `/repos/${data.repoFullName}`,
+      );
+      branch = branch ?? repo.default_branch ?? "main";
+
+      const branchData = await githubJson<{ commit: { sha: string } }>(
+        context.userId,
+        `/repos/${data.repoFullName}/branches/${encodeURIComponent(branch)}`,
+      );
+      headSha = branchData.commit.sha;
+    } else if (!branch) {
+      branch = headSha.slice(0, 7);
+    }
+
+    const scanTitle = data.commitSha
+      ? `Commit Analysis: ${data.commitMessage ? data.commitMessage.slice(0, 60) : data.commitSha.slice(0, 7)}`
+      : data.targetPath
+        ? `Targeted Analysis: ${data.targetPath} (${branch})`
+        : `Full Codebase Analysis (${branch})`;
+
+    const stageDataPayload: Record<string, unknown> = {
+      ...(data.targetPath ? { targetPath: data.targetPath, scope: data.scope || "directory" } : {}),
+      ...(data.commitSha ? { commitSha: data.commitSha, commitMessage: data.commitMessage } : {}),
+    };
 
     // Idempotency check: see if a scan exists for this repo at pr_number = 0 and head_sha
     const { data: existing } = await supabaseAdmin
@@ -158,10 +176,8 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
         .update({
           status: "queued",
           stage: "queued",
-          pr_title: data.targetPath
-            ? `Targeted Analysis: ${data.targetPath} (${branch})`
-            : `Full Codebase Analysis (${branch})`,
-          stage_data: data.targetPath ? { targetPath: data.targetPath, scope: data.scope || "directory" } : {},
+          pr_title: scanTitle,
+          stage_data: stageDataPayload,
           error_message: null,
           risk_score: null,
           risk_level: null,
@@ -183,14 +199,12 @@ export const startRepositoryAnalysis = createServerFn({ method: "POST" })
         head_sha: headSha,
         status: "queued",
         stage: "queued",
-        pr_title: data.targetPath
-          ? `Targeted Analysis: ${data.targetPath} (${branch})`
-          : `Full Codebase Analysis (${branch})`,
-        pr_author: repo.owner?.login ?? "Repository",
+        pr_title: scanTitle,
+        pr_author: "Repository",
         pr_state: "repository",
         base_branch: branch,
         head_branch: branch,
-        stage_data: data.targetPath ? { targetPath: data.targetPath, scope: data.scope || "directory" } : {},
+        stage_data: stageDataPayload,
       })
       .select("id")
       .single();

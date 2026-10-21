@@ -18,6 +18,7 @@ import type { CodebaseFinding } from "@/server/codebaseAnalyzer.server";
 const searchSchema = z.object({
   file: z.string().optional(),
   line: z.coerce.number().optional(),
+  ref: z.string().optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/repositories/$owner/$repo/explorer")({
@@ -48,18 +49,20 @@ function RepoExplorerPage() {
     queryFn: () => getRepositoryOverview({ data: { repoFullName: full } }),
   });
 
+  const activeRef = search.ref || repoMeta.data?.repo?.defaultBranch;
+
   // 2. Fetch File Tree
   const treeQuery = useQuery({
-    queryKey: ["repoTree", full, repoMeta.data?.repo?.defaultBranch],
+    queryKey: ["repoTree", full, activeRef],
     queryFn: () =>
       getRepositoryTree({
         data: {
           repoFullName: full,
-          branch: repoMeta.data?.repo?.defaultBranch,
+          branch: activeRef,
           recursive: true,
         },
       }),
-    enabled: Boolean(repoMeta.data),
+    enabled: Boolean(activeRef || repoMeta.data),
   });
 
   // Automatically select first file if none selected
@@ -74,13 +77,13 @@ function RepoExplorerPage() {
 
   // 3. Fetch Selected File Content
   const fileContentQuery = useQuery({
-    queryKey: ["fileContent", full, selectedPath, repoMeta.data?.repo?.defaultBranch],
+    queryKey: ["fileContent", full, selectedPath, activeRef],
     queryFn: () =>
       getFileContent({
         data: {
           repoFullName: full,
           path: selectedPath!,
-          ref: repoMeta.data?.repo?.defaultBranch,
+          ref: activeRef,
         },
       }),
     enabled: Boolean(selectedPath),

@@ -26,6 +26,8 @@ export const startAnalysisSchema = z.object({
 export const startRepositoryAnalysisSchema = z.object({
   repoFullName: repoFullNameSchema,
   branch: z.string().trim().max(100).optional(),
+  commitSha: z.string().trim().max(100).optional(),
+  commitMessage: z.string().trim().max(500).optional(),
   targetPath: z.string().trim().max(500).optional(),
   scope: z.enum(["repository", "directory", "file"]).optional(),
 });
