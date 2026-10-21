@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Sun, Moon, Laptop, Copy, Check, Webhook, Activity, Send, Shield, ShieldAlert, Sliders } from "lucide-react";
+import { Sun, Moon, Laptop, Copy, Check, Webhook, Activity, Send, Shield, ShieldAlert, Sliders, Loader2 } from "lucide-react";
 import { disconnectGitHub, getGitHubConnection } from "@/lib/github.functions";
 import { deleteMyAnalysisData, getSettings, saveSettings, testWebhookPing, type UserSettings } from "@/lib/settings.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -255,6 +255,7 @@ function Settings() {
   const s = useQuery({ queryKey: ["settings"], queryFn: () => getSettings() });
   const [email, setEmail] = useState<string | null>(null);
   const [form, setForm] = useState<UserSettings | null>(null);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   useEffect(() => { if (s.data) setForm({ ...s.data.settings, min_confidence: Number(s.data.settings.min_confidence) }); }, [s.data]);
   useEffect(() => { void supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null)); }, []);
 
@@ -320,9 +321,33 @@ function Settings() {
             <div className="flex flex-wrap items-center gap-3">
               {conn.data.avatarUrl && <img src={conn.data.avatarUrl} alt="" className="h-10 w-10 rounded-full" />}
               <div className="flex-1"><div className="font-medium">{conn.data.login}</div><div className="text-xs text-muted-foreground">Authorized</div></div>
-              <Button variant="outline" onClick={async () => {
-                try { await disconnectGitHub(); toast.success("GitHub disconnected"); await qc.invalidateQueries(); } catch (e) { toast.error(errMsg(e)); }
-              }}>Disconnect</Button>
+              <Button
+                variant="outline"
+                disabled={isDisconnecting}
+                onClick={async () => {
+                  setIsDisconnecting(true);
+                  try {
+                    await disconnectGitHub();
+                    toast.success("GitHub disconnected");
+                    await qc.refetchQueries({ queryKey: ["github-connection"] });
+                    await qc.invalidateQueries();
+                  } catch (e) {
+                    toast.error(errMsg(e));
+                  } finally {
+                    setIsDisconnecting(false);
+                  }
+                }}
+                className="gap-2 transition-all duration-200 active:scale-95 min-w-[110px]"
+              >
+                {isDisconnecting ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                    <span>Disconnecting&hellip;</span>
+                  </>
+                ) : (
+                  "Disconnect"
+                )}
+              </Button>
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3">

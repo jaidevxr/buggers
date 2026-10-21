@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
+  startGitHubConnectSchema,
   completeGitHubConnectSchema,
   saveGitHubTokenSchema,
   listPullRequestsSchema,
@@ -32,7 +33,8 @@ function toClientError(e: unknown): string {
 
 export const startGitHubConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator(startGitHubConnectSchema)
+  .handler(async ({ data, context }) => {
     const { createOAuthState } = await import("@/server/connectionKeyCrypto");
     const { GITHUB_SCOPES, reloadEnv } = await import("@/server/github.server");
 
@@ -43,10 +45,33 @@ export const startGitHubConnect = createServerFn({ method: "POST" })
     }
 
     const request = getRequest();
-    if (!request) throw new Error("OAuth must start from an app request.");
-    const url = new URL(request.url);
     const configuredCallback = process.env["GITHUB_OAUTH_CALLBACK_URL"];
-    const returnUrl = configuredCallback || new URL("/oauth/github/return", url.origin).toString();
+
+    let resolvedOrigin: string | undefined = undefined;
+    if (data?.origin) {
+      try {
+        resolvedOrigin = new URL(data.origin).origin;
+      } catch {
+        // invalid URL string, skip
+      }
+    }
+
+    if (!resolvedOrigin && request) {
+      const forwardedHost = request.headers.get("x-forwarded-host") || request.headers.get("host");
+      const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+      if (forwardedHost) {
+        resolvedOrigin = `${forwardedProto}://${forwardedHost}`;
+      } else {
+        try {
+          resolvedOrigin = new URL(request.url).origin;
+        } catch {
+          // fallback
+        }
+      }
+    }
+
+    const baseOrigin = resolvedOrigin || "https://buggers.dev";
+    const returnUrl = configuredCallback || new URL("/oauth/github/return", baseOrigin).toString();
 
     const state = createOAuthState(context.userId);
 
@@ -56,7 +81,7 @@ export const startGitHubConnect = createServerFn({ method: "POST" })
       GITHUB_SCOPES.join(" "),
     )}&state=${encodeURIComponent(state)}`;
 
-    return { authorizationUrl };
+    return { authorizationUrl, returnUrl };
   });
 
 export const completeGitHubConnect = createServerFn({ method: "POST" })

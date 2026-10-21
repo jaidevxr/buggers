@@ -7,6 +7,7 @@ import {
   postReportToGitHubPRSchema,
   runAnalysisSchema,
   startAnalysisSchema,
+  startRepositoryAnalysisSchema,
 } from "@/lib/validation";
 
 export const startAnalysis = createServerFn({ method: "POST" })
@@ -97,6 +98,66 @@ export const startAnalysis = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
+    if (error) throw error;
+    return { analysisId: inserted.id, alreadyRunning: false };
+  });
+
+export const startRepositoryAnalysis = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(startRepositoryAnalysisSchema)
+  .handler(async ({ data, context }) => {
+    const { checkUserRateLimit } = await import("@/server/rateLimit.server");
+    checkUserRateLimit(`${context.userId}:startRepoAnalysis`, 10, 60_000);
+
+    const { githubJson } = await import("@/server/github.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Fetch repository default branch
+    const repo = await githubJson<{ default_branch: string; owner: { login: string } }>(
+      context.userId,
+      `/repos/${data.repoFullName}`,
+    );
+    const branch = data.branch ?? repo.default_branch ?? "main";
+
+    const branchData = await githubJson<{ commit: { sha: string } }>(
+      context.userId,
+      `/repos/${data.repoFullName}/branches/${encodeURIComponent(branch)}`,
+    );
+    const headSha = branchData.commit.sha;
+
+    // Idempotency check: see if a running scan exists for this repo at pr_number = 0
+    const { data: existing } = await supabaseAdmin
+      .from("analyses")
+      .select("id, status")
+      .eq("user_id", context.userId)
+      .eq("repo_full_name", data.repoFullName)
+      .eq("pr_number", 0)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing && (existing.status === "processing" || existing.status === "queued")) {
+      return { analysisId: existing.id, alreadyRunning: true };
+    }
+
+    const { data: inserted, error } = await supabaseAdmin
+      .from("analyses")
+      .insert({
+        user_id: context.userId,
+        repo_full_name: data.repoFullName,
+        pr_number: 0,
+        head_sha: headSha,
+        status: "queued",
+        stage: "queued",
+        pr_title: `Full Codebase Analysis (${branch})`,
+        pr_author: repo.owner?.login ?? "Repository",
+        pr_state: "repository",
+        base_branch: branch,
+        head_branch: branch,
+      })
+      .select("id")
+      .single();
+
     if (error) throw error;
     return { analysisId: inserted.id, alreadyRunning: false };
   });

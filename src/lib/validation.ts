@@ -23,6 +23,11 @@ export const startAnalysisSchema = z.object({
   prNumber: prNumberSchema,
 });
 
+export const startRepositoryAnalysisSchema = z.object({
+  repoFullName: repoFullNameSchema,
+  branch: z.string().trim().max(100).optional(),
+});
+
 export const analyzeAllPullRequestsSchema = z.object({
   repoFullName: repoFullNameSchema,
 });
@@ -77,6 +82,12 @@ export const updateTicketSchema = z.object({
   status: z.enum(["open", "in_progress", "closed"]).optional(),
   assignee: z.string().trim().max(100).nullable().optional(),
 });
+
+export const startGitHubConnectSchema = z
+  .object({
+    origin: z.string().trim().optional(),
+  })
+  .optional();
 
 export const completeGitHubConnectSchema = z.object({
   code: z.string().trim().min(1, "OAuth code cannot be empty"),

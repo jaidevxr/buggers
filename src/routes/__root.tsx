@@ -272,6 +272,9 @@ function RootComponent() {
     pathname.startsWith("/settings") ||
     pathname.startsWith("/analysis");
 
+  const isOAuthRoute = pathname.startsWith("/oauth");
+  const hidePublicChrome = isDashboardRoute || isOAuthRoute;
+
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
     import("@/integrations/supabase/client").then(({ supabase }) => {
@@ -291,8 +294,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-[100.1vh] w-full bg-[#000000] text-neutral-100 flex flex-col selection:bg-white/20 relative">
-          {!isDashboardRoute && <AtmosphericBackdrop />}
-          {!isDashboardRoute && <PublicHeader />}
+          {!hidePublicChrome && <AtmosphericBackdrop />}
+          {!hidePublicChrome && <PublicHeader />}
           <div className="flex-1 w-full flex flex-col relative z-10">
             <Outlet />
           </div>

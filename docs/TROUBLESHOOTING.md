@@ -62,7 +62,7 @@ This guide contains diagnostic steps and remediations for common operational sce
   - The analysis heartbeat updates every 60 seconds with a 5-minute lease duration (`lease_expires_at`).
   - Trigger the stale job reaper manually or wait for the scheduled cron run:
     ```sh
-    curl -X POST https://your-domain.vercel.app/api/cron/worker \
+    curl -X POST https://buggers.dev/api/cron/worker \
       -H "Authorization: Bearer <CRON_SECRET>"
     ```
   - The reaper detects the expired lease, re-queues the job, and increments `attempt_count` (up to 3 retries).

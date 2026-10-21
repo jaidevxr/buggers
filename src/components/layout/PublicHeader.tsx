@@ -1,8 +1,23 @@
+import { useState, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { BugMark } from "@/components/brand/BugMark";
+import { supabase } from "@/integrations/supabase/client";
 
 export function PublicHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setIsAuthenticated(Boolean(data.session));
+    });
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session));
+    });
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
     <header
@@ -62,18 +77,28 @@ export function PublicHeader() {
           </Link>
         </nav>
 
-        {/* Login Action Pill — stable dimensions */}
-        <Link
-          to="/auth"
-          preload="intent"
-          className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
-            pathname === "/auth"
-              ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)] ring-2 ring-white/30"
-              : "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_16px_rgba(255,255,255,0.15)]"
-          }`}
-        >
-          Login
-        </Link>
+        {/* Dynamic Action Pill — switches to Dashboard when logged in */}
+        {isAuthenticated ? (
+          <Link
+            to="/dashboard"
+            preload="intent"
+            className="rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_16px_rgba(255,255,255,0.15)] transition-all duration-200 cursor-pointer"
+          >
+            Dashboard
+          </Link>
+        ) : (
+          <Link
+            to="/auth"
+            preload="intent"
+            className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              pathname === "/auth"
+                ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)] ring-2 ring-white/30"
+                : "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_16px_rgba(255,255,255,0.15)]"
+            }`}
+          >
+            Login
+          </Link>
+        )}
       </div>
     </header>
   );

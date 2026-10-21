@@ -20,6 +20,7 @@ import {
   postReportToGitHubPR,
   runAnalysis,
   startAnalysis,
+  startRepositoryAnalysis,
 } from "@/lib/analysis.functions";
 import { applyBatchFindingFixesToGitHub } from "@/lib/findings.functions";
 import { evaluateQualityGate, getSavedSecurityPolicy } from "@/lib/security-policy";
@@ -85,7 +86,7 @@ function AnalysisPage() {
     queryKey: ["pr", a?.repo_full_name, a?.pr_number],
     queryFn: () =>
       getPullRequestDetail({ data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number } }),
-    enabled: Boolean(a),
+    enabled: Boolean(a && a.pr_number > 0),
   });
 
   if (q.isLoading) return <AnalysisDetailSkeleton />;
@@ -164,9 +165,14 @@ function AnalysisPage() {
   async function rerun() {
     setRerunning(true);
     try {
-      const r = await startAnalysis({
-        data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number },
-      });
+      const r =
+        a!.pr_number > 0
+          ? await startAnalysis({
+              data: { repoFullName: a!.repo_full_name, prNumber: a!.pr_number },
+            })
+          : await startRepositoryAnalysis({
+              data: { repoFullName: a!.repo_full_name, branch: a!.head_branch ?? undefined },
+            });
       if (!r.alreadyRunning)
         void runAnalysis({ data: { analysisId: r.analysisId } }).catch(() => {});
       await q.refetch();
@@ -249,10 +255,14 @@ ${f.suggested_fix ? `#### Remediation Fix\n\`\`\`\n${f.suggested_fix}\n\`\`\`` :
   return (
     <div className="page-view content-fade-in">
       <PageHeader
-        backTo="/pull-requests"
-        backLabel="Pull requests"
-        title={`#${a.pr_number} ${a.pr_title ?? ""}`}
-        description={`${a.repo_full_name} · ${a.head_branch} → ${a.base_branch} · by ${a.pr_author ?? "unknown"} · ${timeAgo(a.created_at)}`}
+        backTo={a.pr_number > 0 ? "/pull-requests" : `/repositories/${a.repo_full_name}`}
+        backLabel={a.pr_number > 0 ? "Pull requests" : "Repository"}
+        title={a.pr_number > 0 ? `#${a.pr_number} ${a.pr_title ?? ""}` : (a.pr_title ?? "Full Codebase Analysis")}
+        description={
+          a.pr_number > 0
+            ? `${a.repo_full_name} · ${a.head_branch} → ${a.base_branch} · by ${a.pr_author ?? "unknown"} · ${timeAgo(a.created_at)}`
+            : `${a.repo_full_name} · Branch: ${a.head_branch || "main"} · Whole Repository Scan · by ${a.pr_author ?? "Repository"} · ${timeAgo(a.created_at)}`
+        }
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill status={a.status} />
@@ -268,20 +278,22 @@ ${f.suggested_fix ? `#### Remediation Fix\n\`\`\`\n${f.suggested_fix}\n\`\`\`` :
                   <Download className="h-3.5 w-3.5" />
                   Export report
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={postToGitHub}
-                  disabled={postingComment}
-                  className="gap-1.5 text-xs text-primary border-primary/30 hover:bg-primary/10"
-                >
-                  {postingComment ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <MessageSquare className="h-3.5 w-3.5" />
-                  )}
-                  {commentUrl ? "Review posted ✓" : "Post to GitHub PR"}
-                </Button>
+                {a.pr_number > 0 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={postToGitHub}
+                    disabled={postingComment}
+                    className="gap-1.5 text-xs text-primary border-primary/30 hover:bg-primary/10"
+                  >
+                    {postingComment ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    )}
+                    {commentUrl ? "Review posted ✓" : "Post to GitHub PR"}
+                  </Button>
+                )}
               </>
             )}
             {(a.status === "completed" || a.status === "failed") && (

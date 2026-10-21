@@ -98,6 +98,9 @@ export function AuthPage() {
   async function handleOAuth(provider: "github" | "google") {
     setBusyProvider(provider);
     try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("buggers_auth_pending", "true");
+      }
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

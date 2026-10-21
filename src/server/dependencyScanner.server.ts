@@ -252,3 +252,98 @@ export function scanFilesForVulnerableDependencies(
 
   return findings;
 }
+
+/**
+ * Scan a raw package.json or requirements.txt file content directly
+ */
+export function scanDependencyFile(
+  content: string,
+  filename: string = "package.json",
+): Array<{
+  line: number;
+  packageName: string;
+  version: string;
+  cve: string;
+  severity: "critical" | "high" | "medium";
+  title: string;
+  problem: string;
+  why_it_matters: string;
+  evidence: string;
+  suggested_fix: string;
+}> {
+  const findings: Array<{
+    line: number;
+    packageName: string;
+    version: string;
+    cve: string;
+    severity: "critical" | "high" | "medium";
+    title: string;
+    problem: string;
+    why_it_matters: string;
+    evidence: string;
+    suggested_fix: string;
+  }> = [];
+
+  const lines = content.split("\n");
+  const isPackageJson = /package\.json$/i.test(filename);
+  const isRequirements = /requirements.*\.txt$/i.test(filename);
+
+  for (let idx = 0; idx < lines.length; idx++) {
+    const lineContent = lines[idx] ?? "";
+    const lineNumber = idx + 1;
+
+    if (isPackageJson) {
+      const match = lineContent.match(/"([^"]+)":\s*"([^"]+)"/);
+      if (match) {
+        const pkgName = match[1]!;
+        const versionStr = match[2]!;
+
+        const vuln = KNOWN_VULNERABILITIES.find(
+          (k) => k.ecosystem === "npm" && k.packageName.toLowerCase() === pkgName.toLowerCase(),
+        );
+        if (vuln && vuln.vulnerableRange(versionStr)) {
+          findings.push({
+            line: lineNumber,
+            packageName: pkgName,
+            version: versionStr,
+            cve: vuln.cve,
+            severity: vuln.severity,
+            title: `Vulnerable Dependency: ${pkgName}`,
+            problem: `Known vulnerability ${vuln.cve} detected in dependency "${pkgName}@${versionStr}": ${vuln.summary}`,
+            why_it_matters:
+              "Using components with known vulnerabilities exposes applications to publicly available exploits and automated attack vectors.",
+            evidence: lineContent.trim(),
+            suggested_fix: `"${pkgName}": "^${vuln.safeVersion}"`,
+          });
+        }
+      }
+    } else if (isRequirements) {
+      const match = lineContent.match(/^([a-zA-Z0-9_\-]+)\s*(?:==|>=|~=)\s*([0-9.]+)/);
+      if (match) {
+        const pkgName = match[1]!;
+        const versionStr = match[2]!;
+
+        const vuln = KNOWN_VULNERABILITIES.find(
+          (k) => k.ecosystem === "pypi" && k.packageName.toLowerCase() === pkgName.toLowerCase(),
+        );
+        if (vuln && vuln.vulnerableRange(versionStr)) {
+          findings.push({
+            line: lineNumber,
+            packageName: pkgName,
+            version: versionStr,
+            cve: vuln.cve,
+            severity: vuln.severity,
+            title: `Vulnerable Python Package: ${pkgName}`,
+            problem: `Known vulnerability ${vuln.cve} in package "${pkgName}": ${vuln.summary}`,
+            why_it_matters:
+              "Outdated Python dependencies can allow remote code execution, token leakage, or denial of service.",
+            evidence: lineContent.trim(),
+            suggested_fix: `${pkgName}>=${vuln.safeVersion}`,
+          });
+        }
+      }
+    }
+  }
+
+  return findings;
+}

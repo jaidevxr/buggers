@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { completeGitHubConnect } from "@/lib/github.functions";
 
 export const Route = createFileRoute("/oauth/github/return")({
   component: OAuthReturn,
@@ -11,26 +12,23 @@ export const Route = createFileRoute("/oauth/github/return")({
 
 function OAuthReturn() {
   const [message, setMessage] = useState("Finishing GitHub connection…");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const notifyOpenerAndClose = (
-      type: "gitHubOAuthComplete" | "gitHubOAuthFailed",
-      payload?: { code?: string; state?: string; error?: string },
-    ) => {
-      window.opener?.postMessage(
-        { type, connectorId: "github", ...payload },
-        window.location.origin,
-      );
-      window.close();
-    };
-
     const error = params.get("error");
     const errorDescription = params.get("error_description");
+
     if (error) {
       const errText = errorDescription || error || "GitHub authorization did not complete.";
       setMessage(errText);
-      notifyOpenerAndClose("gitHubOAuthFailed", { error: errText });
+      if (window.opener) {
+        window.opener.postMessage(
+          { type: "gitHubOAuthFailed", connectorId: "github", error: errText },
+          window.location.origin,
+        );
+        window.close();
+      }
       return;
     }
 
@@ -38,17 +36,47 @@ function OAuthReturn() {
     const state = params.get("state");
 
     if (!code || !state) {
-      setMessage("GitHub authorization completed without required code or state.");
-      notifyOpenerAndClose("gitHubOAuthFailed", { error: "Missing code or state" });
+      const errText = "GitHub authorization completed without required code or state.";
+      setMessage(errText);
+      if (window.opener) {
+        window.opener.postMessage(
+          { type: "gitHubOAuthFailed", connectorId: "github", error: errText },
+          window.location.origin,
+        );
+        window.close();
+      }
       return;
     }
 
-    notifyOpenerAndClose("gitHubOAuthComplete", { code, state });
-  }, []);
+    if (window.opener) {
+      window.opener.postMessage(
+        { type: "gitHubOAuthComplete", connectorId: "github", code, state },
+        window.location.origin,
+      );
+      window.close();
+      return;
+    }
+
+    // Direct navigation fallback (e.g. popup blocked or direct redirect)
+    completeGitHubConnect({ data: { code, state } })
+      .then(() => {
+        setMessage("GitHub connected successfully! Redirecting…");
+        setTimeout(() => {
+          navigate({ to: "/settings" });
+        }, 800);
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : "Failed to exchange GitHub authorization code.";
+        setMessage(msg);
+      });
+  }, [navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6 text-center">
-      <p className="text-sm text-muted-foreground">{message}</p>
+      <div className="space-y-3">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent mx-auto" />
+        <p className="text-sm text-muted-foreground">{message}</p>
+      </div>
     </div>
   );
 }

@@ -49,11 +49,12 @@ You can initialize the database using either the SQL Editor or Drizzle ORM:
 
 ### 1.4 Configure Supabase Auth Redirects
 1. Go to **Authentication → URL Configuration**.
-2. Set **Site URL** to your primary deployment URL (e.g. `https://buggers.dev` or `http://localhost:8080`).
+2. Set **Site URL** to `https://buggers.dev`.
 3. Add the following to **Redirect URLs**:
    - `http://localhost:8080/**`
    - `http://localhost:8081/**`
-   - `https://your-domain.vercel.app/**`
+   - `https://buggers.dev/**`
+   - `https://www.buggers.dev/**`
 4. Enable your preferred sign-in providers under **Authentication → Providers** (Google, GitHub, and/or Email).
 
 ---
@@ -64,12 +65,12 @@ Buggers connects to GitHub via a dedicated OAuth App to read repository pull req
 
 ### 2.1 Register the OAuth Application
 1. Go to your GitHub account **Settings → Developer settings → OAuth Apps** ([github.com/settings/developers](https://github.com/settings/developers)).
-2. Click **New OAuth App**.
+2. Click **New OAuth App** (or select your existing App).
 3. Fill in the application details:
    - **Application name**: `Buggers Security Triage`
-   - **Homepage URL**: `https://your-domain.vercel.app` (or `http://localhost:8080` for local testing)
-   - **Authorization callback URL**: `http://localhost:8080/oauth/github/return` (for local development) or `https://your-domain.vercel.app/oauth/github/return` (for production)
-4. Click **Register application**.
+   - **Homepage URL**: `https://buggers.dev`
+   - **Authorization callback URL**: `https://buggers.dev/oauth/github/return` (or `http://localhost:8080/oauth/github/return` for local testing)
+4. Click **Register application** (or **Update application**).
 5. Copy the **Client ID** → set as `GITHUB_CLIENT_ID` in `.env`.
 6. Click **Generate a new client secret** → copy it → set as `GITHUB_CLIENT_SECRET` in `.env`.
 
@@ -124,7 +125,7 @@ To automatically trigger analyses whenever a pull request is opened or updated:
    ```
 2. Set the secret as `GITHUB_WEBHOOK_SECRET` in `.env`.
 3. In your GitHub repository or organization settings, go to **Webhooks → Add webhook**:
-   - **Payload URL**: `https://your-domain.vercel.app/api/webhooks/github`
+   - **Payload URL**: `https://buggers.dev/api/webhooks/github`
    - **Content type**: `application/json`
    - **Secret**: Paste the same secret configured in `GITHUB_WEBHOOK_SECRET`
    - **Which events would you like to trigger this webhook?**: Select **Let me select individual events** and check **Pull requests** and **Pushes**.
@@ -143,7 +144,7 @@ To ensure analyses that abort unexpectedly are automatically re-queued:
 2. Set `CRON_SECRET` in `.env`.
 3. Configure a recurring job (e.g. Vercel Cron or GitHub Actions) to call `/api/cron/worker` every 5–10 minutes:
    ```sh
-   curl -X POST https://your-domain.vercel.app/api/cron/worker \
+   curl -X POST https://buggers.dev/api/cron/worker \
      -H "Authorization: Bearer <CRON_SECRET>"
    ```
 4. **Secret Rotation Support**: To rotate secrets with zero downtime, configure `CRON_SECRET_PREVIOUS` alongside `CRON_SECRET`. The worker endpoint verifies requests using constant-time digest comparison against both secrets.

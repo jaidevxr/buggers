@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowRight,
   BookOpen,
@@ -58,7 +59,43 @@ export const Route = createFileRoute("/")({
 });
 
 export function Landing() {
+  const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
+
+  // If user returns from OAuth with tokens/hash/pending-flag, immediately route to /dashboard
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const isPendingAuth = sessionStorage.getItem("buggers_auth_pending") === "true";
+    const hasOAuthHash = window.location.hash.includes("access_token") || window.location.hash === "#";
+    const hasOAuthCode = window.location.search.includes("code=");
+
+    if (isPendingAuth || hasOAuthHash || hasOAuthCode) {
+      const handleRedirect = () => {
+        sessionStorage.removeItem("buggers_auth_pending");
+        navigate({ to: "/dashboard" });
+      };
+
+      // Check current session
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          handleRedirect();
+        }
+      });
+
+      // Listen for auth event
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+          handleRedirect();
+        }
+      });
+
+      return () => {
+        authListener?.subscription?.unsubscribe();
+      };
+    }
+    return undefined;
+  }, [navigate]);
 
   // Subtle natural cursor ambient drift
   useEffect(() => {

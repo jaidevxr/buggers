@@ -1,7 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ExternalLink, ShieldCheck, Loader2 } from "lucide-react";
 import { getRepositoryOverview } from "@/lib/github.functions";
+import { startRepositoryAnalysis, runAnalysis } from "@/lib/analysis.functions";
 import { PageHeader, StatCard, timeAgo, errMsg } from "@/components/layout/PageHeader";
 import { PageSkeleton } from "@/components/LoadingSkeletons";
 import { ErrorState } from "@/components/status/EmptyState";
@@ -16,7 +19,26 @@ export const Route = createFileRoute("/_authenticated/repositories/$owner/$repo"
 function RepoOverview() {
   const { owner, repo } = Route.useParams();
   const full = `${owner}/${repo}`;
+  const navigate = useNavigate();
+  const [scanning, setScanning] = useState(false);
   const q = useQuery({ queryKey: ["repo", full], queryFn: () => getRepositoryOverview({ data: { repoFullName: full } }) });
+
+  const handleScanCodebase = async () => {
+    setScanning(true);
+    try {
+      const res = await startRepositoryAnalysis({
+        data: { repoFullName: full, branch: q.data?.repo?.defaultBranch },
+      });
+      if (!res.alreadyRunning) {
+        void runAnalysis({ data: { analysisId: res.analysisId } }).catch(() => {});
+      }
+      toast.success("Repository analysis initiated!");
+      navigate({ to: "/analysis/$id", params: { id: res.analysisId } });
+    } catch (e) {
+      toast.error(errMsg(e));
+      setScanning(false);
+    }
+  };
 
   if (q.isLoading) return <PageSkeleton />;
   if (q.error)
@@ -36,9 +58,29 @@ function RepoOverview() {
         title={d.repo.fullName}
         description={d.repo.description ?? "No description"}
         actions={
-          <Button asChild variant="outline" size="sm">
-            <a href={d.repo.htmlUrl} target="_blank" rel="noreferrer">GitHub <ExternalLink className="ml-1 h-3 w-3" /></a>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={handleScanCodebase}
+              disabled={scanning}
+              className="gap-1.5 text-xs bg-primary transition-all duration-200 active:scale-95"
+            >
+              {scanning ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Scanning Codebase…</span>
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>Scan Entire Codebase</span>
+                </>
+              )}
+            </Button>
+            <Button asChild variant="outline" size="sm" className="transition-all duration-200 active:scale-95">
+              <a href={d.repo.htmlUrl} target="_blank" rel="noreferrer">GitHub <ExternalLink className="ml-1 h-3 w-3" /></a>
+            </Button>
+          </div>
         }
       />
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
