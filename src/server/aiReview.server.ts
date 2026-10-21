@@ -182,8 +182,9 @@ export class StandaloneAiProvider implements AiReviewProvider {
         const altOpenrouterModels = (envFallbacks && envFallbacks.length > 0
           ? envFallbacks
           : [
-              "google/gemini-2.0-flash-exp:free",
-              "meta-llama/llama-3.2-3b-instruct:free",
+              "nvidia/nemotron-3.5-lightning:free",
+              "google/gemma-4-31b-it:free",
+              "minimax/minimax-m3.1-flash:free",
             ]
         ).filter((m) => m !== this.model);
         for (const altModel of altOpenrouterModels) {
