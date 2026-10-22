@@ -119,7 +119,7 @@ function RepoExplorerPage() {
     setSelectedPath(path);
     setTargetLine(null);
     navigate({
-      search: (prev) => ({ ...prev, file: path, line: undefined }),
+      search: (prev: Record<string, unknown>) => ({ ...prev, file: path, line: undefined }),
       replace: true,
     });
   };
