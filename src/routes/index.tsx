@@ -1,6 +1,7 @@
-import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect, isRedirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { hasActiveLocalSession } from "@/lib/auth-storage";
 import {
   ArrowRight,
   BookOpen,
@@ -22,11 +23,14 @@ import { VsCodeExtensionHeroSection } from "@/components/home/VsCodeExtensionHer
 import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     if (typeof window !== "undefined") {
-      const search = new URLSearchParams(window.location.search);
+      const search = new URLSearchParams(location?.search || window.location.search);
       if (search.has("public") || search.has("landing")) {
         return;
+      }
+      if (hasActiveLocalSession()) {
+        throw redirect({ to: "/dashboard" });
       }
       try {
         const { data } = await supabase.auth.getSession();
@@ -34,7 +38,7 @@ export const Route = createFileRoute("/")({
           throw redirect({ to: "/dashboard" });
         }
       } catch (e) {
-        if (e && typeof e === "object" && "to" in e) {
+        if (isRedirect(e) || (e && typeof e === "object" && "to" in e)) {
           throw e;
         }
       }
@@ -79,23 +83,34 @@ export const Route = createFileRoute("/")({
 export function Landing() {
   const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 50, y: 55 });
+  const [isRedirecting, setIsRedirecting] = useState(() => hasActiveLocalSession());
 
   // If user is already authenticated (or returns from OAuth), immediately route to /dashboard
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.has("public") || searchParams.has("landing")) return;
+    if (searchParams.has("public") || searchParams.has("landing")) {
+      setIsRedirecting(false);
+      return;
+    }
 
     const redirectToDashboard = () => {
       sessionStorage.removeItem("buggers_auth_pending");
       navigate({ to: "/dashboard", replace: true });
     };
 
+    if (hasActiveLocalSession()) {
+      redirectToDashboard();
+      return;
+    }
+
     // Check active session
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
         redirectToDashboard();
+      } else {
+        setIsRedirecting(false);
       }
     });
 
@@ -121,6 +136,17 @@ export function Landing() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  if (isRedirecting) {
+    return (
+      <div className="min-h-screen w-full bg-[#000000] flex flex-col items-center justify-center relative z-20">
+        <div className="flex flex-col items-center gap-4">
+          <BugMark className="h-10 w-10 animate-pulse text-white" />
+          <p className="text-xs font-mono text-neutral-400 tracking-wider">Opening dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-full bg-transparent text-slate-100 antialiased overflow-x-hidden selection:bg-white/20 flex flex-col justify-between route-fade-entrance">

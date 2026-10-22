@@ -14,16 +14,14 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BugMark } from "@/components/brand/BugMark";
+import { hasActiveLocalSession } from "@/lib/auth-storage";
 
 import { createRouteSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/auth")({
   beforeLoad: async () => {
     if (typeof window !== "undefined") {
-      const hasAuth = Object.keys(localStorage).some(
-        (k) => k.startsWith("sb-") && k.endsWith("-auth-token"),
-      );
-      if (!hasAuth) return;
+      if (!hasActiveLocalSession()) return;
     }
     const { data } = await supabase.auth.getSession();
     if (data.session) {
@@ -73,6 +71,7 @@ function GoogleIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export function AuthPage() {
   const navigate = useNavigate();
+  const [isRedirecting, setIsRedirecting] = useState(() => hasActiveLocalSession());
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -84,6 +83,7 @@ export function AuthPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
+      else setIsRedirecting(false);
     });
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
@@ -161,6 +161,17 @@ export function AuthPage() {
     } finally {
       setBusyProvider(null);
     }
+  }
+
+  if (isRedirecting) {
+    return (
+      <div className="min-h-screen w-full bg-[#000000] flex flex-col items-center justify-center relative z-20">
+        <div className="flex flex-col items-center gap-4">
+          <BugMark className="h-10 w-10 animate-pulse text-white" />
+          <p className="text-xs font-mono text-neutral-400 tracking-wider">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

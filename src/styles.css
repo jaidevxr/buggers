@@ -913,3 +913,17 @@ select {
   mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
+
+/* FOUC prevention for authenticated users landing on public roots */
+html.auth-redirecting,
+html.auth-redirecting body {
+  background-color: #000000 !important;
+  color: #000000 !important;
+}
+
+html.auth-redirecting body > * {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+

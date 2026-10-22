@@ -19,6 +19,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { AtmosphericBackdrop } from "@/components/layout/AtmosphericBackdrop";
 import { cn } from "@/lib/utils";
+import { hasActiveLocalSession } from "@/lib/auth-storage";
 
 function NotFoundComponent() {
   return (
@@ -193,6 +194,21 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              html.auth-redirecting, html.auth-redirecting body {
+                background-color: #000000 !important;
+                color: #000000 !important;
+              }
+              html.auth-redirecting body > * {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+              }
+            `,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -201,6 +217,26 @@ function RootShell({ children }: { children: ReactNode }) {
                 const d = t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
                 if (d) document.documentElement.classList.add("dark");
                 else document.documentElement.classList.remove("dark");
+
+                const p = window.location.pathname;
+                const s = window.location.search;
+                if ((p === "/" || p === "") && !s.includes("public") && !s.includes("landing")) {
+                  let hasAuth = false;
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k && (k.indexOf("-auth-token") !== -1 || (k.indexOf("sb-") === 0 && k.indexOf("-auth-token") !== -1))) {
+                      const raw = localStorage.getItem(k);
+                      if (raw && (raw.indexOf("access_token") !== -1 || raw.indexOf("user") !== -1 || raw.indexOf("refresh_token") !== -1)) {
+                        hasAuth = true;
+                        break;
+                      }
+                    }
+                  }
+                  if (hasAuth) {
+                    document.documentElement.classList.add("auth-redirecting");
+                    window.location.replace("/dashboard");
+                  }
+                }
               } catch (e) {}
             `,
           }}
@@ -274,7 +310,8 @@ function RootComponent() {
     pathname.startsWith("/analysis");
 
   const isOAuthRoute = pathname.startsWith("/oauth");
-  const hidePublicChrome = isDashboardRoute || isOAuthRoute;
+  const isAuthRedirecting = typeof window !== "undefined" && pathname === "/" && hasActiveLocalSession();
+  const hidePublicChrome = isDashboardRoute || isOAuthRoute || isAuthRedirecting;
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
